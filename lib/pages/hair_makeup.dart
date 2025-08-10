@@ -147,11 +147,16 @@ class HairMakeUp extends StatelessWidget {
                   FourSecretsDivider(),
 
                   // Image Carousel Section
-                  Padding(
-                    padding: const EdgeInsets.only(top: 12.0),
-                    child: SwipeableCardWidget(
-                      images: images,
-                      height: 430,
+                  Container(
+                    height: 480,
+                    child: Padding(
+                      padding: const EdgeInsets.only(top: 12.0),
+                      child: SwipeableCardWidget(
+                        images: images,
+                        height: 480,
+                        useImageDimensions: true, // Enable image-based sizing
+                        widthRatio: 0.67, // 67% of screen width
+                      ),
                     ),
                   ),
 

@@ -291,38 +291,6 @@ class _AboutMeState extends State<AboutMe> {
               SizedBox(
                 height: 15,
               ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  ElevatedButton(
-                    child: Icon(
-                      Icons.play_circle,
-                      size: 30,
-                    ),
-                    onPressed: () {
-                      if (videoAsset.isNotEmpty || videoUri.isNotEmpty) {
-                        Timer(
-                          const Duration(milliseconds: 100),
-                          () {
-                            Navigator.of(context).pushNamed(
-                              RouteManager.videoPlayer2,
-                              arguments: {
-                                'asset': videoAsset,
-                                'uri': videoUri,
-                                'ratio': videoRatio,
-                              },
-                            );
-                          },
-                        );
-                      }
-                    },
-                    style: ElevatedButton.styleFrom(
-                        shape: CircleBorder(),
-                        foregroundColor: Color.fromARGB(255, 107, 69, 106),
-                        elevation: 2.5),
-                  ),
-                ],
-              ),
               Padding(
                 padding: EdgeInsets.only(bottom: 25),
               ),

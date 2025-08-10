@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class ApiKeyManager {
@@ -16,33 +17,36 @@ class ApiKeyManager {
     try {
       print('🔑 Initialisiere API Key Manager...');
 
-      // Lade .env Datei
-      await dotenv.load(fileName: ".env");
+      // Firestore-Pfad: app_settings/api_keys/chatbot_key
+      DocumentSnapshot<Map<String, dynamic>> snapshot = await FirebaseFirestore
+          .instance
+          .collection('app_settings')
+          .doc('api_keys')
+          .get();
 
-      // Lade OpenAI API Key
-      _apiKey = dotenv.env['OPENAI_API_KEY'];
+      if (snapshot.exists) {
+        _apiKey = snapshot.data()?['chatbot_key'];
 
-      if (_apiKey == null || _apiKey!.isEmpty) {
-        print('⚠️ OPENAI_API_KEY nicht in .env gefunden');
-        _apiKey = null;
-      } else {
-        // Validiere API Key Format (sollte mit sk- beginnen)
-        if (!_apiKey!.startsWith('sk-')) {
-          print('⚠️ API Key hat falsches Format (sollte mit sk- beginnen)');
+        if (_apiKey == null || _apiKey!.isEmpty) {
+          print('⚠️ chatbot_key nicht in Firestore gefunden oder leer.');
           _apiKey = null;
         } else {
-          print(
-              '✅ API Key erfolgreich geladen (${_apiKey!.substring(0, 10)}...)');
+          if (!_apiKey!.startsWith('sk-')) {
+            print('⚠️ API Key hat falsches Format (sollte mit sk- beginnen)');
+            _apiKey = null;
+          } else {
+            print(
+                '✅ API Key erfolgreich geladen (${_apiKey!.substring(0, 10)}...)');
+          }
         }
+      } else {
+        print('⚠️ Firestore-Dokument app_settings/api_keys existiert nicht.');
+        _apiKey = null;
       }
 
       _isInitialized = true;
     } catch (e) {
-      print('❌ Fehler beim Laden der .env Datei: $e');
-      print(
-          '💡 Stelle sicher dass eine .env Datei im Root-Verzeichnis existiert');
-      print('💡 Die Datei sollte enthalten: OPENAI_API_KEY=sk-proj-...');
-
+      print('❌ Fehler beim Laden des API Keys aus Firestore: $e');
       _apiKey = null;
       _isInitialized = true; // Trotzdem als initialisiert markieren
     }

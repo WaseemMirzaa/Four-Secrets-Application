@@ -81,16 +81,18 @@ class FooterButtons extends StatelessWidget {
               size: iconSize,
             ),
             onPressed: () {
-              if (videoAsset.isNotEmpty || videoUri.isNotEmpty) {
-                Navigator.of(context).pushNamed(
-                  RouteManager.videoPlayer2,
-                  arguments: {
-                    'asset': videoAsset,
-                    'uri': videoUri,
-                    'ratio': videoRatio,
-                  },
-                );
-              }
+              print('Video Asset: $videoAsset');
+              print('Video Uri: $videoUri');
+              // if (videoAsset.isNotEmpty || videoUri.isNotEmpty) {
+              Navigator.of(context).pushNamed(
+                RouteManager.videoPlayer2,
+                arguments: {
+                  'asset': videoAsset,
+                  'uri': videoUri,
+                  'ratio': videoRatio,
+                },
+              );
+              // }
             },
             style: ElevatedButton.styleFrom(
                 shape: CircleBorder(),

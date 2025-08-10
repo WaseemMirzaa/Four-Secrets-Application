@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:four_secrets_wedding_app/extension.dart';
 
@@ -8,6 +9,8 @@ class SwipeableCardWidget extends StatefulWidget {
   String imageFit; // New: Control how images are fitted
   bool showIndicators; // New: Control indicator visibility
   bool showSwipeHints; // New: Control swipe hint visibility
+  bool useImageDimensions; // New: Use actual image dimensions for sizing
+  double widthRatio; // New: Width ratio relative to screen width
 
   SwipeableCardWidget({
     super.key,
@@ -16,6 +19,8 @@ class SwipeableCardWidget extends StatefulWidget {
     this.imageFit = "cover", // Default to cover to fill card shape
     this.showIndicators = true,
     this.showSwipeHints = true,
+    this.useImageDimensions = false, // Default to fixed height
+    this.widthRatio = 0.67, // Default to 67% of screen width
   });
 
   @override
@@ -31,10 +36,20 @@ class _SwipeableCardWidgetState extends State<SwipeableCardWidget>
   bool _isAnimating = false;
   Offset _dragOffset = Offset.zero;
   double _dragRotation = 0.0;
+  Map<String, Size> _imageDimensions = {}; // Store dimensions for each image
+  bool _dimensionsLoaded = false;
 
   @override
   void initState() {
     super.initState();
+
+    // Load image dimensions if enabled
+    if (widget.useImageDimensions && widget.images.isNotEmpty) {
+      _loadAllImageDimensions();
+    } else {
+      _dimensionsLoaded = true;
+    }
+
     _animationController = AnimationController(
       duration: Duration(
           milliseconds: 200), // Faster animation for better responsiveness
@@ -170,18 +185,18 @@ class _SwipeableCardWidgetState extends State<SwipeableCardWidget>
 
   Widget buildImage(
       BuildContext context, String image, int index, String mode) {
+    // Get the calculated size for this specific image
+    final Size imageSize = _calculateCardSize(image, context);
+
     return Container(
-      width: double.infinity,
-      height: double.infinity,
-      decoration: BoxDecoration(
-        color: Colors.grey[100], // Background color for loading
-        borderRadius: BorderRadius.circular(20),
-      ),
+      width: imageSize.width,
+      height: imageSize.height,
       child: Image.asset(
         image,
-        fit: BoxFit.cover, // Use the mode parameter and default to cover
-        width: double.infinity,
-        height: double.infinity,
+        fit: BoxFit
+            .scaleDown, // Scale down to fit within container while maintaining aspect ratio
+        width: imageSize.width,
+        height: imageSize.height,
         filterQuality: FilterQuality.medium,
         errorBuilder: (context, error, stackTrace) {
           return Container(
@@ -198,6 +213,136 @@ class _SwipeableCardWidgetState extends State<SwipeableCardWidget>
         },
       ),
     );
+  }
+
+  // Load dimensions for all images
+  Future<void> _loadAllImageDimensions() async {
+    print('🔄 Starting to load all image dimensions...');
+    if (widget.images.isEmpty) {
+      print('❌ No images provided');
+      setState(() {
+        _dimensionsLoaded = true;
+      });
+      return;
+    }
+
+    try {
+      for (String imagePath in widget.images) {
+        print('📸 Loading image: $imagePath');
+        final ImageProvider imageProvider = AssetImage(imagePath);
+
+        final ImageStream stream =
+            imageProvider.resolve(ImageConfiguration.empty);
+        final Completer<ImageInfo> completer = Completer<ImageInfo>();
+
+        void listener(ImageInfo info, bool synchronousCall) {
+          if (!completer.isCompleted) {
+            completer.complete(info);
+          }
+        }
+
+        stream.addListener(ImageStreamListener(listener));
+
+        final ImageInfo imageInfo = await completer.future;
+        final double imageWidth = imageInfo.image.width.toDouble();
+        final double imageHeight = imageInfo.image.height.toDouble();
+
+        // Store dimensions for this specific image
+        _imageDimensions[imagePath] = Size(imageWidth, imageHeight);
+        print('🖼️ Image $imagePath dimensions: ${imageWidth}x${imageHeight}');
+
+        stream.removeListener(ImageStreamListener(listener));
+      }
+
+      if (mounted) {
+        setState(() {
+          _dimensionsLoaded = true;
+          print(
+              '✅ All image dimensions loaded: ${_imageDimensions.length} images');
+        });
+      }
+    } catch (e) {
+      print('❌ Error loading image dimensions: $e');
+      if (mounted) {
+        setState(() {
+          _dimensionsLoaded = true;
+        });
+      }
+    }
+  }
+
+  // Calculate card size for a specific image
+  Size _calculateCardSize(String imagePath, BuildContext context) {
+    if (!widget.useImageDimensions ||
+        !_imageDimensions.containsKey(imagePath)) {
+      // Use default sizing
+      final double width = context.screenWidth * widget.widthRatio;
+      final double height = widget.height;
+      return Size(width, height);
+    }
+
+    final Size imageSize = _imageDimensions[imagePath]!;
+    final double aspectRatio = imageSize.width / imageSize.height;
+    final bool isLandscape = imageSize.width > imageSize.height;
+
+    double cardWidth;
+    double cardHeight;
+
+    // Calculate maximum constraints
+    final double maxHeight = widget.height - 30.0; // 30 points buffer
+    final double maxWidth =
+        MediaQuery.of(context).size.width * widget.widthRatio;
+    final double minHeight = widget.height * 0.5;
+
+    if (isLandscape) {
+      // For landscape images (width > height), start with width constraint
+      cardWidth = maxWidth;
+      cardHeight = cardWidth / aspectRatio;
+
+      // If calculated height exceeds max height, adjust both dimensions
+      if (cardHeight > maxHeight) {
+        cardHeight = maxHeight;
+        cardWidth = cardHeight * aspectRatio;
+      }
+
+      // For landscape images, ensure minimum height is reasonable (at least 200px)
+      final double minLandscapeHeight = 200.0;
+      if (cardHeight < minLandscapeHeight) {
+        cardHeight = minLandscapeHeight;
+        cardWidth = cardHeight * aspectRatio;
+        // If width becomes too large, cap it and adjust height back
+        if (cardWidth > maxWidth) {
+          cardWidth = maxWidth;
+          cardHeight = cardWidth / aspectRatio;
+        }
+      }
+
+      print(
+          '🖼️ Landscape image: ${imageSize.width.toInt()}x${imageSize.height.toInt()}');
+    } else {
+      // For portrait images (height > width), start with height constraint
+      cardHeight = maxHeight;
+      cardWidth = cardHeight * aspectRatio;
+
+      // If calculated width exceeds max width, adjust both dimensions
+      if (cardWidth > maxWidth) {
+        cardWidth = maxWidth;
+        cardHeight = cardWidth / aspectRatio;
+      }
+
+      print(
+          '🖼️ Portrait image: ${imageSize.width.toInt()}x${imageSize.height.toInt()}');
+    }
+
+    // Ensure minimum height
+    if (cardHeight < minHeight) {
+      cardHeight = minHeight;
+      cardWidth = cardHeight * aspectRatio;
+    }
+
+    print(
+        '� Card size for $imagePath: ${cardWidth.toInt()}x${cardHeight.toInt()}');
+    return Size(cardWidth, cardHeight);
   }
 
   BoxFit? _BoxFitMode(String mode) {
@@ -222,12 +367,21 @@ class _SwipeableCardWidgetState extends State<SwipeableCardWidget>
 
   @override
   Widget build(BuildContext context) {
+    // Calculate dimensions for the current top image
+    final String currentImagePath =
+        widget.images.isNotEmpty ? widget.images[0] : '';
+    final Size cardSize = _calculateCardSize(currentImagePath, context);
+
+    final double cardWidth = cardSize.width;
+    final double cardHeight = cardSize.height;
+
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
         // Card container
         SizedBox(
-          height: widget.height,
+          width: cardWidth,
+          height: cardHeight,
           child: Stack(
             alignment: Alignment.center,
             children: [
@@ -330,24 +484,27 @@ class _SwipeableCardWidgetState extends State<SwipeableCardWidget>
   }
 
   Widget _buildCard(String imagePath, int index, [double swipeProgress = 0.0]) {
+    // Calculate dimensions for this specific card
+    final Size cardSize = _calculateCardSize(imagePath, context);
+
     // Visual feedback based on swipe direction
     Color overlayColor = Colors.transparent;
     if (swipeProgress > 0) {
       // Determine swipe direction
-      if (_dragOffset.dx > 0) {
-        // Swiping right - green success color
-        overlayColor = Colors.green.withValues(alpha: 0.2 * swipeProgress);
-      } else if (_dragOffset.dx < 0) {
-        // Swiping left - blue info color
-        overlayColor = Colors.blue.withValues(alpha: 0.2 * swipeProgress);
-      }
+      // if (_dragOffset.dx > 0) {
+      //   // Swiping right - green success color
+      //   overlayColor = Colors.green.withValues(alpha: 0.2 * swipeProgress);
+      // } else if (_dragOffset.dx < 0) {
+      //   // Swiping left - blue info color
+      //   overlayColor = Colors.blue.withValues(alpha: 0.2 * swipeProgress);
+      // }
     }
 
     return Container(
-      width: context.screenWidth * 0.67,
-      height: widget.height,
+      width: cardSize.width,
+      height: cardSize.height,
       decoration: BoxDecoration(
-        color: Colors.white,
+        // color: Colors.white,
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
@@ -398,31 +555,6 @@ class _SwipeableCardWidgetState extends State<SwipeableCardWidget>
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(20),
                   color: overlayColor,
-                ),
-              ),
-            ),
-
-          // Swipe direction indicator
-          if (swipeProgress > 0.3 && index == 0)
-            Positioned(
-              top: 0,
-              bottom: 0,
-              left: _dragOffset.dx > 0 ? null : 20,
-              right: _dragOffset.dx > 0 ? 20 : null,
-              child: Center(
-                child: Container(
-                  padding: EdgeInsets.all(12),
-                  decoration: BoxDecoration(
-                    color: _dragOffset.dx > 0
-                        ? Colors.green.withValues(alpha: 0.8)
-                        : Colors.blue.withValues(alpha: 0.8),
-                    shape: BoxShape.circle,
-                  ),
-                  child: Icon(
-                    _dragOffset.dx > 0 ? Icons.check : Icons.arrow_forward,
-                    color: Colors.white,
-                    size: 24,
-                  ),
                 ),
               ),
             ),

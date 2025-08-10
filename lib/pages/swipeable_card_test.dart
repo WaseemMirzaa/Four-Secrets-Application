@@ -57,9 +57,12 @@ class _SwipeableCardTestState extends State<SwipeableCardTest> {
                   child: SwipeableCardWidget(
                     images: testImages,
                     height: cardHeight,
+                    
                     imageFit: selectedFitMode,
                     showIndicators: showIndicators,
                     showSwipeHints: showSwipeHints,
+                    useImageDimensions: true, // Enable image-based sizing
+                    widthRatio: 0.8, // 80% of screen width
                   ),
                 ),
 

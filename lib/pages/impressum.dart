@@ -45,8 +45,7 @@ class Impressum extends StatelessWidget {
                   "4secrets - Wedding Planner\n"
                   "Franziskanerstraße 38\n"
                   "81669 München\n\n"
-                  "E-Mail: 4secrets-wedding@gmx.de\n"
-                  "Telefon: [TELEFONNUMMER ERGÄNZEN]\n",
+                  "E-Mail: 4secrets-wedding@gmx.de\n",
                   style: TextStyle(height: 1.4),
                 ),
 

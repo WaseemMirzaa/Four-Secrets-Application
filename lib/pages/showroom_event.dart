@@ -109,6 +109,9 @@ class ShowroomEvent extends StatelessWidget {
                   SwipeableCardWidget(
                     images: images,
                     height: 480,
+
+                          useImageDimensions: true,
+                          widthRatio: 0.67, // 67% of screen width
                   ),
                   SizedBox(
                     height: 15,

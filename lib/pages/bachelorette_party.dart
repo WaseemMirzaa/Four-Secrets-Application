@@ -130,6 +130,8 @@ class BacheloretteParty extends StatelessWidget {
                         SwipeableCardWidget(
                           images: images,
                           height: 330,
+                          useImageDimensions: true,
+                          widthRatio: 0.67, // 67% of screen width
                         ),
                       ],
                     ),
