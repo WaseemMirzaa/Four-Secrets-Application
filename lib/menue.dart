@@ -210,12 +210,6 @@ class MenueState extends State<Menue> {
     return text[0].toUpperCase() + text.substring(1);
   }
 
-  // Mark all collaboration notifications as read
-  // Use shared notification service method
-  Future<void> _markAllCollabNotificationsAsRead() async {
-    await PushNotificationService.markAllCollabNotificationsAsRead();
-  }
-
   // Clear any invalid notifications that might cause the red dot to appear
   Future<void> _clearInvalidNotifications() async {
     try {
@@ -255,30 +249,6 @@ class MenueState extends State<Menue> {
       }
     } catch (e) {
       print('[Menu Debug] Error clearing invalid notifications: $e');
-    }
-  }
-
-  // Test method to create a test notification (for debugging)
-  Future<void> _createTestNotification() async {
-    try {
-      final user = FirebaseAuth.instance.currentUser;
-      if (user == null) return;
-      final fcmToken = await FirebaseMessaging.instance.getToken();
-      final userEmail = user.email;
-      if (fcmToken == null || userEmail == null) return;
-
-      await FirebaseFirestore.instance.collection('notifications').add({
-        'token': fcmToken,
-        'toEmail': userEmail,
-        'title': 'Test Einladung',
-        'body': 'Dies ist eine Test-Einladung',
-        'data': {'type': 'invitation', 'toEmail': userEmail},
-        'timestamp': FieldValue.serverTimestamp(),
-        'read': false,
-      });
-      print('[Menu Debug] Created test notification');
-    } catch (e) {
-      print('[Menu Debug] Error creating test notification: $e');
     }
   }
 

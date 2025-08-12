@@ -37,7 +37,6 @@ class _SwipeableCardWidgetState extends State<SwipeableCardWidget>
   Offset _dragOffset = Offset.zero;
   double _dragRotation = 0.0;
   Map<String, Size> _imageDimensions = {}; // Store dimensions for each image
-  bool _dimensionsLoaded = false;
 
   @override
   void initState() {
@@ -46,8 +45,6 @@ class _SwipeableCardWidgetState extends State<SwipeableCardWidget>
     // Load image dimensions if enabled
     if (widget.useImageDimensions && widget.images.isNotEmpty) {
       _loadAllImageDimensions();
-    } else {
-      _dimensionsLoaded = true;
     }
 
     _animationController = AnimationController(
@@ -220,9 +217,6 @@ class _SwipeableCardWidgetState extends State<SwipeableCardWidget>
     print('🔄 Starting to load all image dimensions...');
     if (widget.images.isEmpty) {
       print('❌ No images provided');
-      setState(() {
-        _dimensionsLoaded = true;
-      });
       return;
     }
 
@@ -256,18 +250,12 @@ class _SwipeableCardWidgetState extends State<SwipeableCardWidget>
 
       if (mounted) {
         setState(() {
-          _dimensionsLoaded = true;
           print(
               '✅ All image dimensions loaded: ${_imageDimensions.length} images');
         });
       }
     } catch (e) {
       print('❌ Error loading image dimensions: $e');
-      if (mounted) {
-        setState(() {
-          _dimensionsLoaded = true;
-        });
-      }
     }
   }
 
@@ -343,26 +331,6 @@ class _SwipeableCardWidgetState extends State<SwipeableCardWidget>
     print(
         '� Card size for $imagePath: ${cardWidth.toInt()}x${cardHeight.toInt()}');
     return Size(cardWidth, cardHeight);
-  }
-
-  BoxFit? _BoxFitMode(String mode) {
-    switch (mode) {
-      case "cover":
-        return BoxFit.cover;
-      case "contain":
-        return BoxFit.contain; // Fixed: Better default to prevent cropping
-      case "fill":
-        return BoxFit.fill;
-      case "height":
-        return BoxFit.fitHeight;
-      case "width":
-        return BoxFit.fitWidth;
-      case "scaleDown":
-        return BoxFit.scaleDown; // New: Scale down if needed
-      default:
-        return BoxFit
-            .contain; // Fixed: Use contain instead of cover to show full image
-    }
   }
 
   @override

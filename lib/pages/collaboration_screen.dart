@@ -2,10 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:four_secrets_wedding_app/menue.dart';
-import 'package:four_secrets_wedding_app/model/to_do_model.dart';
 import 'package:four_secrets_wedding_app/services/collaboration_service.dart';
-import 'package:four_secrets_wedding_app/services/email_service.dart';
-import 'package:four_secrets_wedding_app/services/todo_service.dart';
 import 'package:four_secrets_wedding_app/utils/snackbar_helper.dart';
 import 'package:four_secrets_wedding_app/widgets/custom_text_widget.dart';
 import 'package:four_secrets_wedding_app/widgets/spacer_widget.dart';
@@ -32,20 +29,17 @@ class _CollaborationScreenState extends State<CollaborationScreen>
   final Set<String> _cancellingInvites =
       {}; // Track loading state for cancelling invites
 
-  List<ToDoModel> _collaboratedTodos = [];
   final CollaborationService _collaborationService = CollaborationService();
   final TextEditingController _commentController = TextEditingController();
-  final EmailService _emailService = EmailService();
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   bool _isLoading = true;
-  List<ToDoModel> _ownedTodos = [];
   final PushNotificationService _pushNotificationService =
       PushNotificationService();
 
   List<Map<String, dynamic>> _receivedInvitations = [];
   List<Map<String, dynamic>> _sentInvitations = [];
   late TabController _tabController;
-  final TodoService _todoService = TodoService();
+
   Map<String, Map<String, String>> _userCache = {};
 
   @override
@@ -94,25 +88,7 @@ class _CollaborationScreenState extends State<CollaborationScreen>
       _receivedInvitations = receivedSnapshot.docs
           .map((doc) => {...doc.data(), 'id': doc.id, 'isNonRegistered': false})
           .toList();
-      // Load owned todos
-      final myUid = _auth.currentUser?.uid;
-      final ownedSnapshot = await _firestore
-          .collection('users')
-          .doc(myUid)
-          .collection('todos')
-          .get();
-      _ownedTodos = ownedSnapshot.docs
-          .map((doc) => ToDoModel.fromFirestore(doc))
-          .toList();
-      // Load collaborated todos (shared with me)
-      final collaboratedSnapshot = await _firestore
-          .collectionGroup('todos')
-          .where('collaborators', arrayContains: myEmail)
-          .get();
-      _collaboratedTodos = collaboratedSnapshot.docs
-          .where((doc) => doc.data()['userId'] != myUid)
-          .map((doc) => ToDoModel.fromFirestore(doc))
-          .toList();
+      // Note: Removed unused todo loading code
       print(
           '[COLLAB_LOG] ${DateTime.now().millisecondsSinceEpoch}: Loading sent invitations: ${_sentInvitations.length}');
       print(
@@ -556,9 +532,7 @@ class _CollaborationScreenState extends State<CollaborationScreen>
                               final inviter = isNonRegistered
                                   ? null
                                   : _userCache[invite['inviterId']];
-                              final inviterName = isNonRegistered
-                                  ? (invite['inviterEmail'] ?? 'Unbekannt')
-                                  : (inviter?['name'] ?? 'Unbekannt');
+
                               final isAccepting =
                                   _acceptingInvites.contains(invite['id']);
                               return Container(

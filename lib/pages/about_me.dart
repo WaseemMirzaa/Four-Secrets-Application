@@ -1,8 +1,5 @@
-import 'dart:async';
-
 import 'package:four_secrets_wedding_app/data/about_me_data.dart';
 import 'package:four_secrets_wedding_app/model/url_email_instagram.dart';
-import 'package:four_secrets_wedding_app/routes/routes.dart';
 import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:expandable_text/expandable_text.dart';
 import 'package:flutter/gestures.dart';

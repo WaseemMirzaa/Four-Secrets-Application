@@ -26,7 +26,7 @@ class _AddWeddingSchedulePageState extends State<AddWeddingSchedulePage> {
   final _responsiblePersonController = TextEditingController();
   final _notesController = TextEditingController();
   final _bufferTimeController = TextEditingController();
-  final _reminderTimeController = TextEditingController();
+
   String? _titleController;
   TimeOfDay? _selectedTime;
   String? _selectedTimeText;

@@ -5,7 +5,6 @@ import 'package:four_secrets_wedding_app/data/hair_makeup_card_items.dart';
 import 'package:four_secrets_wedding_app/model/swipeable_card_widget.dart';
 import 'package:four_secrets_wedding_app/model/footer_buttons.dart';
 import 'package:four_secrets_wedding_app/model/four_secrets_divider.dart';
-import 'package:four_secrets_wedding_app/routes/routes.dart';
 import 'package:four_secrets_wedding_app/menue.dart';
 
 // ignore: must_be_immutable

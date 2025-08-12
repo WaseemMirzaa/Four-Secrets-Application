@@ -4,14 +4,14 @@ import 'package:four_secrets_wedding_app/services/email_service.dart';
 import 'package:four_secrets_wedding_app/services/push_notification_service.dart';
 
 import '../model/to_do_model.dart';
-import 'category_service.dart';
+
 import 'collaboration_service.dart';
 
 class TodoService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final CollaborationService _collaborationService = CollaborationService();
-  final CategoryService _categoryService = CategoryService();
+
   final PushNotificationService _notificationService =
       PushNotificationService();
   String? get userId => _auth.currentUser?.uid;
