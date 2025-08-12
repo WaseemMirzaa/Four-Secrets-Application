@@ -696,13 +696,22 @@ class _CollaborationScreenState extends State<CollaborationScreen>
                                       .instance.currentUser?.displayName ??
                                   invite['inviterName'] ??
                                   'Ich';
+                              final inviteStatus =
+                                  invite['status'] ?? 'pending';
+                              final isAccepted = inviteStatus == 'accepted';
+
                               return Container(
                                 decoration: BoxDecoration(
                                   gradient: LinearGradient(
-                                    colors: [
-                                      Colors.grey.shade200,
-                                      Colors.grey.shade300,
-                                    ],
+                                    colors: isAccepted
+                                        ? [
+                                            Colors.grey.shade200,
+                                            Colors.grey.shade300,
+                                          ]
+                                        : [
+                                            Colors.grey.shade200,
+                                            Colors.grey.shade300,
+                                          ],
                                   ),
                                   borderRadius: BorderRadius.circular(15),
                                 ),
@@ -775,7 +784,46 @@ class _CollaborationScreenState extends State<CollaborationScreen>
                                           ),
                                         ],
                                       ),
-                                      // const SizedBox(height: 8),
+                                      const SizedBox(height: 8),
+                                      Row(
+                                        children: [
+                                          Container(
+                                            padding: const EdgeInsets.symmetric(
+                                                horizontal: 8, vertical: 4),
+                                            decoration: BoxDecoration(
+                                              color: isAccepted
+                                                  ? Color.fromARGB(
+                                                      255, 107, 69, 106)
+                                                  : Color.fromARGB(
+                                                      255, 107, 69, 106),
+                                              borderRadius:
+                                                  BorderRadius.circular(12),
+                                            ),
+                                            child: Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.end,
+                                              children: [
+                                                Icon(
+                                                  isAccepted
+                                                      ? Icons.check_circle
+                                                      : Icons.schedule,
+                                                  size: 14,
+                                                  color: Colors.white,
+                                                ),
+                                                const SizedBox(width: 4),
+                                                CustomTextWidget(
+                                                  text: isAccepted
+                                                      ? 'Angenommen'
+                                                      : 'Ausstehend',
+                                                  color: Colors.white,
+                                                  fontSize: 12,
+                                                  fontWeight: FontWeight.bold,
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        ],
+                                      ),
                                     ],
                                   ),
                                 ),

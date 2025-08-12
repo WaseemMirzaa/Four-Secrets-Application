@@ -1,10 +1,59 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import '../models/email_send_response.dart';
 
 class EmailService {
   // New Brevo API server base URL
   static const String baseUrl = 'http://164.92.175.72:3001';
+
+  /// Get current user's name from Firebase
+  static Future<String> _getCurrentUserName() async {
+    try {
+      final user = FirebaseAuth.instance.currentUser;
+      if (user == null) {
+        print('[EMAIL_LOG] No authenticated user found');
+        return 'Wedding Planner User';
+      }
+
+      // Try to get display name first
+      if (user.displayName != null && user.displayName!.isNotEmpty) {
+        print('[EMAIL_LOG] Using display name: ${user.displayName}');
+        return user.displayName!;
+      }
+
+      // Try to get name from Firestore user document
+      try {
+        final userDoc = await FirebaseFirestore.instance
+            .collection('users')
+            .doc(user.uid)
+            .get();
+
+        if (userDoc.exists) {
+          final userData = userDoc.data();
+          final name = userData?['name'] ??
+              userData?['displayName'] ??
+              userData?['firstName'];
+          if (name != null && name.toString().isNotEmpty) {
+            print('[EMAIL_LOG] Using Firestore name: $name');
+            return name.toString();
+          }
+        }
+      } catch (e) {
+        print('[EMAIL_LOG] Error fetching user from Firestore: $e');
+      }
+
+      // Fallback to email prefix
+      final emailPrefix = user.email?.split('@').first ?? 'User';
+      print('[EMAIL_LOG] Using email prefix as name: $emailPrefix');
+      return emailPrefix;
+    } catch (e) {
+      print('[EMAIL_LOG] Error getting current user name: $e');
+      return 'Wedding Planner User';
+    }
+  }
+
   static const String sendCustomEndpoint = '/api/email/send-custom';
   static const String sendInvitationEndpoint = '/api/email/send-invitation';
   static const String sendDeclinedInvitationEndpoint =
@@ -60,8 +109,12 @@ class EmailService {
   /// Send wedding invitation email using Brevo API
   Future<EmailSendResponse> sendInvitationEmail({
     required String email,
-    required String inviterName,
+    String? inviterName, // Made optional
   }) async {
+    // Get current user's name from Firebase if inviterName not provided
+    final currentUserName = await _getCurrentUserName();
+    print('[EMAIL_LOG] Using inviter name: $currentUserName');
+
     try {
       final uri = Uri.parse('$baseUrl$sendInvitationEndpoint');
       final response = await http.post(
@@ -72,7 +125,7 @@ class EmailService {
         },
         body: json.encode({
           'email': email,
-          'inviterName': inviterName,
+          'inviterName': currentUserName,
         }),
       );
       if (response.statusCode == 200 || response.statusCode == 201) {
@@ -143,8 +196,12 @@ class EmailService {
   /// Send access revoked notification email using Brevo API
   Future<EmailSendResponse?> sendRevokeAccessEmail({
     required String email,
-    required String inviterName,
+    String? inviterName, // Made optional
   }) async {
+    // Get current user's name from Firebase if inviterName not provided
+    final currentUserName = inviterName ?? await _getCurrentUserName();
+    print('[EMAIL_LOG] Using revoker name: $currentUserName');
+
     try {
       final uri = Uri.parse('$baseUrl$sendRevokeAccessEndpoint');
       final response = await http.post(
@@ -155,7 +212,7 @@ class EmailService {
         },
         body: json.encode({
           'email': email,
-          'inviterName': inviterName,
+          'inviterName': currentUserName,
         }),
       );
       if (response.statusCode == 200 || response.statusCode == 201) {

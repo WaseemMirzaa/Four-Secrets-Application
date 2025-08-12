@@ -90,12 +90,15 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                     ),
 
                     // Title and Description
-                    const Text(
-                      'Passwort vergessen?',
-                      style: TextStyle(
-                        fontSize: 32,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
+                    FittedBox(
+                      fit: BoxFit.scaleDown,
+                      child: Text(
+                        'Passwort zurücksetzen?',
+                        style: TextStyle(
+                          fontSize: 32,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
                       ),
                     ),
                     const SizedBox(height: 16),

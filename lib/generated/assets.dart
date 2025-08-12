@@ -275,8 +275,7 @@ class Assets {
   static const String videosAkupunktur = 'assets/videos/akupunktur.mp4';
   static const String videosBachelorette = 'assets/videos/bachelorette.mp4';
   static const String videosHairMakeup = 'assets/videos/hair_makeup.mp4';
-  static const String videosX202505210037280001 =
-      'assets/videos/X_20250521_003728_0001.mp4';
+  static const String videosX202505210037280001 = 'assets/videos/new_video.mp4';
   static const String videosYouCut20250520023034496 =
       'assets/videos/YouCut_20250520_023034496.mp4';
 }
