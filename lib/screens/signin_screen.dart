@@ -16,7 +16,7 @@ class SignInScreen extends StatefulWidget {
 }
 
 class _SignInScreenState extends State<SignInScreen> {
-  final _formKey = GlobalKey<FormState>();
+  final _signinFormKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   bool _isLoading = false;
@@ -80,7 +80,7 @@ class _SignInScreenState extends State<SignInScreen> {
   Future<void> _handleSignIn() async {
     setState(() => _autoValidate = true);
 
-    if (!_formKey.currentState!.validate()) return;
+    if (!_signinFormKey.currentState!.validate()) return;
 
     setState(() => _isLoading = true);
 
@@ -171,7 +171,7 @@ class _SignInScreenState extends State<SignInScreen> {
             child: Padding(
               padding: const EdgeInsets.all(24),
               child: Form(
-                key: _formKey,
+                key: _signinFormKey,
                 autovalidateMode: _autoValidate
                     ? AutovalidateMode.onUserInteraction
                     : AutovalidateMode.disabled,

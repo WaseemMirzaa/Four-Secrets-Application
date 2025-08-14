@@ -16,7 +16,7 @@ class AddEditGuestPage extends StatefulWidget {
 }
 
 class _AddEditGuestPageState extends State<AddEditGuestPage> {
-  final _formKey = GlobalKey<FormState>();
+  final _guestFormKey = GlobalKey<FormState>();
   final _nameController = TextEditingController();
   final _contactController = TextEditingController();
   final _newTypeController = TextEditingController();
@@ -143,7 +143,7 @@ class _AddEditGuestPageState extends State<AddEditGuestPage> {
   }
 
   Future<void> _saveGuest() async {
-    if (!_formKey.currentState!.validate()) return;
+    if (!_guestFormKey.currentState!.validate()) return;
 
     setState(() => _isLoading = true);
 
@@ -209,7 +209,7 @@ class _AddEditGuestPageState extends State<AddEditGuestPage> {
               child: Padding(
                 padding: const EdgeInsets.all(16),
                 child: Form(
-                  key: _formKey,
+                  key: _guestFormKey,
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [

@@ -15,6 +15,7 @@ class BacheloretteParty extends StatelessWidget {
 
   late List<String> images = BacheloretteImages.getImages();
   final List items = BacheloretteCardItems.getCardItems();
+  final Key bacheloretteMenuKey = GlobalKey<MenueState>();
 
   var urlHomepage = BacheloretteData.map["homepage"] != null
       ? BacheloretteData.map["homepage"]!
@@ -47,7 +48,7 @@ class BacheloretteParty extends StatelessWidget {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-        drawer: Menue.getInstance(GlobalKey()),
+        drawer: Menue.getInstance(bacheloretteMenuKey),
         appBar: AppBar(
           foregroundColor: Color.fromARGB(255, 255, 255, 255),
           title: const Text('Bachelorette-Party'),

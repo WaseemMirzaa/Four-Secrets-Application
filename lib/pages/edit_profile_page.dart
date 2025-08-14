@@ -31,7 +31,7 @@ class EditProfilePage extends StatefulWidget {
 class _EditProfilePageState extends State<EditProfilePage> {
   final key = GlobalKey<MenueState>();
 
-  final _formKey = GlobalKey<FormState>();
+  final _editProfileFormKey = GlobalKey<FormState>();
   late TextEditingController _nameController;
   File? _newProfilePicture;
   bool _isLoading = false;
@@ -372,7 +372,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
 
   // Modify the existing _updateProfile method to handle profile updates
   Future<void> _updateProfile() async {
-    if (!_formKey.currentState!.validate()) return;
+    if (!_editProfileFormKey.currentState!.validate()) return;
 
     setState(() {
       _isLoading = true;
@@ -632,7 +632,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
               child: SingleChildScrollView(
                 padding: const EdgeInsets.all(24.0),
                 child: Form(
-                  key: _formKey,
+                  key: _editProfileFormKey,
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [

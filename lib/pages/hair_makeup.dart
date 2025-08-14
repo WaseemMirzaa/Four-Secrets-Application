@@ -45,7 +45,7 @@ class HairMakeUp extends StatelessWidget {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-        drawer: Menue.getInstance(GlobalKey()),
+        drawer: Menue.getInstance(key),
         appBar: AppBar(
           foregroundColor: const Color.fromARGB(255, 255, 255, 255),
           title: const Text(

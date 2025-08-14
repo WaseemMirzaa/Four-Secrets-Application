@@ -14,7 +14,7 @@ class AddEditTablePage extends StatefulWidget {
 }
 
 class _AddEditTablePageState extends State<AddEditTablePage> {
-  final _formKey = GlobalKey<FormState>();
+  final _tableFormKey = GlobalKey<FormState>();
   final _nameOrNumberController = TextEditingController();
   final _maxGuestsController = TextEditingController();
   final _tableTypeController = TextEditingController();
@@ -32,7 +32,7 @@ class _AddEditTablePageState extends State<AddEditTablePage> {
   }
 
   Future<void> _saveTable() async {
-    if (!_formKey.currentState!.validate()) return;
+    if (!_tableFormKey.currentState!.validate()) return;
 
     setState(() => _isLoading = true);
 
@@ -96,7 +96,7 @@ class _AddEditTablePageState extends State<AddEditTablePage> {
           child: Padding(
             padding: const EdgeInsets.all(16),
             child: Form(
-              key: _formKey,
+              key: _tableFormKey,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
