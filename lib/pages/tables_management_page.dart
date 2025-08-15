@@ -15,7 +15,6 @@ import 'package:four_secrets_wedding_app/pages/PdfViewPage.dart';
 import 'package:four_secrets_wedding_app/services/native_download_service.dart';
 import 'package:four_secrets_wedding_app/utils/snackbar_helper.dart';
 import 'package:four_secrets_wedding_app/widgets/custom_dialog.dart';
-import 'package:four_secrets_wedding_app/services/menu_service.dart';
 import 'package:four_secrets_wedding_app/widgets/table_mangemant_widget.dart';
 
 class TablesManagementPage extends StatefulWidget {
@@ -837,7 +836,7 @@ class _TablesManagementPageState extends State<TablesManagementPage> {
     return SafeArea(
       child: Scaffold(
         // backgroundColor: Colors.white,
-        drawer: Menue.getInstance(MenuService().menuKey),
+        drawer: Menue.getInstance(),
         appBar: AppBar(
           foregroundColor: Color.fromARGB(255, 255, 255, 255),
           title: Text(AppConstants.tableManagementTitle),

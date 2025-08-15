@@ -9,7 +9,6 @@ import 'package:four_secrets_wedding_app/model/todo_item.dart';
 import 'package:four_secrets_wedding_app/model/checklist_item.dart';
 import 'package:four_secrets_wedding_app/model/four_secrets_divider.dart';
 import 'package:four_secrets_wedding_app/menue.dart';
-import 'package:four_secrets_wedding_app/services/menu_service.dart';
 
 class Checklist extends StatefulWidget {
   const Checklist({super.key});
@@ -1106,7 +1105,7 @@ class _ChecklistState extends State<Checklist> with TickerProviderStateMixin {
 
     return SafeArea(
       child: Scaffold(
-        drawer: Menue.getInstance(MenuService().menuKey),
+        drawer: Menue.getInstance(),
         appBar: AppBar(
           foregroundColor: const Color.fromARGB(255, 255, 255, 255),
           title: const Text('Checkliste'),

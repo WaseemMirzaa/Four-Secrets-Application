@@ -1,6 +1,5 @@
 import 'package:four_secrets_wedding_app/data/unterhaltung_card_items.dart';
 import 'package:four_secrets_wedding_app/menue.dart';
-import 'package:four_secrets_wedding_app/services/menu_service.dart';
 import 'package:flutter/material.dart';
 
 class Unterhaltung extends StatelessWidget {
@@ -12,7 +11,7 @@ class Unterhaltung extends StatelessWidget {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-        drawer: Menue.getInstance(MenuService().menuKey),
+        drawer: Menue.getInstance(),
         appBar: AppBar(
           // automaticallyImplyLeading: false,
           foregroundColor: Color.fromARGB(255, 255, 255, 255),

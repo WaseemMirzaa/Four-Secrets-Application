@@ -3,7 +3,6 @@ import 'package:four_secrets_wedding_app/model/chatbot_session_manager.dart';
 import 'package:four_secrets_wedding_app/model/chatbot_config.dart';
 import 'package:four_secrets_wedding_app/model/chatbot_rate_limiter.dart';
 import 'package:four_secrets_wedding_app/menue.dart';
-import 'package:four_secrets_wedding_app/services/menu_service.dart';
 import 'package:chat_gpt_sdk/chat_gpt_sdk.dart';
 import 'package:dash_chat_2/dash_chat_2.dart';
 import 'package:flutter/material.dart';
@@ -215,7 +214,7 @@ class _ChatbotState extends State<Chatbot> with TickerProviderStateMixin {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-        drawer: Menue.getInstance(MenuService().menuKey),
+        drawer: Menue.getInstance(),
         appBar: AppBar(
           foregroundColor: Colors.white,
           title: const Text('KI-Assistent'),

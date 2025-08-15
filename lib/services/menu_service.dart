@@ -17,7 +17,7 @@ class MenuService {
   String? profilePictureUrl;
   bool isDataLoaded = false;
   String? _selectedItem;
-  
+
   String? get selectedItem => _selectedItem;
   set selectedItem(String? value) {
     _selectedItem = value;
@@ -33,23 +33,24 @@ class MenuService {
     }
   }
 
-
   Future<void> loadSelectedItem() async {
     final prefs = await SharedPreferences.getInstance();
     _selectedItem = prefs.getString('selectedItem');
   }
 
+// Cached menu widget instance
+  Widget? _menuWidget;
 
-
-// Each call makes a fresh Menue widget but with the same key
-  Widget getMenu(Key key) {
-    return Menue(key: key);
+  // Get the singleton menu widget instance
+  Widget getMenu() {
+    _menuWidget = Menue(key: GlobalKey<MenueState>());
+    return _menuWidget!;
   }
-  
+
   // Preload user data
   Future<void> preloadUserData() async {
     if (isDataLoaded) return; // Skip if already loaded
-    
+
     try {
       final user = FirebaseAuth.instance.currentUser;
       if (user != null) {
@@ -57,12 +58,12 @@ class MenuService {
             .collection('users')
             .doc(user.uid)
             .get();
-        
+
         if (userData.exists) {
           userName = _capitalizeFirstLetter(userData.data()?['name']);
           profilePictureUrl = userData.data()?['profilePictureUrl'];
           isDataLoaded = true;
-          
+
           // Update the menu state if it's already created
           if (menuKey.currentState != null) {
             menuKey.currentState!.updateUserData(userName, profilePictureUrl);
@@ -73,13 +74,13 @@ class MenuService {
       debugPrint('Error preloading menu user data: $e');
     }
   }
-  
+
   // Helper method to capitalize the first letter of a string
   String _capitalizeFirstLetter(String? text) {
     if (text == null || text.isEmpty) return '';
     return text[0].toUpperCase() + text.substring(1);
   }
-  
+
   // Refresh user data (call this after profile updates)
   Future<void> refreshUserData() async {
     isDataLoaded = false;

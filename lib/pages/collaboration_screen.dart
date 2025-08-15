@@ -9,7 +9,6 @@ import 'package:four_secrets_wedding_app/widgets/spacer_widget.dart';
 
 import '../services/push_notification_service.dart';
 import '../widgets/custom_button_widget.dart';
-import 'package:four_secrets_wedding_app/services/menu_service.dart';
 
 class CollaborationScreen extends StatefulWidget {
   const CollaborationScreen({Key? key}) : super(key: key);
@@ -428,7 +427,7 @@ class _CollaborationScreenState extends State<CollaborationScreen>
     return SafeArea(
       child: Scaffold(
         backgroundColor: Colors.white,
-        drawer: Menue.getInstance(MenuService().menuKey),
+        drawer: Menue.getInstance(),
         appBar: AppBar(
           leading: IconButton(
             icon: Icon(Icons.arrow_back),

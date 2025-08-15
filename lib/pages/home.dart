@@ -4,7 +4,6 @@ import 'package:four_secrets_wedding_app/menue.dart';
 import 'package:four_secrets_wedding_app/routes/routes.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:four_secrets_wedding_app/services/menu_service.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -38,8 +37,7 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-        drawer: Menue.getInstance(
-            MenuService().menuKey), // Use the singleton instance
+        drawer: Menue.getInstance(), // Use the singleton instance
         body: CustomScrollView(
           physics: ClampingScrollPhysics(),
           slivers: <Widget>[

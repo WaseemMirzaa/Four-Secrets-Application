@@ -22,8 +22,8 @@ class Menue extends StatefulWidget {
   Menue({Key? key}) : super(key: key);
 
   // Static method to get the singleton menu instance
-  static Widget getInstance(Key keyWidget) {
-    return MenuService().getMenu(keyWidget);
+  static Widget getInstance() {
+    return MenuService().getMenu();
   }
 
   // Static method to preload user data

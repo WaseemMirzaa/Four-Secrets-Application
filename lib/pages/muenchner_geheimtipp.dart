@@ -3,7 +3,6 @@ import 'package:four_secrets_wedding_app/data/muenchner_geheimtipp_images.dart';
 import 'package:four_secrets_wedding_app/data/muenchner_geheimtipp_routes.dart';
 import 'package:flutter/material.dart';
 import 'package:four_secrets_wedding_app/menue.dart';
-import 'package:four_secrets_wedding_app/services/menu_service.dart';
 
 class MuenchnerGeheimtipp extends StatelessWidget {
   MuenchnerGeheimtipp({super.key});
@@ -15,7 +14,7 @@ class MuenchnerGeheimtipp extends StatelessWidget {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-        drawer: Menue.getInstance(MenuService().menuKey),
+        drawer: Menue.getInstance(),
         appBar: AppBar(
           // automaticallyImplyLeading: false,
           title: const Text('Münchner Geheimtipp'),

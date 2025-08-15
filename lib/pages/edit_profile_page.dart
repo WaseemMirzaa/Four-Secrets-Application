@@ -13,7 +13,6 @@ import 'package:image_picker/image_picker.dart';
 import 'package:flutter/services.dart';
 import '../utils/snackbar_helper.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:four_secrets_wedding_app/services/menu_service.dart';
 
 class EditProfilePage extends StatefulWidget {
   final String currentName;
@@ -517,7 +516,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
 
     return Scaffold(
       backgroundColor: Colors.white,
-      drawer: Menue.getInstance(MenuService().menuKey),
+      drawer: Menue.getInstance(),
       appBar: AppBar(
         systemOverlayStyle: const SystemUiOverlayStyle(
           statusBarColor: Colors.black,

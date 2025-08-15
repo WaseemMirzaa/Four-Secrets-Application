@@ -18,7 +18,6 @@ import 'package:four_secrets_wedding_app/utils/snackbar_helper.dart';
 import 'package:four_secrets_wedding_app/widgets/custom_button_widget.dart';
 import 'package:four_secrets_wedding_app/widgets/custom_dialog.dart';
 import 'package:four_secrets_wedding_app/widgets/custom_text_widget.dart';
-import 'package:four_secrets_wedding_app/services/menu_service.dart';
 import 'package:four_secrets_wedding_app/widgets/spacer_widget.dart';
 import 'package:four_secrets_wedding_app/services/todo_unread_status_service.dart';
 
@@ -953,7 +952,7 @@ class _ToDoPageState extends State<ToDoPage1> {
     final myEmail = FirebaseAuth.instance.currentUser?.email;
     return SafeArea(
         child: Scaffold(
-            drawer: Menue.getInstance(MenuService().menuKey),
+            drawer: Menue.getInstance(),
             onDrawerChanged: (isOpened) {
               if (isOpened) {
                 // Dismiss keyboard when drawer is opened
