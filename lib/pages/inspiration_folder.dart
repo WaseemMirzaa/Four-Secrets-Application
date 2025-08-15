@@ -13,6 +13,7 @@ import 'package:four_secrets_wedding_app/utils/snackbar_helper.dart';
 import 'package:four_secrets_wedding_app/widgets/custom_button_widget.dart';
 import 'package:four_secrets_wedding_app/widgets/custom_text_widget.dart';
 import 'package:four_secrets_wedding_app/widgets/spacer_widget.dart';
+import 'package:four_secrets_wedding_app/services/menu_service.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:staggered_grid_view/flutter_staggered_grid_view.dart';
 
@@ -26,7 +27,6 @@ class InspirationFolder extends StatefulWidget {
 class _InspirationFolderState extends State<InspirationFolder> {
   InspirationImageService sp = InspirationImageService();
 
-  final key = GlobalKey<MenueState>();
   bool _isLoading = false;
   bool isLoading = false;
   final _controller = TextEditingController();
@@ -269,7 +269,7 @@ class _InspirationFolderState extends State<InspirationFolder> {
     return SafeArea(
       child: Scaffold(
         resizeToAvoidBottomInset: true,
-        drawer: Menue.getInstance(key),
+        drawer: Menue.getInstance(MenuService().menuKey),
         appBar: AppBar(
           foregroundColor: Colors.white,
           title: const Text(AppConstants.inspirationFolderPageTitle),

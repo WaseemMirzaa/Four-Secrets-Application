@@ -13,6 +13,7 @@ import 'package:four_secrets_wedding_app/routes/routes.dart';
 import 'package:four_secrets_wedding_app/services/native_download_service.dart';
 import 'package:four_secrets_wedding_app/services/wedding_day_schedule_service.dart';
 import 'package:four_secrets_wedding_app/utils/snackbar_helper.dart';
+import 'package:four_secrets_wedding_app/services/menu_service.dart';
 import 'package:four_secrets_wedding_app/widgets/custom_dialog.dart';
 import 'package:four_secrets_wedding_app/widgets/custom_text_widget.dart';
 import 'package:four_secrets_wedding_app/widgets/spacer_widget.dart';
@@ -31,7 +32,6 @@ class WeddingSchedulePage extends StatefulWidget {
 }
 
 class _WeddingSchedulePageState extends State<WeddingSchedulePage> {
-  final key = GlobalKey<MenueState>();
   late GoogleMapController _mapController;
 
   WeddingDayScheduleModel? weddingDayScheduleModel;
@@ -282,7 +282,7 @@ class _WeddingSchedulePageState extends State<WeddingSchedulePage> {
       child: Scaffold(
         // backgroundColor: Colors.white,
         // resizeToAvoidBottomInset: false,
-        drawer: Menue.getInstance(key),
+        drawer: Menue.getInstance(MenuService().menuKey),
         appBar: AppBar(
           foregroundColor: Colors.white,
           title: Text(AppConstants.weddingAddPageTitle),
