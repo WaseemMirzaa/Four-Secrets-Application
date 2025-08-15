@@ -13,6 +13,7 @@ import 'package:four_secrets_wedding_app/services/auth_service.dart';
 import 'package:four_secrets_wedding_app/services/collaboration_service.dart';
 import 'package:four_secrets_wedding_app/services/email_service.dart';
 import 'package:four_secrets_wedding_app/services/push_notification_service.dart';
+import 'package:four_secrets_wedding_app/services/menu_service.dart';
 import 'package:four_secrets_wedding_app/services/todo_service.dart';
 import 'package:four_secrets_wedding_app/utils/snackbar_helper.dart';
 import 'package:four_secrets_wedding_app/widgets/custom_button_widget.dart';
@@ -36,7 +37,7 @@ class _ToDoPageState extends State<ToDoPage> {
   final toDoService = TodoService();
   final authService = AuthService();
   final emailService = EmailService();
-  final key = GlobalKey<MenueState>();
+
   final collaborationService = CollaborationService();
   bool isLoading = false;
   List<ToDoModel> listToDoModel = [];
@@ -981,7 +982,7 @@ class _ToDoPageState extends State<ToDoPage> {
 
     return SafeArea(
         child: Scaffold(
-            drawer: Menue.getInstance(key),
+            drawer: Menue.getInstance(MenuService().menuKey),
             onDrawerChanged: (isOpened) {
               if (isOpened) {
                 // Dismiss keyboard when drawer is opened

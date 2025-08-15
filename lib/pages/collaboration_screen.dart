@@ -9,6 +9,7 @@ import 'package:four_secrets_wedding_app/widgets/spacer_widget.dart';
 
 import '../services/push_notification_service.dart';
 import '../widgets/custom_button_widget.dart';
+import 'package:four_secrets_wedding_app/services/menu_service.dart';
 
 class CollaborationScreen extends StatefulWidget {
   const CollaborationScreen({Key? key}) : super(key: key);
@@ -19,8 +20,6 @@ class CollaborationScreen extends StatefulWidget {
 
 class _CollaborationScreenState extends State<CollaborationScreen>
     with SingleTickerProviderStateMixin {
-  final key = GlobalKey<MenueState>();
-
   final Set<String> _acceptingInvites =
       {}; // Track loading state for accepting invites
   List<Map<String, dynamic>>? pendingInvitations;
@@ -429,7 +428,7 @@ class _CollaborationScreenState extends State<CollaborationScreen>
     return SafeArea(
       child: Scaffold(
         backgroundColor: Colors.white,
-        drawer: Menue.getInstance(key),
+        drawer: Menue.getInstance(MenuService().menuKey),
         appBar: AppBar(
           leading: IconButton(
             icon: Icon(Icons.arrow_back),

@@ -13,6 +13,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:flutter/services.dart';
 import '../utils/snackbar_helper.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:four_secrets_wedding_app/services/menu_service.dart';
 
 class EditProfilePage extends StatefulWidget {
   final String currentName;
@@ -29,8 +30,6 @@ class EditProfilePage extends StatefulWidget {
 }
 
 class _EditProfilePageState extends State<EditProfilePage> {
-  final key = GlobalKey<MenueState>();
-
   final _editProfileFormKey = GlobalKey<FormState>();
   late TextEditingController _nameController;
   File? _newProfilePicture;
@@ -518,7 +517,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
 
     return Scaffold(
       backgroundColor: Colors.white,
-      drawer: Menue.getInstance(key),
+      drawer: Menue.getInstance(MenuService().menuKey),
       appBar: AppBar(
         systemOverlayStyle: const SystemUiOverlayStyle(
           statusBarColor: Colors.black,

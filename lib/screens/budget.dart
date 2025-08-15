@@ -4,6 +4,7 @@ import 'package:four_secrets_wedding_app/screens/dialog_box.dart';
 import 'package:four_secrets_wedding_app/model/four_secrets_divider.dart';
 import 'package:flutter/material.dart';
 import 'package:four_secrets_wedding_app/utils/snackbar_helper.dart';
+import 'package:four_secrets_wedding_app/services/menu_service.dart';
 
 class Budget extends StatefulWidget {
   Budget({super.key});
@@ -20,8 +21,6 @@ class _BudgetState extends State<Budget> {
   int wholeBudget = 0;
   int _tempBudget = 0;
   int _maxWholeBudget = 999999;
-
-  final key = GlobalKey<MenueState>();
 
   List budgetList = [
     ["Fotograph", 0],
@@ -123,7 +122,7 @@ class _BudgetState extends State<Budget> {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-        drawer: Menue.getInstance(key),
+        drawer: Menue.getInstance(MenuService().menuKey),
         appBar: AppBar(
           foregroundColor: Color.fromARGB(255, 255, 255, 255),
           title: const Text('Budget'),
