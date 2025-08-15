@@ -1,18 +1,18 @@
 import 'package:four_secrets_wedding_app/data/florist_card_items.dart';
 import 'package:flutter/material.dart';
 import 'package:four_secrets_wedding_app/menue.dart';
+import 'package:four_secrets_wedding_app/services/menu_service.dart';
 
 class Florist extends StatelessWidget {
   Florist({super.key});
   final List items = FloristCardItems.getCardItems();
-  final Key key = GlobalKey<MenueState>();
 
   @override
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
         backgroundColor: Colors.white,
-        drawer: Menue.getInstance(key),
+        drawer: Menue.getInstance(MenuService().menuKey),
         appBar: AppBar(
           // automaticallyImplyLeading: false,
           foregroundColor: Color.fromARGB(255, 255, 255, 255),

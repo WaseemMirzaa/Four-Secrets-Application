@@ -1,17 +1,17 @@
 import 'package:four_secrets_wedding_app/data/gesang_card_items.dart';
 import 'package:flutter/material.dart';
 import 'package:four_secrets_wedding_app/menue.dart';
+import 'package:four_secrets_wedding_app/services/menu_service.dart';
 
 class Gesang extends StatelessWidget {
   Gesang({super.key});
   final List items = GesangCardItems.getCardItems();
-  final Key key = GlobalKey<MenueState>();
 
   @override
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-        drawer: Menue.getInstance(key),
+        drawer: Menue.getInstance(MenuService().menuKey),
         appBar: AppBar(
           foregroundColor: Color.fromARGB(255, 255, 255, 255),
           // automaticallyImplyLeading: false,

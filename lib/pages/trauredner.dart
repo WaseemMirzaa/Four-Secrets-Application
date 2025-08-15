@@ -1,18 +1,18 @@
 import 'package:four_secrets_wedding_app/data/trauredner_cart_items.dart';
 import 'package:four_secrets_wedding_app/menue.dart';
+import 'package:four_secrets_wedding_app/services/menu_service.dart';
 import 'package:flutter/material.dart';
 
 class Trauredner extends StatelessWidget {
   Trauredner({super.key});
 
   final List items = TraurednerCardItems.getCardItems();
-  final Key key = GlobalKey<MenueState>();
 
   @override
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-        drawer: Menue.getInstance(key),
+        drawer: Menue.getInstance(MenuService().menuKey),
         appBar: AppBar(
           // automaticallyImplyLeading: false,
           foregroundColor: Color.fromARGB(255, 255, 255, 255),

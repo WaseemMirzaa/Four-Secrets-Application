@@ -9,6 +9,7 @@ import 'package:four_secrets_wedding_app/model/todo_item.dart';
 import 'package:four_secrets_wedding_app/model/checklist_item.dart';
 import 'package:four_secrets_wedding_app/model/four_secrets_divider.dart';
 import 'package:four_secrets_wedding_app/menue.dart';
+import 'package:four_secrets_wedding_app/services/menu_service.dart';
 
 class Checklist extends StatefulWidget {
   const Checklist({super.key});
@@ -22,7 +23,6 @@ class _ChecklistState extends State<Checklist> with TickerProviderStateMixin {
   final Box _myBoxToDo = Hive.box('myboxToDo');
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
-  final Key key = GlobalKey<MenueState>();
 
   ToDoDataBase db = ToDoDataBase();
   bool _isLoading = false;
@@ -1106,7 +1106,7 @@ class _ChecklistState extends State<Checklist> with TickerProviderStateMixin {
 
     return SafeArea(
       child: Scaffold(
-        drawer: Menue.getInstance(key),
+        drawer: Menue.getInstance(MenuService().menuKey),
         appBar: AppBar(
           foregroundColor: const Color.fromARGB(255, 255, 255, 255),
           title: const Text('Checkliste'),

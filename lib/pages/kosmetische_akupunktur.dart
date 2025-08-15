@@ -3,18 +3,18 @@ import 'package:four_secrets_wedding_app/model/four_secrets_divider.dart';
 import 'package:expandable_text/expandable_text.dart';
 import 'package:flutter/material.dart';
 import 'package:four_secrets_wedding_app/menue.dart';
+import 'package:four_secrets_wedding_app/services/menu_service.dart';
 
 // ignore: must_be_immutable
 class KosmetischeAkupunktur extends StatelessWidget {
   KosmetischeAkupunktur({super.key});
   final List items = KosmetischeAkupunkturCardItems.getCardItems();
-  final Key key = GlobalKey<MenueState>();
 
   @override
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-        drawer: Menue.getInstance(key),
+        drawer: Menue.getInstance(MenuService().menuKey),
         appBar: AppBar(
           foregroundColor: Color.fromARGB(255, 255, 255, 255),
           // automaticallyImplyLeading: false,

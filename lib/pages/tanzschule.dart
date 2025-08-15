@@ -1,12 +1,12 @@
 import 'package:four_secrets_wedding_app/data/tanzschule_card_items.dart';
 import 'package:flutter/material.dart';
 import 'package:four_secrets_wedding_app/menue.dart';
+import 'package:four_secrets_wedding_app/services/menu_service.dart';
 
 class Tanzschule extends StatelessWidget {
   Tanzschule({super.key});
 
   final List items = TanzschuleCardItems.getCardItems();
-  final key = GlobalKey<MenueState>();
 
   @override
   Widget build(BuildContext context) {

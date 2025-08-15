@@ -3,19 +3,19 @@ import 'package:four_secrets_wedding_app/data/muenchner_geheimtipp_images.dart';
 import 'package:four_secrets_wedding_app/data/muenchner_geheimtipp_routes.dart';
 import 'package:flutter/material.dart';
 import 'package:four_secrets_wedding_app/menue.dart';
+import 'package:four_secrets_wedding_app/services/menu_service.dart';
 
 class MuenchnerGeheimtipp extends StatelessWidget {
   MuenchnerGeheimtipp({super.key});
   final List<String> images = MuenchnerGeheimtippImages.getImages();
   final List<String> content = MuenchnerGeheimtippContent.getContent();
   final List routes = MuenchnerGeheimtippRoutes.getRoutes();
-  final Key key = GlobalKey<MenueState>();
 
   @override
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-        drawer: Menue.getInstance(key),
+        drawer: Menue.getInstance(MenuService().menuKey),
         appBar: AppBar(
           // automaticallyImplyLeading: false,
           title: const Text('Münchner Geheimtipp'),

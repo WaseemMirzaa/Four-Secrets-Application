@@ -6,6 +6,7 @@ import 'package:four_secrets_wedding_app/model/swipeable_card_widget.dart';
 import 'package:four_secrets_wedding_app/model/footer_buttons.dart';
 import 'package:four_secrets_wedding_app/model/four_secrets_divider.dart';
 import 'package:four_secrets_wedding_app/menue.dart';
+import 'package:four_secrets_wedding_app/services/menu_service.dart';
 
 // ignore: must_be_immutable
 class HairMakeUp extends StatelessWidget {
@@ -13,7 +14,6 @@ class HairMakeUp extends StatelessWidget {
 
   final List items = HairMakeUpCardItems.getCardItems();
   late List<String> images = HairMakeUpImages.getImages();
-  final Key key = GlobalKey<MenueState>();
 
   int activeIndex = 0;
   String urlMode = "default";
@@ -45,7 +45,7 @@ class HairMakeUp extends StatelessWidget {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-        drawer: Menue.getInstance(key),
+        drawer: Menue.getInstance(MenuService().menuKey),
         appBar: AppBar(
           foregroundColor: const Color.fromARGB(255, 255, 255, 255),
           title: const Text(

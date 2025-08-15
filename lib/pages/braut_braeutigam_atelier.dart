@@ -1,11 +1,11 @@
 import 'package:four_secrets_wedding_app/data/braut_braeutigam_card_items.dart';
 import 'package:flutter/material.dart';
 import 'package:four_secrets_wedding_app/menue.dart';
+import 'package:four_secrets_wedding_app/services/menu_service.dart';
 
 class BrautBraeutigam extends StatelessWidget {
   BrautBraeutigam({super.key});
   final List items = BrautBraeutigamCardItems.getCardItems();
-  final key = GlobalKey<MenueState>();
   @override
   Widget build(BuildContext context) {
     return SafeArea(

@@ -5,6 +5,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:four_secrets_wedding_app/constants/app_constants.dart';
 import 'package:four_secrets_wedding_app/menue.dart';
+import 'package:four_secrets_wedding_app/services/menu_service.dart';
 import 'package:four_secrets_wedding_app/model/dialog_box.dart';
 import 'package:four_secrets_wedding_app/model/four_secrets_divider.dart';
 import 'package:four_secrets_wedding_app/model/gaestelist_item.dart';
@@ -22,7 +23,6 @@ class _GaestelistState extends State<Gaestelist> {
   // Firebase references
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final FirebaseAuth _auth = FirebaseAuth.instance;
-  final Key key = GlobalKey<MenueState>();
 
   // List to store guests
   List<Map<String, dynamic>> guestList = [];
@@ -280,7 +280,7 @@ class _GaestelistState extends State<Gaestelist> {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-        drawer: Menue.getInstance(key),
+        drawer: Menue.getInstance(MenuService().menuKey),
         appBar: AppBar(
           foregroundColor: Color.fromARGB(255, 255, 255, 255),
           title: Text(AppConstants.gaestelistTitle),

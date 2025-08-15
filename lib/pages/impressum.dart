@@ -1,15 +1,15 @@
 import 'package:four_secrets_wedding_app/menue.dart';
+import 'package:four_secrets_wedding_app/services/menu_service.dart';
 import 'package:flutter/material.dart';
 
 class Impressum extends StatelessWidget {
   Impressum({super.key});
-  final Key key = GlobalKey<MenueState>();
 
   @override
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-        drawer: Menue.getInstance(key),
+        drawer: Menue.getInstance(MenuService().menuKey),
         appBar: AppBar(
           foregroundColor: const Color.fromARGB(255, 255, 255, 255),
           title: const Text('Impressum & Datenschutz'),

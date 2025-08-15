@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:four_secrets_wedding_app/model/swipeable_card_widget.dart';
 import 'package:four_secrets_wedding_app/menue.dart';
+import 'package:four_secrets_wedding_app/services/menu_service.dart';
 import 'package:four_secrets_wedding_app/model/four_secrets_divider.dart';
 
 class SwipeableCardTest extends StatefulWidget {
@@ -19,7 +20,6 @@ class _SwipeableCardTestState extends State<SwipeableCardTest> {
     "assets/images/background/wedding_design_back.jpg",
   ];
 
-  final Key key = GlobalKey<MenueState>();
 
   // Settings for the swipeable card
   String selectedFitMode = "contain";
@@ -31,7 +31,7 @@ class _SwipeableCardTestState extends State<SwipeableCardTest> {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-        drawer: Menue.getInstance(key),
+        drawer: Menue.getInstance(MenuService().menuKey),
         appBar: AppBar(
           foregroundColor: Colors.white,
           title: const Text('Swipeable Card Test'),
