@@ -152,7 +152,7 @@ class _BudgetState extends State<Budget> {
             Container(
               width: MediaQuery.of(context).size.width,
               child: Image.asset(
-                'assets/images/budget/budget.png',
+                'assets/images/budget/budget.jpg',
                 fit: BoxFit.cover,
               ),
             ),
