@@ -20,6 +20,8 @@ class _BudgetState extends State<Budget> {
   int wholeBudget = 0;
   int _tempBudget = 0;
   int _maxWholeBudget = 999999;
+  bool _isOverBudget = false;
+  int _overspentAmount = 0;
 
   List budgetList = [
     ["Fotograph", 0],
@@ -28,35 +30,45 @@ class _BudgetState extends State<Budget> {
 
   @override
   void initState() {
-    _wholeBudgetController.addListener(_initializeBudget);
     super.initState();
+    _wholeBudgetController.addListener(_initializeBudget);
+    // Initialize with default values
+    _initializeBudget();
   }
 
   void _initializeBudget() {
     if (int.tryParse(_wholeBudgetController.text) != null) {
       int newBudget = int.parse(_wholeBudgetController.text);
       if (newBudget >= 0 && newBudget <= _maxWholeBudget) {
-        wholeBudget = newBudget;
+        setState(() {
+          wholeBudget = newBudget;
+          int tempCosts = calculateCosts();
+          calculateBudget(tempCosts);
+        });
+      }
+    } else {
+      setState(() {
+        wholeBudget = 0;
         int tempCosts = calculateCosts();
         calculateBudget(tempCosts);
-      }
+      });
     }
   }
 
   void _budgetChanged(String value, int index) {
-    setState(
-      () {
-        if (int.tryParse(value) != null) {
-          int costs = int.parse(value);
-          if (costs >= 0 && costs <= _maxWholeBudget) {
-            budgetList[index][1] = costs;
-          }
-        } else {
-          budgetList[index][1] = 0;
+    setState(() {
+      if (int.tryParse(value) != null) {
+        int costs = int.parse(value);
+        if (costs >= 0 && costs <= _maxWholeBudget) {
+          budgetList[index][1] = costs;
         }
-      },
-    );
-    calculateCosts();
+      } else {
+        budgetList[index][1] = 0;
+      }
+      // Force recalculation from the total budget
+      int tempCosts = calculateCosts();
+      calculateBudget(tempCosts);
+    });
   }
 
   int calculateCosts() {
@@ -69,8 +81,12 @@ class _BudgetState extends State<Budget> {
   }
 
   void calculateBudget(int costs) {
-    var tempResult = wholeBudget - costs;
-    _tempBudget = tempResult >= 0 ? tempResult : 0;
+    final tempResult = wholeBudget - costs;
+    setState(() {
+      _isOverBudget = tempResult < 0;
+      _overspentAmount = _isOverBudget ? -tempResult : 0;
+      _tempBudget = tempResult;
+    });
   }
 
   void createNewTask() {
@@ -213,7 +229,9 @@ class _BudgetState extends State<Budget> {
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(10),
                   border: Border.all(
-                    color: const Color.fromARGB(255, 107, 69, 106),
+                    color: _isOverBudget
+                        ? Colors.red
+                        : const Color.fromARGB(255, 107, 69, 106),
                     width: 2,
                   ),
                 ),
@@ -233,7 +251,9 @@ class _BudgetState extends State<Budget> {
                                 fontSize: 16),
                           ),
                           Text(
-                            "${_tempBudget.toString()} €",
+                            _isOverBudget
+                                ? "-${_overspentAmount.toString()} €"
+                                : "${_tempBudget.toString()} €",
                             style: TextStyle(
                                 color: Colors.black,
                                 fontWeight: FontWeight.bold,
@@ -250,7 +270,7 @@ class _BudgetState extends State<Budget> {
                           Text(
                             "Ausgaben:",
                             style: TextStyle(
-                              color: Colors.black,
+                              color: _isOverBudget ? Colors.red : Colors.black,
                               fontWeight: FontWeight.bold,
                               fontSize: 16,
                             ),
@@ -258,13 +278,27 @@ class _BudgetState extends State<Budget> {
                           Text(
                             "${calculateCosts().toString()} €",
                             style: TextStyle(
-                                color: Colors.black,
+                                color:
+                                    _isOverBudget ? Colors.red : Colors.black,
                                 fontWeight: FontWeight.bold,
                                 fontSize: 16),
                           ),
                         ],
                       ),
                     ),
+                    if (_isOverBudget)
+                      Padding(
+                        padding: EdgeInsets.all(5),
+                        child: Text(
+                          "Warnung: Sie haben Ihr Budget um ${_overspentAmount} € überschritten!",
+                          style: TextStyle(
+                            color: Colors.red,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 14,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
                   ],
                 ),
               ),
