@@ -34,7 +34,7 @@ class ChatSessionManager {
       Messages(role: Role.system, content: WeddingPrompts.systemPrompt)
     ];
 
-    // UI-Messages starten leer - Welcome Message wird separat hinzugefügt
+    // UI-Messages starten leer
     _uiMessages = [];
 
     // Unique Session ID generieren
@@ -44,12 +44,11 @@ class ChatSessionManager {
     print('✅ Chat-Session bereit - ID: $_currentUserId');
   }
 
-  /// Fügt die Willkommensnachricht hinzu (nur einmal pro Session)
+  /// Fügt die Willkommensnachricht hinzu (nur wenn keine Nachrichten vorhanden sind)
   void addWelcomeMessage() {
-    // ✅ Prüfung: Willkommensnachricht bereits vorhanden?
-    if (_hasWelcomeMessage()) {
-      print(
-          '💬 Willkommensnachricht bereits vorhanden - überspringe Hinzufügung');
+    // Wenn bereits Nachrichten vorhanden sind, keine Willkommensnachricht hinzufügen
+    if (_uiMessages.isNotEmpty) {
+      print('💬 Chat-History vorhanden - überspringe Willkommensnachricht');
       return;
     }
 
@@ -62,7 +61,6 @@ class ChatSessionManager {
     );
 
     // Nur zur UI hinzufügen, NICHT zur API-History
-    // (System Prompt in API ist bereits ausreichend)
     _uiMessages.insert(0, welcomeMessage);
 
     print('✅ Willkommensnachricht hinzugefügt');
