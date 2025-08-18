@@ -124,8 +124,9 @@ class _AdvancedPlacePickerWidgetState extends State<AdvancedPlacePickerWidget> {
                   onTap: () async {
                     _searchController.text = prediction['description'] ?? '';
                     _removeOverlay();
-                    await _selectPrediction(prediction);
                     FocusScope.of(context).unfocus();
+                    await _selectPrediction(prediction);
+                    if (!mounted) return;
                   },
                 );
               },
