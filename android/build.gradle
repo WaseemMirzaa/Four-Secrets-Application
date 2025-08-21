@@ -28,9 +28,6 @@ subprojects {
 
     project.configurations.all {
         resolutionStrategy.eachDependency { details ->
-            if (details.requested.group == 'androidx.core') {
-                details.useVersion "1.10.0"
-            }
             if (details.requested.group == 'androidx.activity') {
                 details.useVersion "1.7.2"
             }
