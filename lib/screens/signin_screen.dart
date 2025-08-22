@@ -359,6 +359,23 @@ class _SignInScreenState extends State<SignInScreen> {
                         ),
                       ],
                     ),
+                    const SizedBox(height: 12),
+
+                    Center(
+                      child: TextButton(
+                        onPressed: () {
+                          Navigator.of(context)
+                              .pushNamed(RouteManager.impressumAuth);
+                        },
+                        child: const Text(
+                          'Impressum & Datenschutz',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    ),
                   ],
                 ),
               ),

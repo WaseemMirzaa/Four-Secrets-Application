@@ -33,7 +33,7 @@
 
 
     <application
-        android:label="4secrets - Wedding Planner"
+        android:label="4secrets"
         android:icon="@mipmap/ic_launcher"
         android:usesCleartextTraffic="true"
         android:requestLegacyExternalStorage="true"

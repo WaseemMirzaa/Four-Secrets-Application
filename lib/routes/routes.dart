@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:four_secrets_wedding_app/pages/impressum_auth.dart';
 import 'package:page_transition/page_transition.dart';
 
 // Models
@@ -119,6 +120,7 @@ class RouteManager {
   static const String videoPlayer2 = '/video_player2';
   static const String kontakt = '/kontakt';
   static const String impressum = '/impressum';
+  static const String impressumAuth = '/impressum-auth';
   static const String editProfilePage = '/edit-profile';
 
   // Management Routes
@@ -432,6 +434,14 @@ class RouteManager {
       case impressum:
         return PageTransition(
           child: Impressum(),
+          settings: settings,
+          duration: const Duration(milliseconds: 250),
+          type: PageTransitionType.rightToLeft,
+        );
+
+      case impressumAuth:
+        return PageTransition(
+          child: ImpressumAuth(),
           settings: settings,
           duration: const Duration(milliseconds: 250),
           type: PageTransitionType.rightToLeft,
