@@ -2,7 +2,7 @@ class KosmetischeAkupunkturCardData {
   static final Map<String, String> map1 = {
     "videoAsset": "", // Uri geht vor Asset video
     "videoUri":
-        "https://res.cloudinary.com/djtwrm1ss/video/upload/v1755776323/akupunktur_ar5oo4.mp4",
+        "https://res.cloudinary.com/dhnupmrhv/video/upload/v1755861868/akupunktur_zby6yd.mp4",
     "videoRatio": "0.65",
     "email": "tcm.reginaseiler@gmail.com",
     "homepage": "https://www.tcm-reginaseiler.de",

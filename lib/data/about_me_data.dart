@@ -4,7 +4,7 @@ class AboutMeData {
         "https://www.tophair.de/salons/salon-detailseite/4-secrets-by-elena-koller-muenchen/",
     "videoAsset": "", // Uri geht vor Asset video
     "videoUri":
-        "https://res.cloudinary.com/djtwrm1ss/video/upload/v1755776334/about_me_pxhaf4.mp4",
+        "https://res.cloudinary.com/dhnupmrhv/video/upload/v1755861889/about_me_iudgbz.mp4",
     "videoRatio": "0.62",
   };
 

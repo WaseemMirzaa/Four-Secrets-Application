@@ -1,5 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:four_secrets_wedding_app/config/theme/app_theme.dart';
+import 'package:four_secrets_wedding_app/constants/app_constants.dart';
 
 class CustomButtonWidget extends StatefulWidget {
   final Function()? onPressed;
@@ -53,7 +55,7 @@ class _CustomButtonWidgetState extends State<CustomButtonWidget> {
                 width: 20,
                 child: Center(
                   child: CupertinoActivityIndicator(
-                    color: Colors.white,
+                    color: AppTheme.primaryColor,
                   ),
                 ),
               )

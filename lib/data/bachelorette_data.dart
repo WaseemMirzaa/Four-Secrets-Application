@@ -2,7 +2,7 @@ class BacheloretteData {
   static final Map<String, String> map = {
     "videoAsset": "", // Uri geht vor Asset video
     "videoUri":
-        "https://res.cloudinary.com/djtwrm1ss/video/upload/v1755776868/bachelorette_f9vvq0.mp4",
+        "https://res.cloudinary.com/dhnupmrhv/video/upload/v1755861955/bachelorette_kxlngt.mp4",
     "videoRatio": "0.75", // 4:3
     "email": "info@4-secrets.de",
     "homepage": "https://www.4-secrets.de",
