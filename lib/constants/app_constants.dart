@@ -317,4 +317,32 @@ class AppConstants {
   static var kategorie = "Kategorie";
 
   static var weddingSchedulePageReminderDate1;
+
+  // Subscription screen texts
+  static const String subscriptionTitle = '4secrets Wedding Planner';
+  static const String subscriptionSubtitle =
+      'Vervollkommnen Sie Ihre Hochzeit mit unserer Premium-App';
+  static const String chooseSubscription = 'Wählen Sie Ihr Abonnement';
+  static const String popularBadge = 'BELIEBT';
+  static const String buyNow = 'JETZT KAUFEN';
+  static const String restorePurchases = 'Käufe wiederherstellen';
+  static const String privacyPolicy = 'Datenschutz';
+  static const String termsAndConditions = 'AGB';
+  static const String subscriptionAgreement =
+      'Mit dem Kauf stimmen Sie unseren Nutzungsbedingungen und unserer Datenschutzrichtlinie zu.';
+
+  // Error messages
+  static const String offeringsLoadError =
+      'Angebote konnten nicht geladen werden. Bitte versuchen Sie es später erneut.';
+  static const String purchaseSuccess =
+      'Vielen Dank für Ihren Kauf! Genießen Sie die App.';
+  static const String restoreSuccess =
+      'Käufe wurden erfolgreich wiederhergestellt.';
+  static const String restoreError =
+      'Käufe konnten nicht wiederhergestellt werden. Bitte versuchen Sie es erneut.';
+  static const String noSubscriptionsAvailable =
+      'Keine Abonnements verfügbar. Bitte versuchen Sie es später erneut.';
+
+  static const String subscriptionRequiredMessage =
+      'Bitte wählen Sie ein Abonnement, um fortzufahren';
 }

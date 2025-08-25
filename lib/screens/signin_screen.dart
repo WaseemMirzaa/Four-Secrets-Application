@@ -1,9 +1,14 @@
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:four_secrets_wedding_app/config/theme/app_theme.dart';
 import 'package:four_secrets_wedding_app/routes/routes.dart';
+import 'package:four_secrets_wedding_app/services/subscription/revenuecat_subscription_service.dart';
 import 'package:four_secrets_wedding_app/widgets/auth_background.dart';
 import 'package:four_secrets_wedding_app/widgets/auth_text_field.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:url_launcher/url_launcher.dart';
+import '../models/user_model.dart';
 import '../services/auth_service.dart';
 import '../utils/snackbar_helper.dart';
 import '../constants/app_constants.dart';
@@ -112,13 +117,8 @@ class _SignInScreenState extends State<SignInScreen> {
         return;
       }
 
-      SnackBarHelper.showSuccessSnackBar(
-          context, AppConstants.welcomeBackMessage);
-
-      Navigator.of(context).pushNamedAndRemoveUntil(
-        RouteManager.homePage,
-        (route) => false,
-      );
+      // Check subscription status after successful sign in
+      await _checkSubscriptionAndNavigate(userModel);
     } on FirebaseAuthException catch (e) {
       if (!mounted) return;
 
@@ -157,6 +157,65 @@ class _SignInScreenState extends State<SignInScreen> {
     } finally {
       if (mounted) {
         setState(() => _isLoading = false);
+      }
+    }
+  }
+
+  Future<void> _checkSubscriptionAndNavigate(UserModel userModel) async {
+    try {
+      // Initialize RevenueCat with user ID
+      final revenueCatService = RevenueCatService();
+      await revenueCatService.initialize(userModel.uid);
+
+      // Check if user has active subscription
+      final hasActiveSubscription =
+          await revenueCatService.hasActiveSubscription();
+
+      // Update Firebase with current subscription status
+      await revenueCatService.updateSubscriptionStatusInFirebase(
+          await revenueCatService.getCustomerInfo());
+
+      if (hasActiveSubscription) {
+        // User has active subscription - navigate to home
+        SnackBarHelper.showSuccessSnackBar(
+            context, AppConstants.welcomeBackMessage);
+
+        Navigator.of(context).pushNamedAndRemoveUntil(
+          RouteManager.homePage,
+          (route) => false,
+        );
+      } else {
+        // User doesn't have active subscription - navigate to subscription screen
+        SnackBarHelper.showInfoSnackBar(
+            context, 'Bitte wählen Sie ein Abonnement, um fortzufahren');
+
+        Navigator.of(context).pushNamedAndRemoveUntil(
+          RouteManager.subscriptionPreviewScreen,
+          (route) => false,
+        );
+      }
+    } catch (e) {
+      print('❌ Error checking subscription: $e');
+
+      // Fallback: Check the subscription status from Firestore
+      if (userModel.isSubscribed) {
+        // Use Firestore data if RevenueCat check fails
+        SnackBarHelper.showSuccessSnackBar(
+            context, AppConstants.welcomeBackMessage);
+
+        Navigator.of(context).pushNamedAndRemoveUntil(
+          RouteManager.homePage,
+          (route) => false,
+        );
+      } else {
+        // Redirect to subscription screen
+        SnackBarHelper.showInfoSnackBar(
+            context, 'Bitte wählen Sie ein Abonnement, um fortzufahren');
+
+        Navigator.of(context).pushNamedAndRemoveUntil(
+          RouteManager.subscriptionPreviewScreen,
+          (route) => false,
+        );
       }
     }
   }
@@ -362,17 +421,55 @@ class _SignInScreenState extends State<SignInScreen> {
                     const SizedBox(height: 12),
 
                     Center(
-                      child: TextButton(
-                        onPressed: () {
-                          Navigator.of(context)
-                              .pushNamed(RouteManager.impressumAuth);
-                        },
-                        child: const Text(
-                          'Impressum & Datenschutz',
+                      child: RichText(
+                        textAlign: TextAlign.center,
+                        text: TextSpan(
+                          text: 'Mit der Nutzung akzeptieren Sie ',
                           style: TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold,
+                            fontSize: 14,
                           ),
+                          children: [
+                            TextSpan(
+                              text: 'Datenschutz',
+                              style: TextStyle(
+                                fontWeight: FontWeight.w600,
+                                fontSize: 16,
+                              ),
+                              recognizer: TapGestureRecognizer()
+                                ..onTap = () async {
+                                  final url = Uri.parse(
+                                    'https://www.4secrets-wedding-planner.de/datenschutz-app/',
+                                  );
+                                  if (await canLaunchUrl(url)) {
+                                    await launchUrl(url,
+                                        mode: LaunchMode.externalApplication);
+                                  }
+                                },
+                            ),
+                            TextSpan(
+                              text: ' & ',
+                              style: TextStyle(
+                                fontSize: 14,
+                              ),
+                            ),
+                            TextSpan(
+                              text: 'AGB',
+                              style: TextStyle(
+                                fontWeight: FontWeight.w600,
+                                fontSize: 16,
+                              ),
+                              recognizer: TapGestureRecognizer()
+                                ..onTap = () async {
+                                  final url = Uri.parse(
+                                    'https://www.4secrets-wedding-planner.de/agb',
+                                  );
+                                  if (await canLaunchUrl(url)) {
+                                    await launchUrl(url,
+                                        mode: LaunchMode.externalApplication);
+                                  }
+                                },
+                            ),
+                          ],
                         ),
                       ),
                     ),

@@ -25,7 +25,6 @@ void alarmCallback(int id) {
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
 
   // Initialize timezone data for alarm functionality
   tz.initializeTimeZones();

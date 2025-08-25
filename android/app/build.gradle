@@ -124,6 +124,8 @@ dependencies {
     implementation "androidx.activity:activity:1.7.2"
     implementation "androidx.fragment:fragment:1.6.1"
     implementation 'com.github.yalantis:ucrop:2.2.8'
+    implementation 'com.revenuecat.purchases:purchases:7.0.0' 
+    implementation 'com.android.billingclient:billing:6.2.0'
 }
 
 configurations.all {

@@ -1,17 +1,28 @@
 import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:four_secrets_wedding_app/pages/home.dart';
+import 'package:four_secrets_wedding_app/screens/email_verification_screen.dart';
+import 'package:four_secrets_wedding_app/screens/subscription_preview_screen.dart';
+import 'package:four_secrets_wedding_app/services/wedding_day_schedule_service.dart';
+import 'package:four_secrets_wedding_app/screens/newfeature1/services/wedding_day_schedule_service1.dart';
+import 'package:page_transition/page_transition.dart';
+import '../services/auth_service.dart';
+import '../services/subscription/revenuecat_subscription_service.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
 
   @override
-  State<SplashScreen> createState() => _SplashScreenState();
+  State<SplashScreen> createState() {
+    return _SplashScreenState();
+  }
 }
 
 class _SplashScreenState extends State<SplashScreen>
     with SingleTickerProviderStateMixin {
+  final AuthService _authService = AuthService();
+  final RevenueCatService _revenueCatService = RevenueCatService();
   Future<double> get _height => Future<double>.value(200);
   AnimationController? _controller;
   final int timeInSeconds = 1;
@@ -26,35 +37,112 @@ class _SplashScreenState extends State<SplashScreen>
 
     _controller?.addListener(() {
       if (_controller?.status == AnimationStatus.completed) {
-        // Animation ist abgeschlossen => Nachfolgend Aktion ausführen!
         Timer(const Duration(seconds: 2), () {
-          _checkAuthAndNavigate();
+          _checkAuthentication();
         });
       }
     });
-    _controller?.forward(); // Starten Sie die Animation.
+    _controller?.forward();
   }
 
-  Future<void> _checkAuthAndNavigate() async {
-    // await Future.delayed(const Duration(seconds: 2));
+  Future<void> _checkAuthentication() async {
+    try {
+      final user = FirebaseAuth.instance.currentUser;
 
-    if (!mounted) return;
+      if (user != null) {
+        // Reload user to get latest verification status
+        await user.reload();
 
-    final user = FirebaseAuth.instance.currentUser;
-    if (!mounted) return;
+        // Initialize RevenueCat with user ID
+        await _revenueCatService.initialize(user.uid);
 
-    if (user != null) {
-      Navigator.of(context).pushReplacementNamed('/home');
-    } else {
+        // Check subscription status
+        await _revenueCatService.checkSubscriptionStatus();
+
+        // Fetch and save user data using AuthService
+        final userModel = await _authService.getCurrentUser();
+
+        if (userModel != null) {
+          // Save user data to SharedPreferences using the public method
+          await _authService.saveUserToPrefs(userModel);
+
+          // Load both wedding schedule services to set up notifications
+          try {
+            final scheduleService = WeddingDayScheduleService();
+            await scheduleService.loadData();
+            print('🟢 Original wedding schedule service loaded in splash');
+
+            final scheduleService1 = WeddingDayScheduleService1();
+            await scheduleService1.loadData();
+            print('🟢 Eigene Dienstleister schedule service loaded in splash');
+          } catch (e) {
+            print('🔴 Error loading schedule services in splash: $e');
+          }
+
+          if (!mounted) return;
+
+          // Check if email is verified
+          if (!user.emailVerified) {
+            // Navigate to verification screen if email is not verified
+            Navigator.of(context).pushReplacement(
+              PageTransition(
+                duration: const Duration(seconds: 1),
+                curve: Curves.easeIn,
+                type: PageTransitionType.rightToLeft,
+                child: const EmailVerificationScreen(),
+              ),
+            );
+            return;
+          }
+
+          // Check subscription status before allowing access to dashboard
+          if (!userModel.isSubscribed) {
+            // Navigate to subscription screen if not subscribed
+            Navigator.of(context).pushReplacement(
+              PageTransition(
+                duration: const Duration(seconds: 1),
+                curve: Curves.easeIn,
+                type: PageTransitionType.rightToLeft,
+                child: const SubscriptionPreviewScreen(),
+              ),
+            );
+            return;
+          }
+        }
+
+        if (!mounted) return;
+
+        Navigator.of(context).pushReplacement(
+          PageTransition(
+            duration: const Duration(seconds: 1),
+            curve: Curves.easeIn,
+            type: PageTransitionType.rightToLeft,
+            child: const HomePage(),
+          ),
+        );
+      } else {
+        if (!mounted) return;
+        Navigator.of(context).pushReplacementNamed('/signin');
+      }
+    } catch (e) {
+      print('🔴 Error in splash screen authentication check: $e');
+      if (!mounted) return;
       Navigator.of(context).pushReplacementNamed('/signin');
     }
   }
 
   @override
+  void dispose() {
+    _controller?.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Center(
-        child: Column(
+    return SafeArea(
+      child: Scaffold(
+        backgroundColor: const Color.fromARGB(255, 255, 255, 255),
+        body: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             FutureBuilder<double>(
@@ -64,26 +152,56 @@ class _SplashScreenState extends State<SplashScreen>
                 return AnimatedContainer(
                   duration: Duration(seconds: timeInSeconds),
                   height: snapshot.data,
-                  child: Image.asset(
-                    'assets/icons/secrets-icon.png',
-                    fit: BoxFit.contain, // Changed to contain
+                  child: Container(
+                    // width: 180, // Increased size
+                    // height: 180, // Increased size
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      border: Border.all(
+                          color: Colors.white,
+                          width: 4.0), // Slightly thicker border
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.2),
+                          spreadRadius: 2,
+                          blurRadius: 7,
+                          offset: const Offset(0, 3),
+                        ),
+                      ],
+                    ),
+                    child: ClipOval(
+                      child: Image.asset(
+                        'assets/images/logo/secrets-logo.jpg',
+                        fit: BoxFit
+                            .contain, // Changed to contain instead of cover
+                      ),
+                    ),
                   ),
                 );
               },
             ),
-            // Larger logo with border radius
-
-            const SizedBox(height: 24),
-            const CircularProgressIndicator(),
+            const SizedBox(height: 25),
+            const Align(
+              alignment: Alignment.center,
+              child: Padding(
+                padding: EdgeInsets.symmetric(
+                  horizontal: 25.0,
+                  vertical: 0.0,
+                ),
+                child: Text(
+                  'Perfect your Wedding with 4secrets - Wedding Planner',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                      color: Colors.black,
+                      fontSize: 20,
+                      fontFamily: 'Roboto',
+                      fontWeight: FontWeight.w300),
+                ),
+              ),
+            ),
           ],
         ),
       ),
     );
-  }
-
-  @override
-  void dispose() {
-    _controller?.dispose();
-    super.dispose();
   }
 }

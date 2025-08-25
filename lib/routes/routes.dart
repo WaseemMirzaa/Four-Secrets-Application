@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:four_secrets_wedding_app/pages/impressum_auth.dart';
+import 'package:four_secrets_wedding_app/screens/subscription_preview_screen.dart';
+import 'package:four_secrets_wedding_app/screens/subscription_screen.dart';
 import 'package:page_transition/page_transition.dart';
 
 // Models
@@ -60,7 +62,7 @@ import 'package:four_secrets_wedding_app/pages/papeterie.dart';
 import 'package:four_secrets_wedding_app/pages/parsonal_training.dart';
 import 'package:four_secrets_wedding_app/pages/patiserie.dart';
 import 'package:four_secrets_wedding_app/pages/showroom_event.dart';
-import 'package:four_secrets_wedding_app/pages/splash_screen.dart';
+import 'package:four_secrets_wedding_app/screens/splash_screen.dart';
 import 'package:four_secrets_wedding_app/pages/swipeable_card_test.dart';
 import 'package:four_secrets_wedding_app/pages/tables_management_page.dart';
 import 'package:four_secrets_wedding_app/pages/tanzschule.dart';
@@ -80,6 +82,9 @@ class RouteManager {
   static const String signupPage = '/signup';
   static const String forgotPasswordPage = '/forgot-password';
   static const String emailVerificationPage = '/email-verification';
+
+  static const String subscriptionScreen = '/subscription';
+  static const String subscriptionPreviewScreen = '/subscription-preview';
 
   // Main Feature Routes
   static const String inspirationsPage = '/inspirations';
@@ -175,6 +180,22 @@ class RouteManager {
       case signupPage:
         return PageTransition(
           child: const SignUpScreen(),
+          settings: settings,
+          duration: const Duration(milliseconds: 250),
+          type: PageTransitionType.rightToLeft,
+        );
+
+      case subscriptionScreen:
+        return PageTransition(
+          child: const SubscriptionScreen(),
+          settings: settings,
+          duration: const Duration(milliseconds: 250),
+          type: PageTransitionType.rightToLeft,
+        );
+
+      case subscriptionPreviewScreen:
+        return PageTransition(
+          child: const SubscriptionPreviewScreen(),
           settings: settings,
           duration: const Duration(milliseconds: 250),
           type: PageTransitionType.rightToLeft,
