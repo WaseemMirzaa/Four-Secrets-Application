@@ -1,7 +1,6 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:four_secrets_wedding_app/config/theme/app_theme.dart';
 import 'package:four_secrets_wedding_app/routes/routes.dart';
 import 'package:four_secrets_wedding_app/services/subscription/revenuecat_subscription_service.dart';
 import 'package:four_secrets_wedding_app/widgets/auth_background.dart';

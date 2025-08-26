@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:four_secrets_wedding_app/pages/impressum_auth.dart';
-import 'package:four_secrets_wedding_app/screens/subscription_preview_screen.dart';
-import 'package:four_secrets_wedding_app/screens/subscription_screen.dart';
+import 'package:four_secrets_wedding_app/screens/subscriptions/subscription_management_screen.dart';
+import 'package:four_secrets_wedding_app/screens/subscriptions/subscription_preview_screen.dart';
+import 'package:four_secrets_wedding_app/screens/subscriptions/subscription_screen.dart';
+import 'package:four_secrets_wedding_app/screens/subscriptions/update_subscription_screen.dart';
 import 'package:page_transition/page_transition.dart';
 
 // Models
@@ -85,6 +87,8 @@ class RouteManager {
 
   static const String subscriptionScreen = '/subscription';
   static const String subscriptionPreviewScreen = '/subscription-preview';
+  static const String subscriptionManagementScreen = '/subscription-management';
+  static const String updateSubscriptionScreen = '/update-subscription';
 
   // Main Feature Routes
   static const String inspirationsPage = '/inspirations';
@@ -196,6 +200,22 @@ class RouteManager {
       case subscriptionPreviewScreen:
         return PageTransition(
           child: const SubscriptionPreviewScreen(),
+          settings: settings,
+          duration: const Duration(milliseconds: 250),
+          type: PageTransitionType.rightToLeft,
+        );
+
+      case subscriptionManagementScreen:
+        return PageTransition(
+          child: const SubscriptionManagementScreen(),
+          settings: settings,
+          duration: const Duration(milliseconds: 250),
+          type: PageTransitionType.rightToLeft,
+        );
+
+      case updateSubscriptionScreen:
+        return PageTransition(
+          child: const UpdateSubscriptionScreen(),
           settings: settings,
           duration: const Duration(milliseconds: 250),
           type: PageTransitionType.rightToLeft,

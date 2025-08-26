@@ -32,4 +32,5 @@ List<DrawerModel> listDrawerModel = [
   DrawerModel(name: "Über mich", icon: Icons.account_box_sharp),
   DrawerModel(name: "Kontakt", icon: FontAwesomeIcons.mapLocationDot),
   DrawerModel(name: "Impressum", icon: FontAwesomeIcons.circleInfo),
+  DrawerModel(name: "Abonnement", icon: FontAwesomeIcons.crown)
 ];

@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 
-import '../routes/routes.dart';
-import '../services/auth_service.dart';
-import '../utils/snackbar_helper.dart';
+import '../../routes/routes.dart';
+import '../../services/auth_service.dart';
+import '../../utils/snackbar_helper.dart';
 
 class SubscriptionPreviewScreen extends StatefulWidget {
   const SubscriptionPreviewScreen({super.key});
@@ -15,25 +15,6 @@ class SubscriptionPreviewScreen extends StatefulWidget {
 
 class _SubscriptionPreviewScreenState extends State<SubscriptionPreviewScreen> {
   final AuthService _authService = AuthService();
-
-  Future<void> _handleLogout(BuildContext context) async {
-    try {
-      await _authService.signOut();
-      if (mounted) {
-        Navigator.of(context).pushNamedAndRemoveUntil(
-          RouteManager.signinPage,
-          (route) => false,
-        );
-      }
-    } catch (e) {
-      if (mounted) {
-        SnackBarHelper.showErrorSnackBar(
-          context,
-          'Logout failed: ${e.toString()}',
-        );
-      }
-    }
-  }
 
   final List<String> _previewImages = [
     'assets/preview/1.jpg',
@@ -175,9 +156,14 @@ class _SubscriptionPreviewScreenState extends State<SubscriptionPreviewScreen> {
                   const SizedBox(height: 20),
 
                   TextButton(
-                    onPressed: () => _handleLogout(context),
+                    onPressed: () {
+                      Navigator.of(context).pushNamedAndRemoveUntil(
+                        RouteManager.homePage,
+                        (route) => false,
+                      );
+                    },
                     child: const Text(
-                      'Logout',
+                      'vorerst überspringen',
                       style: TextStyle(
                         color: Colors.white,
                         fontSize: 16,

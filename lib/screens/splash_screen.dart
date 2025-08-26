@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:four_secrets_wedding_app/pages/home.dart';
 import 'package:four_secrets_wedding_app/screens/email_verification_screen.dart';
-import 'package:four_secrets_wedding_app/screens/subscription_preview_screen.dart';
+import 'package:four_secrets_wedding_app/screens/subscriptions/subscription_preview_screen.dart';
 import 'package:four_secrets_wedding_app/services/wedding_day_schedule_service.dart';
 import 'package:four_secrets_wedding_app/screens/newfeature1/services/wedding_day_schedule_service1.dart';
 import 'package:page_transition/page_transition.dart';

@@ -1,27 +1,29 @@
-// screens/subscription_screen.dart
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:four_secrets_wedding_app/services/subscription/revenuecat_purchase_exception.dart';
+import 'package:four_secrets_wedding_app/services/subscription/revenuecat_subscription_service.dart';
 import 'package:four_secrets_wedding_app/utils/snackbar_helper.dart';
 import 'package:purchases_flutter/purchases_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-import '../services/subscription/revenuecat_subscription_service.dart';
+class UpdateSubscriptionScreen extends StatefulWidget {
+  final String? currentPlan;
 
-class SubscriptionScreen extends StatefulWidget {
-  const SubscriptionScreen({Key? key}) : super(key: key);
+  const UpdateSubscriptionScreen({Key? key, this.currentPlan})
+      : super(key: key);
 
   @override
-  _SubscriptionScreenState createState() => _SubscriptionScreenState();
+  _UpdateSubscriptionScreenState createState() =>
+      _UpdateSubscriptionScreenState();
 }
 
-class _SubscriptionScreenState extends State<SubscriptionScreen> {
+class _UpdateSubscriptionScreenState extends State<UpdateSubscriptionScreen> {
   final RevenueCatService _revenueCatService = RevenueCatService();
   Offerings? _offerings;
   bool _isLoading = true;
   bool _purchasing = false;
-  bool _billingUnavailable = false;
-  String _selectedPlan = 'monthly'; // 'monthly' or 'yearly'
+  String _selectedPlan = 'monthly';
 
   @override
   void initState() {
@@ -36,23 +38,10 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
         _offerings = offerings;
         _isLoading = false;
       });
-    } on PlatformException catch (e) {
-      if (e.code == 'PurchaseNotAllowedError') {
-        setState(() {
-          _isLoading = false;
-          _billingUnavailable = true;
-        });
-        SnackBarHelper.showErrorSnackBar(context,
-            'In-App-Käufe sind auf diesem Gerät nicht verfügbar. Bitte verwenden Sie ein anderes Gerät.');
-      } else {
-        setState(() => _isLoading = false);
-        SnackBarHelper.showErrorSnackBar(context,
-            'Angebote konnten nicht geladen werden. Bitte versuchen Sie es später erneut.');
-      }
     } catch (e) {
-      setState(() => _isLoading = false);
       SnackBarHelper.showErrorSnackBar(
-          context, 'Ein unerwarteter Fehler ist aufgetreten.');
+          context, 'Angebote konnten nicht geladen werden');
+      setState(() => _isLoading = false);
     }
   }
 
@@ -63,64 +52,21 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
       final result = await _revenueCatService.purchasePackage(package);
 
       if (result.info != null) {
-        Navigator.of(context).pushReplacementNamed('/home');
+        Navigator.of(context).popUntil((route) => route.isFirst);
         SnackBarHelper.showSuccessSnackBar(
-            context, 'Vielen Dank für Ihren Kauf! Genießen Sie die App.');
+            context, 'Abonnement erfolgreich geändert!');
       }
-    } on PurchaseException catch (e) {
-      SnackBarHelper.showErrorSnackBar(context, e.message);
+    } on PlatformException catch (e) {
+      SnackBarHelper.showErrorSnackBar(
+          context, e.message ?? 'Fehler beim Kauf');
     } catch (e) {
-      SnackBarHelper.showErrorSnackBar(context,
-          'Ein unerwarteter Fehler ist aufgetreten. Bitte versuchen Sie es erneut.');
+      SnackBarHelper.showErrorSnackBar(
+          context, 'Ein unerwarteter Fehler ist aufgetreten');
     } finally {
       setState(() => _purchasing = false);
     }
   }
 
-  Future<void> _restorePurchases() async {
-    setState(() => _isLoading = true);
-
-    try {
-      final customerInfo = await _revenueCatService.restorePurchases();
-
-      final hasActiveSub = await _revenueCatService.hasActiveSubscription();
-
-      if (hasActiveSub) {
-        SnackBarHelper.showSuccessSnackBar(
-          context,
-          'Käufe wurden erfolgreich wiederhergestellt.',
-        );
-        Navigator.of(context).pushReplacementNamed('/home');
-      } else {
-        SnackBarHelper.showErrorSnackBar(
-          context,
-          'Es wurden keine aktiven Abos zum Wiederherstellen gefunden.',
-        );
-      }
-    } catch (e) {
-      SnackBarHelper.showErrorSnackBar(
-        context,
-        'Käufe konnten nicht wiederhergestellt werden. Bitte versuchen Sie es erneut.',
-      );
-    } finally {
-      setState(() => _isLoading = false);
-    }
-  }
-
-  // Extract free trial information from package
-  String _getFreeTrialInfo(Package package) {
-    return '7 Tage kostenlos testen';
-  }
-
-  String _getPlanLabel(Package package) {
-    if (package.storeProduct.identifier.contains("monthly"))
-      return "Premium monatlich";
-    if (package.storeProduct.identifier.contains("yearly"))
-      return "Premium Jährlich";
-    return package.storeProduct.title;
-  }
-
-  // Get the appropriate package based on selected plan
   Package? _getSelectedPackage() {
     if (_offerings?.current?.availablePackages == null) return null;
 
@@ -135,7 +81,6 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
     );
   }
 
-  // Build plan toggle buttons
   Widget _buildPlanToggle() {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 4),
@@ -155,20 +100,31 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
 
   Widget _buildToggleButton(String text, String value) {
     final isSelected = _selectedPlan == value;
+    final isCurrentPlan = widget.currentPlan != null &&
+        ((value == 'monthly' &&
+                widget.currentPlan!.toLowerCase().contains('month')) ||
+            (value == 'yearly' &&
+                widget.currentPlan!.toLowerCase().contains('year')));
+
     return Expanded(
       child: GestureDetector(
-        onTap: () => setState(() => _selectedPlan = value),
+        onTap:
+            isCurrentPlan ? null : () => setState(() => _selectedPlan = value),
         child: Container(
           padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
           decoration: BoxDecoration(
-            color: isSelected ? Colors.white : Colors.transparent,
+            color: isCurrentPlan
+                ? Colors.grey[300]
+                : (isSelected ? Colors.white : Colors.transparent),
             borderRadius: BorderRadius.circular(26),
           ),
           child: Text(
             text,
             textAlign: TextAlign.center,
             style: TextStyle(
-              color: isSelected ? Colors.purple : Colors.white,
+              color: isCurrentPlan
+                  ? Colors.grey[600]
+                  : (isSelected ? const Color(0xFF6B456A) : Colors.white),
               fontWeight: FontWeight.w600,
               fontSize: 14,
             ),
@@ -178,51 +134,51 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
     );
   }
 
-  // Build subscription card
   Widget _buildSubscriptionCard(Package package) {
     final price = package.storeProduct.priceString;
-
-    final freeTrialInfo = _getFreeTrialInfo(package);
+    final isCurrentPlan = widget.currentPlan != null &&
+        package.identifier
+            .toLowerCase()
+            .contains(widget.currentPlan!.toLowerCase());
     final isYearly = _selectedPlan == 'yearly';
 
-    return Container(
-      margin: const EdgeInsets.symmetric(vertical: 20),
-      padding: const EdgeInsets.all(24),
-      decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.9),
-        borderRadius: BorderRadius.circular(20),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.purple.withOpacity(0.2),
-            blurRadius: 15,
-            spreadRadius: 2,
-            offset: const Offset(0, 5),
-          ),
-        ],
-      ),
+    return GlassCard(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Free trial badge
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-            decoration: BoxDecoration(
-              color: Colors.purple,
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Text(
-              freeTrialInfo,
-              style: const TextStyle(
-                color: Colors.white,
-                fontSize: 12,
-                fontWeight: FontWeight.bold,
+          if (isCurrentPlan)
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+              decoration: BoxDecoration(
+                color: const Color(0xFF6B456A),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: const Text(
+                'Aktuelles Abo',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 12,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            )
+          else
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+              decoration: BoxDecoration(
+                color: Colors.green,
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: const Text(
+                '7 Tage kostenlos testen',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 12,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
             ),
-          ),
-
           const SizedBox(height: 16),
-
-          // Plan title
           Text(
             _getPlanLabel(package),
             style: const TextStyle(
@@ -231,10 +187,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
               color: Colors.black87,
             ),
           ),
-
           const SizedBox(height: 8),
-
-          // Price
           Row(
             children: [
               Text(
@@ -242,12 +195,10 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
                 style: const TextStyle(
                   fontSize: 28,
                   fontWeight: FontWeight.bold,
-                  color: Colors.purple,
+                  color: Color(0xFF6B456A),
                 ),
               ),
-              SizedBox(
-                width: 12,
-              ),
+              const SizedBox(width: 12),
               Text(
                 isYearly ? 'pro Jahr' : 'pro Monat',
                 style: TextStyle(
@@ -257,15 +208,9 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
               ),
             ],
           ),
-
           const SizedBox(height: 12),
-
-          // Divider
           const Divider(color: Colors.grey, height: 1),
-
           const SizedBox(height: 12),
-
-          // Features list
           const Text(
             'Enthaltene Funktionen:',
             style: TextStyle(
@@ -274,50 +219,66 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
               color: Colors.black87,
             ),
           ),
-
           const SizedBox(height: 8),
-
           _buildFeature('Alle 11 Hochzeitsfunktionen frei'),
           _buildFeature('Freunde & Familie einladen'),
           _buildFeature('PDFs & Infos mit Dienstlern teilen'),
           _buildFeature('Unbegrenzte Gästeliste'),
           _buildFeature('Budgetplaner & Kostenübersicht'),
-
           const SizedBox(height: 8),
-
-          // Purchase button
           SizedBox(
             width: double.infinity,
             height: 54,
-            child: ElevatedButton(
-              onPressed: _purchasing ? null : () => _purchasePackage(package),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.purple,
-                foregroundColor: Colors.white,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                elevation: 5,
-                textStyle: const TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              child: _purchasing
-                  ? const SizedBox(
-                      width: 20,
-                      height: 20,
-                      child: CircularProgressIndicator(
-                        strokeWidth: 2,
-                        valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+            child: isCurrentPlan
+                ? OutlinedButton(
+                    onPressed: null,
+                    style: OutlinedButton.styleFrom(
+                      side: const BorderSide(color: Colors.grey),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
                       ),
-                    )
-                  : const Text('JETZT KAUFEN'),
-            ),
+                    ),
+                    child: const Text(
+                      'AKTUELLES ABO',
+                      style: TextStyle(color: Colors.grey),
+                    ),
+                  )
+                : ElevatedButton(
+                    onPressed:
+                        _purchasing ? null : () => _purchasePackage(package),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFF6B456A),
+                      foregroundColor: Colors.white,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      elevation: 3,
+                      shadowColor: const Color(0xFF6B456A).withOpacity(0.4),
+                    ),
+                    child: _purchasing
+                        ? const SizedBox(
+                            width: 20,
+                            height: 20,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                              valueColor:
+                                  AlwaysStoppedAnimation<Color>(Colors.white),
+                            ),
+                          )
+                        : const Text('ABONNIEREN'),
+                  ),
           ),
         ],
       ),
     );
+  }
+
+  String _getPlanLabel(Package package) {
+    if (package.storeProduct.identifier.contains("monthly"))
+      return "Premium monatlich";
+    if (package.storeProduct.identifier.contains("yearly"))
+      return "Premium Jährlich";
+    return package.storeProduct.title;
   }
 
   Widget _buildFeature(String feature) {
@@ -328,7 +289,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
         children: [
           const Icon(
             Icons.check_circle,
-            color: Colors.purple,
+            color: Color(0xFF6B456A),
             size: 20,
           ),
           const SizedBox(width: 12),
@@ -348,38 +309,6 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
 
   @override
   Widget build(BuildContext context) {
-    if (_billingUnavailable) {
-      return Scaffold(
-        body: Center(
-          child: Padding(
-            padding: const EdgeInsets.all(20),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                const Icon(Icons.error_outline, size: 64, color: Colors.red),
-                const SizedBox(height: 20),
-                const Text(
-                  'In-App-Käufe nicht verfügbar',
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                  textAlign: TextAlign.center,
-                ),
-                const SizedBox(height: 10),
-                const Text(
-                  'Bitte verwenden Sie ein Gerät mit Google Play Services, um Abonnements zu erwerben.',
-                  textAlign: TextAlign.center,
-                ),
-                const SizedBox(height: 20),
-                TextButton(
-                  onPressed: () => Navigator.of(context).pop(),
-                  child: const Text('Zurück'),
-                ),
-              ],
-            ),
-          ),
-        ),
-      );
-    }
-
     final selectedPackage = _getSelectedPackage();
 
     return Scaffold(
@@ -392,9 +321,9 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
                 colors: [
-                  Colors.purple.shade800,
-                  Colors.purple.shade600,
-                  Colors.purple.shade400,
+                  const Color(0xFF6B456A).withOpacity(0.9),
+                  const Color(0xFF6B456A).withOpacity(0.7),
+                  const Color(0xFF6B456A).withOpacity(0.5),
                 ],
               ),
             ),
@@ -417,12 +346,14 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
                 children: [
                   const SizedBox(height: 5),
 
-                  Align(
-                    alignment: Alignment.topLeft,
-                    child: IconButton(
-                      icon: const Icon(Icons.arrow_back, color: Colors.white),
-                      onPressed: () => Navigator.of(context).pop(),
-                    ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      IconButton(
+                        icon: const Icon(Icons.arrow_back, color: Colors.white),
+                        onPressed: () => Navigator.of(context).pop(),
+                      ),
+                    ],
                   ),
 
                   // App Logo
@@ -452,7 +383,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
 
                   // Title
                   const Text(
-                    '4secrets Wedding Planner',
+                    'Abonnement ändern',
                     style: TextStyle(
                       fontSize: 28,
                       fontWeight: FontWeight.bold,
@@ -464,7 +395,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
                   const SizedBox(height: 8),
 
                   const Text(
-                    'Vervollkommnen Sie Ihre Hochzeit mit unserer Premium-App',
+                    'Wählen Sie ein neues Abonnement',
                     style: TextStyle(
                       fontSize: 16,
                       color: Colors.white70,
@@ -496,20 +427,6 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
                     ),
 
                   const SizedBox(height: 12),
-
-                  // Restore purchases
-                  TextButton(
-                    onPressed: _isLoading ? null : _restorePurchases,
-                    child: const Text(
-                      'Käufe wiederherstellen',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 16,
-                      ),
-                    ),
-                  ),
-
-                  const SizedBox(height: 8),
 
                   // Privacy and Terms
                   Row(
@@ -573,6 +490,43 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+class GlassCard extends StatelessWidget {
+  final Widget child;
+  final EdgeInsets? padding;
+
+  const GlassCard({Key? key, required this.child, this.padding})
+      : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(16),
+        color: Colors.white.withOpacity(0.7),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.withOpacity(0.1),
+            blurRadius: 20,
+            spreadRadius: 2,
+            offset: const Offset(0, 4),
+          ),
+        ],
+        border: Border.all(
+          color: Colors.white.withOpacity(0.5),
+          width: 1,
+        ),
+      ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(16),
+        child: Padding(
+          padding: padding ?? const EdgeInsets.all(20),
+          child: child,
+        ),
       ),
     );
   }
