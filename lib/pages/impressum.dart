@@ -1,4 +1,6 @@
 import 'package:flutter/gestures.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:four_secrets_wedding_app/config/theme/app_theme.dart';
 import 'package:four_secrets_wedding_app/menue.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -32,49 +34,71 @@ class Impressum extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Links Section
-                Text.rich(
-                  TextSpan(
-                    text: "➡ ",
-                    style: const TextStyle(fontSize: 20, color: Colors.black),
+                GestureDetector(
+                  onTap: () => _openUrl(
+                    'https://www.4secrets-wedding-planner.de/datenschutz-app/',
+                  ),
+                  child: Row(
                     children: [
-                      TextSpan(
-                        text: "Datenschutzerklärung",
+                      Container(
+                        padding: EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                          color: AppTheme.primaryColor,
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: FaIcon(
+                          FontAwesomeIcons.arrowRight,
+                          color: Colors.white,
+                          size: 18,
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      Text(
+                        "Datenschutzerklärung",
                         style: const TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.w600,
-                          color: Color.fromARGB(255, 107, 69, 106),
+                          color: AppTheme.primaryColor,
                           decoration: TextDecoration.underline,
                         ),
-                        recognizer: TapGestureRecognizer()
-                          ..onTap = () => _openUrl(
-                              'https://www.4secrets-wedding-planner.de/datenschutz-app/'),
                       ),
                     ],
                   ),
                 ),
                 const SizedBox(height: 12),
-                Text.rich(
-                  TextSpan(
-                    text: "➡ ",
-                    style: const TextStyle(fontSize: 20, color: Colors.black),
+                GestureDetector(
+                  onTap: () => _openUrl(
+                    'https://www.4secrets-wedding-planner.de/agb',
+                  ),
+                  child: Row(
                     children: [
-                      TextSpan(
-                        text: "Nutzungsbedingungen",
+                      Container(
+                        padding: EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                          color: AppTheme.primaryColor,
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: FaIcon(
+                          FontAwesomeIcons.arrowRight,
+                          color: Colors.white,
+                          size: 18,
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      Text(
+                        "Nutzungsbedingungen",
                         style: const TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.w600,
-                          color: Color.fromARGB(255, 107, 69, 106),
+                          color: AppTheme.primaryColor,
                           decoration: TextDecoration.underline,
                         ),
-                        recognizer: TapGestureRecognizer()
-                          ..onTap = () => _openUrl(
-                              'https://www.4secrets-wedding-planner.de/agb'),
                       ),
                     ],
                   ),
                 ),
-                const SizedBox(height: 32),
+
+                const SizedBox(height: 16),
                 const Text(
                   "IMPRESSUM",
                   style: TextStyle(
@@ -144,10 +168,10 @@ class Impressum extends StatelessWidget {
                 ),
                 const SizedBox(height: 8),
                 const Text(
-                  "Als Diensteanbieter sind wir gemäß § 7 Abs. 1 TMG für "
+                  "Als Dienstanbieter sind wir gemäß § 7 Abs. 1 TMG für "
                   "eigene Inhalte auf diesen Seiten nach den allgemeinen "
                   "Gesetzen verantwortlich. Nach §§ 8 bis 10 TMG sind wir "
-                  "als Diensteanbieter jedoch nicht verpflichtet, "
+                  "als Dienstanbieter jedoch nicht verpflichtet, "
                   "übermittelte oder gespeicherte fremde Informationen zu "
                   "überwachen oder nach Umständen zu forschen, die auf eine "
                   "rechtswidrige Tätigkeit hinweisen.\n\n"

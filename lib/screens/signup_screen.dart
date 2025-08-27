@@ -292,7 +292,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       ],
                     ),
 
-                    const SizedBox(height: 12),
+                    const SizedBox(height: 16),
 
                     Center(
                       child: RichText(
@@ -300,14 +300,14 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         text: TextSpan(
                           text: 'Mit der Nutzung akzeptieren Sie ',
                           style: TextStyle(
-                            fontSize: 14,
+                            fontSize: 12,
                           ),
                           children: [
                             TextSpan(
                               text: 'Datenschutz',
                               style: TextStyle(
                                 fontWeight: FontWeight.w600,
-                                fontSize: 16,
+                                fontSize: 13,
                               ),
                               recognizer: TapGestureRecognizer()
                                 ..onTap = () async {
@@ -323,14 +323,14 @@ class _SignUpScreenState extends State<SignUpScreen> {
                             TextSpan(
                               text: ' & ',
                               style: TextStyle(
-                                fontSize: 14,
+                                fontSize: 12,
                               ),
                             ),
                             TextSpan(
                               text: 'AGB',
                               style: TextStyle(
                                 fontWeight: FontWeight.w600,
-                                fontSize: 16,
+                                fontSize: 13,
                               ),
                               recognizer: TapGestureRecognizer()
                                 ..onTap = () async {

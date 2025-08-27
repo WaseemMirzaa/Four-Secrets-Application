@@ -162,7 +162,6 @@ class _AboutMeState extends State<AboutMe> {
                                         style: const TextStyle(
                                             fontWeight: FontWeight.bold),
                                       ),
-                                      TextSpan(text: ' in München.'),
                                     ],
                                   ),
                                 )),
@@ -239,9 +238,9 @@ class _AboutMeState extends State<AboutMe> {
                     ),
                     Positioned(
                       top:
-                          520, // Passe diesen Wert ggf. an, damit das Bild direkt unter dem Text erscheint
+                          540, // Passe diesen Wert ggf. an, damit das Bild direkt unter dem Text erscheint
+
                       left: 20,
-                      right: 20,
                       child: Image.asset(
                         'assets/images/about_me/about_me_main.jpg',
                         height: 350,
@@ -251,10 +250,10 @@ class _AboutMeState extends State<AboutMe> {
                 ),
               ),
               SizedBox(
-                height: 15,
+                height: 40,
               ),
               Container(
-                width: 320,
+                width: 350,
                 margin: EdgeInsets.only(left: 20),
                 color: Colors.white,
                 child: Padding(

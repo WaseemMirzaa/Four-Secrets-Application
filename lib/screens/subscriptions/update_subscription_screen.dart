@@ -81,6 +81,7 @@ class _UpdateSubscriptionScreenState extends State<UpdateSubscriptionScreen> {
     );
   }
 
+// Build plan toggle buttons
   Widget _buildPlanToggle() {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 4),
@@ -100,31 +101,21 @@ class _UpdateSubscriptionScreenState extends State<UpdateSubscriptionScreen> {
 
   Widget _buildToggleButton(String text, String value) {
     final isSelected = _selectedPlan == value;
-    final isCurrentPlan = widget.currentPlan != null &&
-        ((value == 'monthly' &&
-                widget.currentPlan!.toLowerCase().contains('month')) ||
-            (value == 'yearly' &&
-                widget.currentPlan!.toLowerCase().contains('year')));
 
     return Expanded(
       child: GestureDetector(
-        onTap:
-            isCurrentPlan ? null : () => setState(() => _selectedPlan = value),
+        onTap: () => setState(() => _selectedPlan = value),
         child: Container(
           padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
           decoration: BoxDecoration(
-            color: isCurrentPlan
-                ? Colors.grey[300]
-                : (isSelected ? Colors.white : Colors.transparent),
+            color: isSelected ? Colors.white : Colors.transparent,
             borderRadius: BorderRadius.circular(26),
           ),
           child: Text(
             text,
             textAlign: TextAlign.center,
             style: TextStyle(
-              color: isCurrentPlan
-                  ? Colors.grey[600]
-                  : (isSelected ? const Color(0xFF6B456A) : Colors.white),
+              color: isSelected ? const Color(0xFF6B456A) : Colors.white,
               fontWeight: FontWeight.w600,
               fontSize: 14,
             ),
@@ -166,7 +157,7 @@ class _UpdateSubscriptionScreenState extends State<UpdateSubscriptionScreen> {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
               decoration: BoxDecoration(
-                color: Colors.green,
+                color: const Color(0xFF6B456A),
                 borderRadius: BorderRadius.circular(12),
               ),
               child: const Text(

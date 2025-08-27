@@ -231,12 +231,12 @@ class _SubscriptionManagementScreenState
                     Container(
                       padding: const EdgeInsets.all(6),
                       decoration: BoxDecoration(
-                        color: Colors.green.withOpacity(0.2),
+                        color: const Color(0xFF6B456A),
                         shape: BoxShape.circle,
                       ),
                       child: const Icon(
                         Icons.check_circle_rounded,
-                        color: Colors.green,
+                        color: Colors.white,
                         size: 24,
                       ),
                     ),
@@ -352,14 +352,12 @@ class _SubscriptionManagementScreenState
                   width: double.infinity,
                   child: ElevatedButton(
                     onPressed: () {
-                      Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (_) => UpdateSubscriptionScreen(
-                            currentPlan: _userData?.subscriptionPlan,
-                          ),
-                        ),
+                      Navigator.of(context).pushNamed(
+                        RouteManager.updateSubscriptionScreen,
+                        arguments: {
+                          'currentPlan': _userData?.subscriptionPlan,
+                        },
                       );
-                      print(_userData?.subscriptionPlan);
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.white,
@@ -440,12 +438,9 @@ class GlassCard extends StatelessWidget {
       ),
       child: ClipRRect(
         borderRadius: BorderRadius.circular(16),
-        child: BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-          child: Padding(
-            padding: padding ?? const EdgeInsets.all(20),
-            child: child,
-          ),
+        child: Padding(
+          padding: padding ?? const EdgeInsets.all(20),
+          child: child,
         ),
       ),
     );

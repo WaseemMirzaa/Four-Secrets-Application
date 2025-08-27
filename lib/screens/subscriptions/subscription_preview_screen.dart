@@ -14,17 +14,17 @@ class SubscriptionPreviewScreen extends StatefulWidget {
 }
 
 class _SubscriptionPreviewScreenState extends State<SubscriptionPreviewScreen> {
-  final AuthService _authService = AuthService();
-
   final List<String> _previewImages = [
     'assets/preview/1.jpg',
     'assets/preview/2.jpg',
     'assets/preview/3.png',
     'assets/preview/4.jpg',
-    'assets/preview/5.jpg',
+    'assets/preview/6.jpg',
+    'assets/preview/7.jpg',
+    'assets/preview/8.jpg',
+    'assets/preview/9.jpg',
+    'assets/preview/10.jpg',
   ];
-
-  int _currentIndex = 0;
 
   @override
   Widget build(BuildContext context) {
@@ -48,10 +48,7 @@ class _SubscriptionPreviewScreenState extends State<SubscriptionPreviewScreen> {
                   height: double.infinity,
                   viewportFraction: 1.0,
                   autoPlay: true,
-                  autoPlayInterval: const Duration(seconds: 4),
-                  onPageChanged: (index, _) {
-                    setState(() => _currentIndex = index);
-                  },
+                  autoPlayInterval: const Duration(seconds: 2),
                 ),
               ),
 
@@ -140,14 +137,14 @@ class _SubscriptionPreviewScreenState extends State<SubscriptionPreviewScreen> {
                             style: TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.bold,
-                              color: Color.fromARGB(255, 107, 69, 106),
+                              color: Colors.black,
                             ),
                           ),
                           SizedBox(width: 8),
                           Icon(
                             Icons.arrow_forward_ios,
                             size: 18,
-                            color: Color.fromARGB(255, 107, 69, 106),
+                            color: Colors.black,
                           ),
                         ],
                       ),
@@ -163,7 +160,7 @@ class _SubscriptionPreviewScreenState extends State<SubscriptionPreviewScreen> {
                       );
                     },
                     child: const Text(
-                      'vorerst überspringen',
+                      'überspringen',
                       style: TextStyle(
                         color: Colors.white,
                         fontSize: 16,

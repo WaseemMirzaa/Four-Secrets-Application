@@ -184,10 +184,6 @@ class _SignInScreenState extends State<SignInScreen> {
           (route) => false,
         );
       } else {
-        // User doesn't have active subscription - navigate to subscription screen
-        SnackBarHelper.showInfoSnackBar(
-            context, 'Bitte wählen Sie ein Abonnement, um fortzufahren');
-
         Navigator.of(context).pushNamedAndRemoveUntil(
           RouteManager.subscriptionPreviewScreen,
           (route) => false,
@@ -417,7 +413,7 @@ class _SignInScreenState extends State<SignInScreen> {
                         ),
                       ],
                     ),
-                    const SizedBox(height: 12),
+                    const SizedBox(height: 16),
 
                     Center(
                       child: RichText(
@@ -425,14 +421,14 @@ class _SignInScreenState extends State<SignInScreen> {
                         text: TextSpan(
                           text: 'Mit der Nutzung akzeptieren Sie ',
                           style: TextStyle(
-                            fontSize: 14,
+                            fontSize: 12,
                           ),
                           children: [
                             TextSpan(
                               text: 'Datenschutz',
                               style: TextStyle(
                                 fontWeight: FontWeight.w600,
-                                fontSize: 16,
+                                fontSize: 13,
                               ),
                               recognizer: TapGestureRecognizer()
                                 ..onTap = () async {
@@ -448,14 +444,14 @@ class _SignInScreenState extends State<SignInScreen> {
                             TextSpan(
                               text: ' & ',
                               style: TextStyle(
-                                fontSize: 14,
+                                fontSize: 12,
                               ),
                             ),
                             TextSpan(
                               text: 'AGB',
                               style: TextStyle(
                                 fontWeight: FontWeight.w600,
-                                fontSize: 16,
+                                fontSize: 13,
                               ),
                               recognizer: TapGestureRecognizer()
                                 ..onTap = () async {

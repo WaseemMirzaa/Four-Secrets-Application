@@ -214,8 +214,11 @@ class RouteManager {
         );
 
       case updateSubscriptionScreen:
+        final args = settings.arguments as Map<String, dynamic>?;
         return PageTransition(
-          child: const UpdateSubscriptionScreen(),
+          child: UpdateSubscriptionScreen(
+            currentPlan: args?['currentPlan'],
+          ),
           settings: settings,
           duration: const Duration(milliseconds: 250),
           type: PageTransitionType.rightToLeft,
