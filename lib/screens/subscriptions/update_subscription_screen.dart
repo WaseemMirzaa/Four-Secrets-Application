@@ -1,5 +1,3 @@
-import 'dart:ui';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:four_secrets_wedding_app/services/subscription/revenuecat_subscription_service.dart';
@@ -126,7 +124,7 @@ class _UpdateSubscriptionScreenState extends State<UpdateSubscriptionScreen> {
   }
 
   Widget _buildSubscriptionCard(Package package) {
-    final price = package.storeProduct.priceString;
+    final price = _selectedPlan == 'yearly' ? '€99.00' : '€11.99';
     final isCurrentPlan = widget.currentPlan != null &&
         package.identifier
             .toLowerCase()
@@ -199,6 +197,16 @@ class _UpdateSubscriptionScreenState extends State<UpdateSubscriptionScreen> {
               ),
             ],
           ),
+          const SizedBox(height: 8),
+          if (isYearly)
+            Text(
+              'Spare €44,88 (30%) im Vergleich zum Monatsabo',
+              style: TextStyle(
+                fontSize: 11,
+                color: const Color(0xFF6B456A),
+                fontWeight: FontWeight.w600,
+              ),
+            ),
           const SizedBox(height: 12),
           const Divider(color: Colors.grey, height: 1),
           const SizedBox(height: 12),
@@ -266,7 +274,7 @@ class _UpdateSubscriptionScreenState extends State<UpdateSubscriptionScreen> {
 
   String _getPlanLabel(Package package) {
     if (package.storeProduct.identifier.contains("monthly"))
-      return "Premium monatlich";
+      return "Premium Monatlich";
     if (package.storeProduct.identifier.contains("yearly"))
       return "Premium Jährlich";
     return package.storeProduct.title;

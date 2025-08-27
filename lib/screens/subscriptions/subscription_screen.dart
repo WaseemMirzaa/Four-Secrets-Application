@@ -86,7 +86,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
     setState(() => _isLoading = true);
 
     try {
-      final customerInfo = await _revenueCatService.restorePurchases();
+      await _revenueCatService.restorePurchases();
 
       final hasActiveSub = await _revenueCatService.hasActiveSubscription();
 
@@ -119,7 +119,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
 
   String _getPlanLabel(Package package) {
     if (package.storeProduct.identifier.contains("monthly"))
-      return "Premium monatlich";
+      return "Premium Monatlich";
     if (package.storeProduct.identifier.contains("yearly"))
       return "Premium Jährlich";
     return package.storeProduct.title;
@@ -185,7 +185,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
 
   // Build subscription card
   Widget _buildSubscriptionCard(Package package) {
-    final price = package.storeProduct.priceString;
+    final price = _selectedPlan == 'yearly' ? '€99.00' : '€11.99';
 
     final freeTrialInfo = _getFreeTrialInfo(package);
     final isYearly = _selectedPlan == 'yearly';
@@ -246,8 +246,22 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
                   color: Colors.grey[600],
                 ),
               ),
+              SizedBox(
+                width: 12,
+              ),
             ],
           ),
+
+          const SizedBox(height: 8),
+          if (isYearly)
+            Text(
+              'Spare €44,88 (30%) im Vergleich zum Monatsabo',
+              style: TextStyle(
+                fontSize: 11,
+                color: const Color(0xFF6B456A),
+                fontWeight: FontWeight.w600,
+              ),
+            ),
 
           const SizedBox(height: 12),
 
@@ -304,6 +318,16 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
                       ),
                     )
                   : const Text('JETZT KAUFEN'),
+            ),
+          ),
+          const SizedBox(height: 8),
+
+          Text(
+            'inkl. MwSt., länderabhängig',
+            style: TextStyle(
+              fontSize: 12,
+              color: Colors.grey[600],
+              fontStyle: FontStyle.italic,
             ),
           ),
         ],
@@ -456,7 +480,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
 
                   // Title
                   const Text(
-                    '4secrets Wedding Planner',
+                    '4secrets - Wedding Planner',
                     style: TextStyle(
                       fontSize: 28,
                       fontWeight: FontWeight.bold,

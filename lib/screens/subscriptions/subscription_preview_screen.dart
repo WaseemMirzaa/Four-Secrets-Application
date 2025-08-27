@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 
 import '../../routes/routes.dart';
-import '../../services/auth_service.dart';
-import '../../utils/snackbar_helper.dart';
 
 class SubscriptionPreviewScreen extends StatefulWidget {
   const SubscriptionPreviewScreen({super.key});
@@ -133,7 +131,7 @@ class _SubscriptionPreviewScreenState extends State<SubscriptionPreviewScreen> {
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           Text(
-                            "Jetzt premium freischalten",
+                            "Jetzt Premium Freischalten",
                             style: TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.bold,

@@ -174,7 +174,7 @@ class MenueState extends State<Menue> {
     // Define which menu items require active subscription
     const premiumFeatures = [
       "Münchner Geheimtipp",
-      //"Budget",
+      "Budget",
       "Checkliste",
       "Gästeliste",
       "Tischverwaltung",

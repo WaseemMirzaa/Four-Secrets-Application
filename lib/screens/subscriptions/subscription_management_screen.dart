@@ -1,10 +1,6 @@
-import 'dart:ui';
-
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:four_secrets_wedding_app/menue.dart';
 import 'package:four_secrets_wedding_app/routes/routes.dart';
-import 'package:four_secrets_wedding_app/screens/subscriptions/update_subscription_screen.dart';
 import 'package:four_secrets_wedding_app/services/auth_service.dart';
 import 'package:four_secrets_wedding_app/utils/snackbar_helper.dart';
 import 'package:intl/intl.dart';
