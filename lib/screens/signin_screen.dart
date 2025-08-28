@@ -296,6 +296,7 @@ class _SignInScreenState extends State<SignInScreen> {
                       },
                     ),
                     const SizedBox(height: 16),
+
                     AuthTextField(
                       label: AppConstants.passwordLabel,
                       controller: _passwordController,

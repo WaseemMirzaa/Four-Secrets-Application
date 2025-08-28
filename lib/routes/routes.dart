@@ -493,11 +493,14 @@ class RouteManager {
 
       case editProfilePage:
         final args = settings.arguments as Map<String, dynamic>;
-        return MaterialPageRoute(
-          builder: (_) => EditProfilePage(
+        return PageTransition(
+          child: EditProfilePage(
             currentName: args['currentName'],
             currentProfilePicUrl: args['currentProfilePicUrl'],
           ),
+          settings: settings,
+          duration: const Duration(milliseconds: 250),
+          type: PageTransitionType.rightToLeft,
         );
 
       case tablesManagementPage:

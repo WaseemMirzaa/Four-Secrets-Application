@@ -173,19 +173,19 @@ class MenueState extends State<Menue> {
   Future<void> _handleNavigation(String itemName) async {
     // Define which menu items require active subscription
     const premiumFeatures = [
-      "Münchner Geheimtipp",
-      "Budget",
-      "Checkliste",
-      "Gästeliste",
-      "Tischverwaltung",
-      "Showroom",
-      "KI-Assistent",
-      "Mitgestalter",
-      "Hochzeitskit",
-      "Inspirationen",
-      "Tagesablauf",
-      "Abonnement",
-      "Eigene Dienstleister"
+      // "Münchner Geheimtipp",
+      // "Budget",
+      // "Checkliste",
+      // "Gästeliste",
+      // "Tischverwaltung",
+      // "Showroom",
+      // "KI-Assistent",
+      // "Mitgestalter",
+      // "Hochzeitskit",
+      // "Inspirationen",
+      // "Tagesablauf",
+      // "Abonnement",
+      // "Eigene Dienstleister"
     ];
 
     final isPremiumFeature = premiumFeatures.contains(itemName);
@@ -244,14 +244,39 @@ class MenueState extends State<Menue> {
     }
   }
 
-  // Optimized navigation method to eliminate Timer delays
+// Optimized navigation method to eliminate Timer delays
   void _navigateTo(String routeName) {
     if (!mounted) return;
+    // Close the drawer first
+    Navigator.of(context).pop();
+    // Then navigate to the new screen
     Navigator.of(context).pushNamed(routeName);
+  }
+
+  Future<void> _navigateToEditProfile() async {
+    // Close the drawer first
+    Navigator.of(context).pop();
+
+    final result = await Navigator.pushNamed(
+      context,
+      RouteManager.editProfilePage,
+      arguments: {
+        'currentName': _userName,
+        'currentProfilePicUrl': _profilePictureUrl,
+      },
+    );
+
+    if (result == true) {
+      // Reload user data after successful update
+      await _loadUserData();
+    }
   }
 
   Future<void> _handleLogout(BuildContext context) async {
     try {
+      // Close the drawer first
+      Navigator.of(context).pop();
+
       await _authService.signOut();
       MenuService().selectedItem = null;
       if (mounted) {
@@ -265,22 +290,6 @@ class MenueState extends State<Menue> {
         SnackBarHelper.showErrorSnackBar(
             context, 'Logout failed: ${e.toString()}');
       }
-    }
-  }
-
-  Future<void> _navigateToEditProfile() async {
-    final result = await Navigator.pushNamed(
-      context,
-      RouteManager.editProfilePage,
-      arguments: {
-        'currentName': _userName,
-        'currentProfilePicUrl': _profilePictureUrl,
-      },
-    );
-
-    if (result == true) {
-      // Reload user data after successful update
-      await _loadUserData();
     }
   }
 
