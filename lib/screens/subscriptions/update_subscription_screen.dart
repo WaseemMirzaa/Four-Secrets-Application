@@ -274,9 +274,9 @@ class _UpdateSubscriptionScreenState extends State<UpdateSubscriptionScreen> {
 
   String _getPlanLabel(Package package) {
     if (package.storeProduct.identifier.contains("monthly"))
-      return "Premium Monatlich";
+      return "Premium monatlich";
     if (package.storeProduct.identifier.contains("yearly"))
-      return "Premium Jährlich";
+      return "Premium jährlich";
     return package.storeProduct.title;
   }
 

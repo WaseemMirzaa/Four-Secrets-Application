@@ -131,7 +131,7 @@ class _SubscriptionPreviewScreenState extends State<SubscriptionPreviewScreen> {
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           Text(
-                            "Jetzt Premium Freischalten",
+                            "Jetzt Premium freischalten",
                             style: TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.bold,
