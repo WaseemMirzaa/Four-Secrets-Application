@@ -97,15 +97,15 @@ class _AboutMeState extends State<AboutMe> {
                           children: [
                             // Image
                             Container(
-                              width: isSmallScreen ? 100 : 120,
-                              height: isSmallScreen ? 130 : 158,
+                              width: isSmallScreen ? 110 : 130,
+                              height: isSmallScreen ? 160 : 180,
                               child: Image.asset(
                                 'assets/images/about_me/about_me_header.jpg',
                                 fit: BoxFit.cover,
                               ),
                             ),
 
-                            SizedBox(width: 20),
+                            SizedBox(width: 10),
 
                             // Text content next to image
                             Expanded(
@@ -258,7 +258,6 @@ class _AboutMeState extends State<AboutMe> {
                           child: Image.asset(
                             'assets/images/about_me/about_me_main.jpg',
                             width: double.infinity,
-                            height: isSmallScreen ? 250 : 350,
                             fit: BoxFit.cover,
                           ),
                         ),
