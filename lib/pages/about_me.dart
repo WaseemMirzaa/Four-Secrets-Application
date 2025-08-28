@@ -69,7 +69,7 @@ class _AboutMeState extends State<AboutMe> {
                   // Header section with gradient
                   Container(
                     width: double.infinity,
-                    height: isSmallScreen ? 80 : 100,
+                    height: isSmallScreen ? 60 : 100,
                     decoration: const BoxDecoration(
                       gradient: LinearGradient(
                         begin: Alignment.centerLeft,

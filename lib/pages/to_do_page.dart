@@ -575,7 +575,7 @@ class _ToDoPageState extends State<ToDoPage> {
                                                           currentlyInvitingEmail =
                                                               null;
                                                           errorMessage =
-                                                              "Fehler beim Senden der Einladung: $e";
+                                                              "Fehler beim Senden der Einladung";
                                                         });
                                                         print(
                                                             '[INVITE_LOG] ${DateTime.now().millisecondsSinceEpoch}: Error setState completed');
@@ -1241,6 +1241,9 @@ class _ToDoPageState extends State<ToDoPage> {
                                     fontWeight: FontWeight.w500,
                                     text:
                                         "Noch Keine Punkte hinzugefügt. Tippe auf das + Symbol unten rechts.")),
+                          ),
+                          SizedBox(
+                            height: 8,
                           ),
                           FourSecretsDivider(),
                         ],
