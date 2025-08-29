@@ -492,7 +492,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
                   const SizedBox(height: 8),
 
                   const Text(
-                    'Vervollkommnen Sie Ihre Hochzeit mit unserer Premium-App',
+                    'Planen Sie Ihre Hochzeit mit unserer Premium-App',
                     style: TextStyle(
                       fontSize: 16,
                       color: Colors.white70,
