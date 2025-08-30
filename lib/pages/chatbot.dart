@@ -133,8 +133,10 @@ class _ChatbotState extends State<Chatbot> with TickerProviderStateMixin {
 
       print('✅ Chat erfolgreich initialisiert');
 
-      // Willkommensnachricht hinzufügen
-      _sessionManager.addWelcomeMessage();
+      // Nur Willkommensnachricht hinzufügen, wenn keine Nachrichten vorhanden sind
+      if (_sessionManager.messages.isEmpty) {
+        _sessionManager.addWelcomeMessage();
+      }
 
       // Animation starten
       WidgetsBinding.instance.addPostFrameCallback((_) {

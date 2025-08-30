@@ -25,7 +25,6 @@ class ShowroomEvent extends StatelessWidget {
       ? ShowroomEventData.map["videoRatio"]!
       : "";
 
-
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -54,7 +53,7 @@ class ShowroomEvent extends StatelessWidget {
                   Container(
                     width: MediaQuery.of(context).size.width,
                     child: Image.asset(
-                      'assets/images/showroom_event/showroom_event_1.png',
+                      'assets/images/showroom_event/showroom_event_1.jpg',
                       fit: BoxFit.cover,
                     ),
                   ),
@@ -109,8 +108,8 @@ class ShowroomEvent extends StatelessWidget {
                     images: images,
                     height: 480,
 
-                          useImageDimensions: true,
-                          widthRatio: 0.67, // 67% of screen width
+                    useImageDimensions: true,
+                    widthRatio: 0.67, // 67% of screen width
                   ),
                   SizedBox(
                     height: 15,

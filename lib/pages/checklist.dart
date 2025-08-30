@@ -2,6 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:four_secrets_wedding_app/config/theme/app_theme.dart';
 import 'package:hive/hive.dart';
 import 'package:four_secrets_wedding_app/model/dialog_box.dart';
 import 'package:four_secrets_wedding_app/model/to_do_data_base.dart';
@@ -21,7 +22,6 @@ class _ChecklistState extends State<Checklist> with TickerProviderStateMixin {
   // reference the hive box
   final Box _myBoxToDo = Hive.box('myboxToDo');
   final FirebaseAuth _auth = FirebaseAuth.instance;
-
 
   ToDoDataBase db = ToDoDataBase();
   bool _isLoading = false;
@@ -323,6 +323,7 @@ class _ChecklistState extends State<Checklist> with TickerProviderStateMixin {
             return DialogBox(
               controller: _controller,
               isLoading: _isLoading,
+              
               onSave: () async {
                 if (_controller.text.isEmpty) {
                   Navigator.of(context).pop();
@@ -1135,6 +1136,11 @@ class _ChecklistState extends State<Checklist> with TickerProviderStateMixin {
             // Hochzeitsdatum Section
             _buildWeddingDateSection(),
 
+            _buildScrollHint(),
+            SizedBox(
+              height: 12,
+            ),
+
             // Kategorie Sections mit Drag-and-Drop
             ..._getSortedCategoryIds().map((categoryId) {
               return _buildCategorySection(categoryId);
@@ -1147,4 +1153,30 @@ class _ChecklistState extends State<Checklist> with TickerProviderStateMixin {
       ),
     );
   }
+}
+
+// Add this widget at the top of your ListView children
+Widget _buildScrollHint() {
+  return Container(
+    padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 25),
+    color: AppTheme.primaryColor,
+    child: Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Icon(Icons.touch_app, size: 16, color: Colors.white),
+        SizedBox(width: 8),
+        Flexible(
+          child: Text(
+            'Tipp: Lang drücken zum Verschieben, am Rand scrollen',
+            style: TextStyle(
+              fontSize: 12,
+              color: Colors.white,
+              fontStyle: FontStyle.italic,
+            ),
+            textAlign: TextAlign.center,
+          ),
+        ),
+      ],
+    ),
+  );
 }

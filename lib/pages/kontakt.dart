@@ -61,7 +61,7 @@ class Kontakt extends StatelessWidget {
                                         modeString: "appBrowser");
                                   }
                                 },
-                              text: "@4secrets_wedding_planner",
+                              text: "@4secrets_wedding",
                               style: TextStyle(
                                 fontSize: 16,
                                 color: Colors.black,

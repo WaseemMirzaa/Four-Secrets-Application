@@ -9,6 +9,7 @@ import 'package:four_secrets_wedding_app/models/drawer_model.dart';
 import 'package:four_secrets_wedding_app/routes/routes.dart';
 import 'package:four_secrets_wedding_app/services/auth_service.dart';
 import 'package:four_secrets_wedding_app/services/push_notification_service.dart';
+import 'package:four_secrets_wedding_app/services/subscription/subscription_manager.dart';
 import 'package:four_secrets_wedding_app/services/todo_unread_status_service.dart';
 import 'package:four_secrets_wedding_app/widgets/custom_text_widget.dart';
 import 'package:four_secrets_wedding_app/widgets/spacer_widget.dart';
@@ -90,6 +91,10 @@ class MenueState extends State<Menue> {
       // Also try to clear any invalid notifications
       _clearInvalidNotifications();
     });
+    // Refresh subscription status when menu is opened
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      SubscriptionManager().checkSubscriptionStatus();
+    });
   }
 
   @override
@@ -164,14 +169,114 @@ class MenueState extends State<Menue> {
     }
   }
 
-  // Optimized navigation method to eliminate Timer delays
+  // Add this method to your MenueState class
+  Future<void> _handleNavigation(String itemName) async {
+    // Define which menu items require active subscription
+    const premiumFeatures = [
+      // "Münchner Geheimtipp",
+      // "Budget",
+      // "Checkliste",
+      // "Gästeliste",
+      // "Tischverwaltung",
+      // "Showroom",
+      // "KI-Assistent",
+      // "Mitgestalter",
+      // "Hochzeitskit",
+      // "Inspirationen",
+      // "Tagesablauf",
+      // "Abonnement",
+      // "Eigene Dienstleister"
+    ];
+
+    final isPremiumFeature = premiumFeatures.contains(itemName);
+    final hasSubscription = SubscriptionManager().hasActiveSubscription;
+
+    if (isPremiumFeature && !hasSubscription) {
+      Navigator.of(context).pushNamed(
+        RouteManager.subscriptionPreviewScreen,
+      );
+    } else {
+      // Proceed with normal navigation
+      _select(itemName);
+      _navigateTo(_getRouteForItem(itemName));
+    }
+  }
+
+  // Add this helper method to get route for menu item
+  String _getRouteForItem(String itemName) {
+    switch (itemName) {
+      case "Home":
+        return RouteManager.homePage;
+      case "Münchner Geheimtipp":
+        return RouteManager.muenchnerGeheimtippPage;
+      case "Budget":
+        return RouteManager.budgetPage;
+      case "Checkliste":
+        return RouteManager.checklistPage;
+      case "Gästeliste":
+        return RouteManager.gaestelistPage;
+      case "Tischverwaltung":
+        return RouteManager.tablesManagementPage;
+      case "Showroom":
+        return RouteManager.showroomEventPage;
+      case "Über mich":
+        return RouteManager.aboutMePage;
+      case "Kontakt":
+        return RouteManager.kontakt;
+      case "KI-Assistent":
+        return RouteManager.chatbotPage;
+      case "Mitgestalter":
+        return RouteManager.collaborationPage;
+      case "Impressum":
+        return RouteManager.impressum;
+      case "Hochzeitskit":
+        return RouteManager.toDoPage;
+      case "Inspirationen":
+        return RouteManager.inspirationFolderPage;
+      case "Tagesablauf":
+        return RouteManager.weddingSchedulePage;
+      case "Abonnement":
+        return RouteManager.subscriptionManagementScreen;
+      case "Eigene Dienstleister":
+        return RouteManager.weddingSchedulePage1;
+      default:
+        return RouteManager.homePage;
+    }
+  }
+
+// Optimized navigation method to eliminate Timer delays
   void _navigateTo(String routeName) {
     if (!mounted) return;
+    // Close the drawer first
+    Navigator.of(context).pop();
+    // Then navigate to the new screen
     Navigator.of(context).pushNamed(routeName);
+  }
+
+  Future<void> _navigateToEditProfile() async {
+    // Close the drawer first
+    Navigator.of(context).pop();
+
+    final result = await Navigator.pushNamed(
+      context,
+      RouteManager.editProfilePage,
+      arguments: {
+        'currentName': _userName,
+        'currentProfilePicUrl': _profilePictureUrl,
+      },
+    );
+
+    if (result == true) {
+      // Reload user data after successful update
+      await _loadUserData();
+    }
   }
 
   Future<void> _handleLogout(BuildContext context) async {
     try {
+      // Close the drawer first
+      Navigator.of(context).pop();
+
       await _authService.signOut();
       MenuService().selectedItem = null;
       if (mounted) {
@@ -185,22 +290,6 @@ class MenueState extends State<Menue> {
         SnackBarHelper.showErrorSnackBar(
             context, 'Logout failed: ${e.toString()}');
       }
-    }
-  }
-
-  Future<void> _navigateToEditProfile() async {
-    final result = await Navigator.pushNamed(
-      context,
-      RouteManager.editProfilePage,
-      arguments: {
-        'currentName': _userName,
-        'currentProfilePicUrl': _profilePictureUrl,
-      },
-    );
-
-    if (result == true) {
-      // Reload user data after successful update
-      await _loadUserData();
     }
   }
 
@@ -424,62 +513,7 @@ class MenueState extends State<Menue> {
                           color: Colors.black,
                         ),
                         onTap: () {
-                          _select(e.name);
-
-                          // Optimized navigation without Timer delays
-                          switch (e.name) {
-                            case "Home":
-                              _navigateTo(RouteManager.homePage);
-                              break;
-                            case "Münchner Geheimtipp":
-                              _navigateTo(RouteManager.muenchnerGeheimtippPage);
-                              break;
-                            case "Budget":
-                              _navigateTo(RouteManager.budgetPage);
-                              break;
-
-                            case "Checkliste":
-                              _navigateTo(RouteManager.checklistPage);
-                              break;
-                            case "Gästeliste":
-                              _navigateTo(RouteManager.gaestelistPage);
-                              break;
-                            case "Tischverwaltung":
-                              _navigateTo(RouteManager.tablesManagementPage);
-                              break;
-                            case "Showroom":
-                              _navigateTo(RouteManager.showroomEventPage);
-                              break;
-                            case "Über mich":
-                              _navigateTo(RouteManager.aboutMePage);
-                              break;
-                            case "Kontakt":
-                              _navigateTo(RouteManager.kontakt);
-                              break;
-                            case "KI-Assistent":
-                              _navigateTo(RouteManager.chatbotPage);
-                              break;
-                            case "Mitgestalter":
-                              _navigateTo(RouteManager.collaborationPage);
-                              break;
-                            case "Impressum":
-                              _navigateTo(RouteManager.impressum);
-                              break;
-                            case "Hochzeitskit":
-                              // Don't mark notifications as read automatically
-                              // Only mark as read when user actually clicks the collaboration icon
-                              _navigateTo(RouteManager.toDoPage);
-                              break;
-                            case "Inspirationen":
-                              _navigateTo(RouteManager.inspirationFolderPage);
-                              break;
-                            case "Tagesablauf":
-                              _navigateTo(RouteManager.weddingSchedulePage);
-                              break;
-                            case "Eigene Dienstleister":
-                              _navigateTo(RouteManager.weddingSchedulePage1);
-                              break;
-                          }
+                          _handleNavigation(e.name);
                         },
                       ),
                       // Show red dot for 'Hochzeitskit' and 'Mitgestalter' based on todoUnreadStatus

@@ -7,7 +7,7 @@ class Assets {
   static const String aboutMeAboutMeMain =
       'assets/images/about_me/about_me_main.jpg';
   static const String bachelorettePartyBacheloretteParty1 =
-      'assets/images/bachelorette_party/bachelorette_party_1.png';
+      'assets/images/bachelorette_party/bachelorette_party_1.jpg';
   static const String bachelorettePartyBacheloretteParty2 =
       'assets/images/bachelorette_party/bachelorette_party_2.jpg';
   static const String bachelorettePartyBacheloretteParty3 =
@@ -42,11 +42,11 @@ class Assets {
       'assets/images/background/fotografie_back.jpg';
   static const String backgroundHairstylingMakeupBack =
       'assets/images/background/hairstyling_makeup_back.jpg';
-  static const String backgroundHomeBg = 'assets/images/background/home_bg.png';
+  static const String backgroundHomeBg = 'assets/images/background/home_bg.jpg';
   static const String backgroundInspiration =
-      'assets/images/background/inspiration.png';
+      'assets/images/background/inspiration.jpg';
   static const String backgroundInspirationbg =
-      'assets/images/background/inspirationbg.png';
+      'assets/images/background/inspirationbg.jpg';
   static const String backgroundKosmetischeAkupunkturBack =
       'assets/images/background/kosmetische_akupunktur_back.jpg';
   static const String backgroundLocationBack =
@@ -74,8 +74,8 @@ class Assets {
   static const String backgroundWeddingDesignBack =
       'assets/images/background/wedding_design_back.jpg';
   static const String backgroundWeddingSche =
-      'assets/images/background/wedding_sche.png';
-  static const String budgetBudget = 'assets/images/budget/budget.png';
+      'assets/images/background/wedding_sche.jpg';
+  static const String budgetBudget = 'assets/images/budget/budget.jpg';
   static const String cardAlexeyTestovCard =
       'assets/images/card/alexey_testov_card.jpg';
   static const String cardAlteGaertnereiCard =
@@ -252,7 +252,7 @@ class Assets {
   static const String muenchnerGeheimtippsWeddingDesigner =
       'assets/images/muenchner_geheimtipps/Wedding_Designer.jpg';
   static const String showroomEventShowroomEvent1 =
-      'assets/images/showroom_event/showroom_event_1.png';
+      'assets/images/showroom_event/showroom_event_1.jpg';
   static const String showroomEventShowroomEvent2 =
       'assets/images/showroom_event/showroom_event_2.jpg';
   static const String showroomEventShowroomEvent3 =

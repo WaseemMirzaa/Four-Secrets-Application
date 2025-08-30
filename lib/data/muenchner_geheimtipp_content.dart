@@ -14,7 +14,6 @@ class MuenchnerGeheimtippContent {
       'Fotografie',
       'Tanzschule',
       'Kosmetische Akupunktur',
-      'Personal Training',
       'Papeterie',
       'Unterhaltung',
       'Trauringe',

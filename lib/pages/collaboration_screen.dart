@@ -429,21 +429,9 @@ class _CollaborationScreenState extends State<CollaborationScreen>
         backgroundColor: Colors.white,
         drawer: Menue.getInstance(),
         appBar: AppBar(
-          leading: IconButton(
-            icon: Icon(Icons.arrow_back),
-            onPressed: () {
-              Navigator.of(context).pop();
-            },
-          ),
-          automaticallyImplyLeading: true,
-          foregroundColor: Colors.white,
-          backgroundColor: Color.fromARGB(255, 107, 69, 106),
-          title: const CustomTextWidget(
-            text: 'Zusammenarbeit',
-            color: Colors.white,
-            fontSize: 18,
-            fontWeight: FontWeight.normal,
-          ),
+          foregroundColor: Color.fromARGB(255, 255, 255, 255),
+          title: const Text('Zusammenarbeit'),
+          backgroundColor: const Color.fromARGB(255, 107, 69, 106),
           bottom: TabBar(
             indicatorColor: Colors.white,
             onTap: (value) async {

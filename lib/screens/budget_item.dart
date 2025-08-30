@@ -6,14 +6,20 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 // ignore: must_be_immutable
 class BudgetItem extends StatefulWidget {
   final String taskName;
+  final int initialAmount;
+  final bool initialPaidStatus;
   final Function(String)? onChanged;
   final Function(BuildContext)? deleteFunction;
+  final Function(bool)? onPaidStatusChanged;
 
   BudgetItem({
     super.key,
     required this.taskName,
+    required this.initialAmount,
+    required this.initialPaidStatus,
     required this.onChanged,
     required this.deleteFunction,
+    required this.onPaidStatusChanged,
   });
 
   @override
@@ -22,8 +28,17 @@ class BudgetItem extends StatefulWidget {
 
 class _BudgetItemState extends State<BudgetItem> {
   final double padValue = 15;
-  bool _switchOn = false;
+  late bool _switchOn;
   final node1 = FocusNode();
+  final TextEditingController _amountController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    _switchOn = widget.initialPaidStatus;
+    _amountController.text =
+        widget.initialAmount > 0 ? widget.initialAmount.toString() : '';
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -81,18 +96,19 @@ class _BudgetItemState extends State<BudgetItem> {
                           height: 40,
                           width: 110,
                           child: GestureDetector(
-                            onTap: () =>
-                                FocusScope.of(context).requestFocus(node1),
+                            onTap: () => _switchOn
+                                ? null
+                                : FocusScope.of(context).requestFocus(node1),
                             child: TextField(
                               focusNode: node1,
-                              onSubmitted: (value) {
-                                // Hier wird die onChanged-Funktion aufgerufen und der Wert übergeben
+                              controller: _amountController,
+                              onChanged: (value) {
                                 if (widget.onChanged != null) {
                                   widget.onChanged!(value);
                                 }
                               },
                               keyboardType: TextInputType.number,
-                              readOnly: _switchOn == false ? false : true,
+                              readOnly: _switchOn,
                               textAlign: TextAlign.center,
                               textAlignVertical: TextAlignVertical.center,
                               decoration: InputDecoration(
@@ -143,6 +159,9 @@ class _BudgetItemState extends State<BudgetItem> {
                             setState(() {
                               _switchOn = value;
                             });
+                            if (widget.onPaidStatusChanged != null) {
+                              widget.onPaidStatusChanged!(value);
+                            }
                           },
                         ),
                         Padding(

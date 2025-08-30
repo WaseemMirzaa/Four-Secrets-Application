@@ -926,12 +926,16 @@ class _AddWeddingSchedulePage1State extends State<AddWeddingSchedulePage1> {
                 GestureDetector(
                   onTap: () async {
                     var g = await Navigator.pushNamed(
-                        context, RouteManager.weddingCategoryMap, arguments: {
-                      'address': address ?? "",
-                      'lat': lat ?? 0.00,
-                      'long': long ?? 0.00
-                    });
+                      context,
+                      RouteManager.weddingCategoryMap,
+                      arguments: {
+                        'address': address ?? "",
+                        'lat': lat ?? 0.00,
+                        'long': long ?? 0.00,
+                      },
+                    );
 
+                    if (!mounted) return; // ⬅️ safeguard
                     if (g != null) {
                       final map = g as Map<String, dynamic>;
                       setState(() {
@@ -962,13 +966,16 @@ class _AddWeddingSchedulePage1State extends State<AddWeddingSchedulePage1> {
                         IconButton(
                           onPressed: () async {
                             var g = await Navigator.pushNamed(
-                                context, RouteManager.weddingCategoryMap,
-                                arguments: {
-                                  'address': address ?? "",
-                                  'lat': lat ?? 0.00,
-                                  'long': long ?? 0.00
-                                });
+                              context,
+                              RouteManager.weddingCategoryMap,
+                              arguments: {
+                                'address': address ?? "",
+                                'lat': lat ?? 0.00,
+                                'long': long ?? 0.00,
+                              },
+                            );
 
+                            if (!mounted) return; // ⬅️ safeguard
                             if (g != null) {
                               final map = g as Map<String, dynamic>;
                               setState(() {

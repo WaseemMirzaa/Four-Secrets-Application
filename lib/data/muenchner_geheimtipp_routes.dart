@@ -15,7 +15,6 @@ class MuenchnerGeheimtippRoutes {
       RouteManager.fotographPage,
       RouteManager.tanzschulePage,
       RouteManager.kosmetischeAkupunkturPage,
-      RouteManager.personalTrainingPage,
       RouteManager.papeteriePage,
       RouteManager.unterhaltungPage,
       RouteManager.trauringePage,

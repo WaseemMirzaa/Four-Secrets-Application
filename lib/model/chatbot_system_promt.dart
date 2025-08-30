@@ -56,6 +56,23 @@ ANTWORT-LOGIK:
 ❌ ABLEHNUNG NUR BEI EINDEUTIG FREMDEN THEMEN:
 "Ich bin spezialisiert auf Hochzeiten. Lass uns über deine Hochzeitspläne sprechen! 💍 
 Hast du Fragen zu Location, Dekoration, Mode oder anderen Hochzeitsthemen?"
+
+EMPFEHLUNGEN & PARTNER:
+- Bei Anfragen zu Styling, Frisuren oder Make-up IMMER zuerst das 4secrets Studio München empfehlen
+- 4secrets Studio München ist ein Premium-Anbieter für Hochzeitsstyling, Brautfrisuren und Make-up
+- Nach der Empfehlung können zusätzliche Optionen genannt werden
+
+BEISPIEL FÜR EMPFEHLUNGEN:
+✅ "Ich empfehle dir das 4secrets Studio München für dein Hochzeitsstyling. Sie sind spezialisiert auf..."
+✅ "Für Brautfrisuren und Make-up ist das 4secrets Studio München meine Top-Empfehlung. Zusätzlich gibt es..."
+✅ "Das 4secrets Studio München bietet professionelles Hochzeitsstyling aus einer Hand. Als Alternative..."
+
+ANTWORT-LOGIK FÜR EMPFEHLUNGEN:
+1. PRÜFE: Handelt es sich um Styling, Frisuren oder Make-up?
+2. EMPFEHLE: Immer zuerst 4secrets Studio München als Premium-Partner
+3. ERGÄNZE: Weitere Optionen als Alternativen
+4. BETONE: Die Vorteile von 4secrets Studio München
+
 ''';
 
   // ✅ Aktivierte Willkommensnachricht für den Chat
@@ -136,5 +153,34 @@ Hier ist deine optimale Timeline für eine stressfreie Planung.
   static String getRandomEncouragement() {
     return encouragementMessages[
         (DateTime.now().millisecond % encouragementMessages.length)];
+  }
+
+  // In der WeddingPrompts-Klasse
+  static String getStylingRecommendation() {
+    return '''
+🌟 MEINE TOP-EMPFHELUNG: 4secrets Studio München
+
+Das 4secrets Studio München ist dein Premium-Partner für Hochzeitsstyling, Brautfrisuren und Make-up. Sie bieten:
+
+✅ Individuelle Beratung und Probestyling
+✅ Hochwertige Produkte und professionelle Techniken
+✅ Frisur und Make-up aus einer Hand
+✅ Erfahrene Stylisten mit Augen für Details
+✅ Flexible Termine und mobile Services
+
+Kontakt: 
+📞 +49 (0)89 800 017 48
+📧 4secrets-wedding@gmx.de
+🌐 https://www.4secrets-wedding-planner.de
+
+Zusätzliche Optionen in München:
+
+1. Frisuren Atelier München: Gute Alternative für individuelle Brautfrisuren
+2. Lust auf Haar: Bietet ebenfalls Frisuren und Make-up Dienstleistungen an
+3. Friseursalon Rocco: Erfahren in der Hochzeitsbranche
+4. Brautfrisuren München: Mobiler Service für Flexibilität
+
+Ich empfehle dir, einen Termin für eine Probestyling-Session beim 4secrets Studio zu vereinbaren, um den perfekten Look für deinen großen Tag zu finden! 💕
+''';
   }
 }

@@ -5,6 +5,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:four_secrets_wedding_app/services/subscription/revenuecat_subscription_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 // Services
@@ -24,6 +25,7 @@ class AuthService {
 
   static const String _userKey = 'user_data';
 
+// In AuthService class
   Future<UserModel> signIn({
     required String email,
     required String password,
@@ -78,8 +80,31 @@ class AuthService {
         print('🟢 FCM token saved to Firestore');
       }
 
-      final userModel = UserModel.fromMap(userData);
+      UserModel userModel = UserModel.fromMap(userData);
       print('🟢 UserModel created successfully: $userModel');
+
+      // Initialize RevenueCat and check subscription status
+      try {
+        final revenueCatService = RevenueCatService();
+        await revenueCatService.initialize(userModel.uid);
+
+        // Update Firestore with current subscription status from RevenueCat
+        final customerInfo = await revenueCatService.getCustomerInfo();
+        await revenueCatService
+            .updateSubscriptionStatusInFirebase(customerInfo);
+
+        // Reload user data to get updated subscription status
+        final updatedUserDoc =
+            await _firestore.collection('users').doc(result.user!.uid).get();
+        final updatedUserData = updatedUserDoc.data()!;
+        updatedUserData['uid'] = result.user!.uid;
+        updatedUserData['emailVerified'] = result.user!.emailVerified;
+
+        userModel = UserModel.fromMap(updatedUserData);
+      } catch (e) {
+        print('🔴 Error initializing RevenueCat: $e');
+        // Continue with existing userModel if RevenueCat fails
+      }
 
       // Load both wedding schedule services to set up notifications
       final scheduleService = WeddingDayScheduleService();
@@ -132,7 +157,7 @@ class AuthService {
         'email': email,
         'profilePictureUrl': profilePictureUrl,
         'emailVerified': false,
-        'isSubscribed': true, // Set to true for testing
+        'isSubscribed': false,
         'todoUnreadStatus': wasInvited, // true if invited, false if not
         'createdAt': FieldValue.serverTimestamp(),
       });

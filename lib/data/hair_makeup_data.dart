@@ -2,7 +2,7 @@ class HairMakeUpData {
   static final Map<String, String> map = {
     "videoAsset": "", // Uri geht vor Asset video
     "videoUri":
-        "https://firebasestorage.googleapis.com/v0/b/secrets-wedding.firebasestorage.app/o/assets%2Fvideos%2F2.mp4?alt=media",
+        "https://res.cloudinary.com/dhnupmrhv/video/upload/v1755861979/2_npmgkz.mp4",
     "videoRatio": "0.85",
     "email": "info@4-secrets.de",
     "homepage": "https://www.4-secrets.de",

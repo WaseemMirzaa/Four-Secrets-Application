@@ -50,5 +50,5 @@ endif()
 
 string(REPLACE ";" "\n" CMAKE_INSTALL_MANIFEST_CONTENT
        "${CMAKE_INSTALL_MANIFEST_FILES}")
-file(WRITE "/Users/gulzarsoft/FlutterProjects/four_secrets_app-elena-waseem-merge-2/android/app/.cxx/Debug/304a3j4z/arm64-v8a/${CMAKE_INSTALL_MANIFEST}"
+file(WRITE "/Users/gulzarsoft/FlutterProjects/four_secrets_app/android/app/.cxx/Debug/304a3j4z/arm64-v8a/${CMAKE_INSTALL_MANIFEST}"
      "${CMAKE_INSTALL_MANIFEST_CONTENT}")

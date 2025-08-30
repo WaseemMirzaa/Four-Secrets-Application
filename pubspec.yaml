@@ -4,7 +4,7 @@ description: "4secrets - Wedding Planner"
 # Prevent accidental publishing to pub.dev
 publish_to: "none"
 
-version: 1.0.3+3
+version: 1.0.2+3
 
 environment:
   sdk: ">=3.2.3 <4.0.0"
@@ -104,6 +104,8 @@ dependencies:
   share_plus: ^11.0.0
   http: ^1.2.1
 
+  purchases_flutter: ^8.7.2
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -146,7 +148,7 @@ flutter:
     - assets/images/eigene/
     - assets/icons/
     - assets/images/divider/
-    - assets/videos/
+    - assets/preview/
 # An image asset can refer to one or more resolution-specific "variants", see
 # https://flutter.dev/assets-and-images/#resolution-aware
 

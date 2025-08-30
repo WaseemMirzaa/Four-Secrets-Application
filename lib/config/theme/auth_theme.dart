@@ -6,8 +6,7 @@ class AuthTheme {
   static InputDecoration textFieldDecoration(String label) {
     return InputDecoration(
       hintText: label,
-      hintStyle:
-          TextStyle(color: Colors.grey[600]), // Darker grey color for hint text
+      hintStyle: TextStyle(color: Colors.grey[600]),
       filled: true,
       fillColor: Colors.grey[100],
       floatingLabelBehavior: FloatingLabelBehavior.never,

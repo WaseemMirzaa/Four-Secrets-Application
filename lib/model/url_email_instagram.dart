@@ -15,32 +15,64 @@ class UrlEmailInstagram {
     }
   }
 
-  // Method for sending E-Mails
+// Method for sending E-Mails with debug info
   static void sendEmail(
       {required String toEmail, String subject = "", String body = ""}) async {
-    final emailUri = Uri.parse(
-        'mailto:$toEmail?subject=${Uri.encodeFull(subject)}&body=${Uri.encodeFull(body)}');
-
     try {
-      if (await canLaunchUrl(emailUri)) {
-        await launchUrl(emailUri);
+      print("Original email: $toEmail");
+
+      // Option 1: Use Uri constructor (recommended)
+      final emailUri = Uri(
+        scheme: 'mailto',
+        path: toEmail,
+        queryParameters: {
+          'subject': subject,
+          'body': body,
+        },
+      );
+
+      print("Formatted URI: ${emailUri.toString()}");
+
+      // Check which apps can handle this URI
+      final canLaunch = await canLaunchUrl(emailUri);
+      print("Can launch URL: $canLaunch");
+
+      if (canLaunch) {
+        // Try different modes to see which one works
+        try {
+          await launchUrl(emailUri, mode: LaunchMode.platformDefault);
+          print("Launched with platformDefault");
+        } catch (e) {
+          print("platformDefault failed: $e");
+          await launchUrl(emailUri, mode: LaunchMode.externalApplication);
+          print("Launched with externalApplication");
+        }
       } else {
-        print("Keine E-Mail-App gefunden");
+        print("No app can handle this URI");
+
+        // Try Gmail-specific URI as fallback (for Android)
+        if (toEmail.contains('gmx.de')) {
+          final gmailUri = Uri.parse(
+              'https://mail.google.com/mail/?view=cm&fs=1&to=$toEmail&su=${Uri.encodeComponent(subject)}&body=${Uri.encodeComponent(body)}');
+
+          if (await canLaunchUrl(gmailUri)) {
+            await launchUrl(gmailUri);
+            print("Opened in Gmail web");
+          }
+        }
       }
     } catch (e) {
-      print("Fehler beim Öffnen der E-Mail-App: $e");
+      print("Complete failure: $e");
     }
   }
 
-  // Method for connection with Instagram
   static void getlaunchInstagram(
       {required String url, required String modeString}) async {
     final finalUrl = Uri.parse(url);
 
     try {
       if (await canLaunchUrl(finalUrl)) {}
-      await launchUrl(finalUrl,
-          mode: helperLaunchMode(modeString)); // Show in Browser
+      await launchUrl(finalUrl, mode: helperLaunchMode(modeString));
     } catch (e) {
       print("$e" + ", " + "Cannot launch to: $url ( 404 not found )");
     }

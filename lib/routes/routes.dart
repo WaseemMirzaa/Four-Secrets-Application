@@ -1,4 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:four_secrets_wedding_app/pages/impressum_auth.dart';
+import 'package:four_secrets_wedding_app/screens/subscriptions/subscription_management_screen.dart';
+import 'package:four_secrets_wedding_app/screens/subscriptions/subscription_preview_screen.dart';
+import 'package:four_secrets_wedding_app/screens/subscriptions/subscription_screen.dart';
+import 'package:four_secrets_wedding_app/screens/subscriptions/update_subscription_screen.dart';
 import 'package:page_transition/page_transition.dart';
 
 // Models
@@ -59,7 +64,7 @@ import 'package:four_secrets_wedding_app/pages/papeterie.dart';
 import 'package:four_secrets_wedding_app/pages/parsonal_training.dart';
 import 'package:four_secrets_wedding_app/pages/patiserie.dart';
 import 'package:four_secrets_wedding_app/pages/showroom_event.dart';
-import 'package:four_secrets_wedding_app/pages/splash_screen.dart';
+import 'package:four_secrets_wedding_app/screens/splash_screen.dart';
 import 'package:four_secrets_wedding_app/pages/swipeable_card_test.dart';
 import 'package:four_secrets_wedding_app/pages/tables_management_page.dart';
 import 'package:four_secrets_wedding_app/pages/tanzschule.dart';
@@ -79,6 +84,11 @@ class RouteManager {
   static const String signupPage = '/signup';
   static const String forgotPasswordPage = '/forgot-password';
   static const String emailVerificationPage = '/email-verification';
+
+  static const String subscriptionScreen = '/subscription';
+  static const String subscriptionPreviewScreen = '/subscription-preview';
+  static const String subscriptionManagementScreen = '/subscription-management';
+  static const String updateSubscriptionScreen = '/update-subscription';
 
   // Main Feature Routes
   static const String inspirationsPage = '/inspirations';
@@ -119,6 +129,7 @@ class RouteManager {
   static const String videoPlayer2 = '/video_player2';
   static const String kontakt = '/kontakt';
   static const String impressum = '/impressum';
+  static const String impressumAuth = '/impressum-auth';
   static const String editProfilePage = '/edit-profile';
 
   // Management Routes
@@ -173,6 +184,41 @@ class RouteManager {
       case signupPage:
         return PageTransition(
           child: const SignUpScreen(),
+          settings: settings,
+          duration: const Duration(milliseconds: 250),
+          type: PageTransitionType.rightToLeft,
+        );
+
+      case subscriptionScreen:
+        return PageTransition(
+          child: const SubscriptionScreen(),
+          settings: settings,
+          duration: const Duration(milliseconds: 250),
+          type: PageTransitionType.rightToLeft,
+        );
+
+      case subscriptionPreviewScreen:
+        return PageTransition(
+          child: const SubscriptionPreviewScreen(),
+          settings: settings,
+          duration: const Duration(milliseconds: 250),
+          type: PageTransitionType.rightToLeft,
+        );
+
+      case subscriptionManagementScreen:
+        return PageTransition(
+          child: const SubscriptionManagementScreen(),
+          settings: settings,
+          duration: const Duration(milliseconds: 250),
+          type: PageTransitionType.rightToLeft,
+        );
+
+      case updateSubscriptionScreen:
+        final args = settings.arguments as Map<String, dynamic>?;
+        return PageTransition(
+          child: UpdateSubscriptionScreen(
+            currentPlan: args?['currentPlan'],
+          ),
           settings: settings,
           duration: const Duration(milliseconds: 250),
           type: PageTransitionType.rightToLeft,
@@ -437,13 +483,24 @@ class RouteManager {
           type: PageTransitionType.rightToLeft,
         );
 
+      case impressumAuth:
+        return PageTransition(
+          child: ImpressumAuth(),
+          settings: settings,
+          duration: const Duration(milliseconds: 250),
+          type: PageTransitionType.rightToLeft,
+        );
+
       case editProfilePage:
         final args = settings.arguments as Map<String, dynamic>;
-        return MaterialPageRoute(
-          builder: (_) => EditProfilePage(
+        return PageTransition(
+          child: EditProfilePage(
             currentName: args['currentName'],
             currentProfilePicUrl: args['currentProfilePicUrl'],
           ),
+          settings: settings,
+          duration: const Duration(milliseconds: 250),
+          type: PageTransitionType.rightToLeft,
         );
 
       case tablesManagementPage:

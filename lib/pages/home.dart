@@ -1,9 +1,11 @@
-import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:four_secrets_wedding_app/menue.dart';
 import 'package:four_secrets_wedding_app/routes/routes.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
+
+import '../services/subscription/subscription_manager.dart';
+import '../utils/snackbar_helper.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -23,6 +25,11 @@ class _HomePageState extends State<HomePage> {
 
     // Preload menu data when home page initializes
     Menue.preloadUserData();
+
+    // Refresh subscription status when menu is opened
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      SubscriptionManager().checkSubscriptionStatus();
+    });
   }
 
   void buttonIsPressed(int id) {
@@ -57,7 +64,7 @@ class _HomePageState extends State<HomePage> {
               child: Container(
                 width: MediaQuery.of(context).size.width,
                 child: Image.asset(
-                  'assets/images/home/welcome_home.png',
+                  'assets/images/home/welcome_home.jpg',
                   fit: BoxFit.contain,
                 ),
               ),
@@ -88,15 +95,19 @@ class _HomePageState extends State<HomePage> {
                           ? Color.fromARGB(255, 204, 145, 203)
                           : Colors.white,
                     ),
-                    onPressed: () {
+                    onPressed: () async {
                       buttonIsPressed(1);
-                      Timer(
-                        const Duration(milliseconds: 100),
-                        () {
-                          Navigator.of(context)
-                              .pushNamed(RouteManager.muenchnerGeheimtippPage);
-                        },
-                      );
+
+                      final hasActiveSubscription =
+                          SubscriptionManager().hasActiveSubscription;
+
+                      if (hasActiveSubscription) {
+                        Navigator.of(context)
+                            .pushNamed(RouteManager.muenchnerGeheimtippPage);
+                      } else {
+                        Navigator.of(context)
+                            .pushNamed(RouteManager.subscriptionPreviewScreen);
+                      }
                     },
                     label: const Text(
                       'let´s go',

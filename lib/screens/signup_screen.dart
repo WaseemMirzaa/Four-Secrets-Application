@@ -1,9 +1,11 @@
 import 'dart:io';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:four_secrets_wedding_app/routes/routes.dart';
 import 'package:four_secrets_wedding_app/widgets/auth_background.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../services/auth_service.dart';
 import '../services/image_upload_service.dart';
 import '../widgets/auth_text_field.dart';
@@ -288,6 +290,62 @@ class _SignUpScreenState extends State<SignUpScreen> {
                           ),
                         ),
                       ],
+                    ),
+
+                    const SizedBox(height: 16),
+
+                    Center(
+                      child: RichText(
+                        textAlign: TextAlign.center,
+                        text: TextSpan(
+                          text: 'Mit der Nutzung akzeptieren Sie ',
+                          style: TextStyle(
+                            fontSize: 12,
+                          ),
+                          children: [
+                            TextSpan(
+                              text: 'Datenschutz',
+                              style: TextStyle(
+                                fontWeight: FontWeight.w600,
+                                fontSize: 13,
+                              ),
+                              recognizer: TapGestureRecognizer()
+                                ..onTap = () async {
+                                  final url = Uri.parse(
+                                    'https://www.4secrets-wedding-planner.de/datenschutz-app/',
+                                  );
+                                  if (await canLaunchUrl(url)) {
+                                    await launchUrl(url,
+                                        mode: LaunchMode.externalApplication);
+                                  }
+                                },
+                            ),
+                            TextSpan(
+                              text: ' & ',
+                              style: TextStyle(
+                                fontSize: 12,
+                              ),
+                            ),
+                            TextSpan(
+                              text: 'AGB',
+                              style: TextStyle(
+                                fontWeight: FontWeight.w600,
+                                fontSize: 13,
+                              ),
+                              recognizer: TapGestureRecognizer()
+                                ..onTap = () async {
+                                  final url = Uri.parse(
+                                    'https://www.4secrets-wedding-planner.de/agb',
+                                  );
+                                  if (await canLaunchUrl(url)) {
+                                    await launchUrl(url,
+                                        mode: LaunchMode.externalApplication);
+                                  }
+                                },
+                            ),
+                          ],
+                        ),
+                      ),
                     ),
                   ],
                 ),

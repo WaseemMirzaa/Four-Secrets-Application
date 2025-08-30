@@ -41,8 +41,7 @@ class SubscriptionService {
         return false;
       }
 
-      final isSubscribed = userDoc.data()?['isSubscribed'] ??
-          true; // Default to true for testing
+      final isSubscribed = userDoc.data()?['isSubscribed'] ?? true;
 
       // Cache the result
       _cachedSubscriptionStatus = isSubscribed;

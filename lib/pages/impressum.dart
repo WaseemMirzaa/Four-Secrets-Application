@@ -1,11 +1,22 @@
+import 'package:flutter/gestures.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:four_secrets_wedding_app/config/theme/app_theme.dart';
 import 'package:four_secrets_wedding_app/menue.dart';
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class Impressum extends StatelessWidget {
   Impressum({super.key});
 
   @override
   Widget build(BuildContext context) {
+    Future<void> _openUrl(String url) async {
+      final uri = Uri.parse(url);
+      if (await canLaunchUrl(uri)) {
+        await launchUrl(uri, mode: LaunchMode.externalApplication);
+      }
+    }
+
     return SafeArea(
       child: Scaffold(
         drawer: Menue.getInstance(),
@@ -17,12 +28,77 @@ class Impressum extends StatelessWidget {
         body: SingleChildScrollView(
           physics: const ClampingScrollPhysics(),
           child: Container(
-            margin: const EdgeInsets.only(bottom: 25),
+            margin: const EdgeInsets.only(bottom: 25, top: 12),
             width: MediaQuery.of(context).size.width,
             padding: const EdgeInsets.all(16),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                GestureDetector(
+                  onTap: () => _openUrl(
+                    'https://www.4secrets-wedding-planner.de/datenschutz-app/',
+                  ),
+                  child: Row(
+                    children: [
+                      Container(
+                        padding: EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                          color: AppTheme.primaryColor,
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: FaIcon(
+                          FontAwesomeIcons.arrowRight,
+                          color: Colors.white,
+                          size: 18,
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      Text(
+                        "Datenschutzerklärung",
+                        style: const TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                          color: AppTheme.primaryColor,
+                          decoration: TextDecoration.underline,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 12),
+                GestureDetector(
+                  onTap: () => _openUrl(
+                    'https://www.4secrets-wedding-planner.de/agb',
+                  ),
+                  child: Row(
+                    children: [
+                      Container(
+                        padding: EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                          color: AppTheme.primaryColor,
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: FaIcon(
+                          FontAwesomeIcons.arrowRight,
+                          color: Colors.white,
+                          size: 18,
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      Text(
+                        "Nutzungsbedingungen",
+                        style: const TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                          color: AppTheme.primaryColor,
+                          decoration: TextDecoration.underline,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+
+                const SizedBox(height: 16),
                 const Text(
                   "IMPRESSUM",
                   style: TextStyle(
@@ -43,12 +119,12 @@ class Impressum extends StatelessWidget {
                   "Verantwortlich für den Inhalt:\n"
                   "4secrets - Wedding Planner\n"
                   "Franziskanerstraße 38\n"
-                  "81669 München\n\n"
+                  "81669 München\n"
                   "E-Mail: 4secrets-wedding@gmx.de\n",
                   style: TextStyle(height: 1.4),
                 ),
 
-                const SizedBox(height: 20),
+                const SizedBox(height: 8),
 
                 const Text(
                   "ENTWICKLUNG UND DESIGN",
@@ -61,7 +137,7 @@ class Impressum extends StatelessWidget {
                 const Text("Patrick Schubert"),
                 const Text("Elena Koller\n"),
 
-                const SizedBox(height: 20),
+                const SizedBox(height: 8),
 
                 const Text(
                   "STREITBEILEGUNG",
@@ -70,7 +146,7 @@ class Impressum extends StatelessWidget {
                     color: Color.fromARGB(255, 107, 69, 106),
                   ),
                 ),
-                const SizedBox(height: 8),
+                const SizedBox(height: 16),
                 const Text(
                   "Die Europäische Kommission stellt eine Plattform zur "
                   "Online-Streitbeilegung (OS) bereit: "
@@ -92,10 +168,10 @@ class Impressum extends StatelessWidget {
                 ),
                 const SizedBox(height: 8),
                 const Text(
-                  "Als Diensteanbieter sind wir gemäß § 7 Abs. 1 TMG für "
+                  "Als Dienstanbieter sind wir gemäß § 7 Abs. 1 TMG für "
                   "eigene Inhalte auf diesen Seiten nach den allgemeinen "
                   "Gesetzen verantwortlich. Nach §§ 8 bis 10 TMG sind wir "
-                  "als Diensteanbieter jedoch nicht verpflichtet, "
+                  "als Dienstanbieter jedoch nicht verpflichtet, "
                   "übermittelte oder gespeicherte fremde Informationen zu "
                   "überwachen oder nach Umständen zu forschen, die auf eine "
                   "rechtswidrige Tätigkeit hinweisen.\n\n"
@@ -370,6 +446,8 @@ class Impressum extends StatelessWidget {
                   "Stand: Juni 2025",
                   style: TextStyle(height: 1.4),
                 ),
+
+                const SizedBox(height: 40),
               ],
             ),
           ),

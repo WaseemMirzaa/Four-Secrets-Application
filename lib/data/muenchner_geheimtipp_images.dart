@@ -14,7 +14,6 @@ class MuenchnerGeheimtippImages {
       'assets/images/muenchner_geheimtipps/Fotografie.jpg',
       'assets/images/muenchner_geheimtipps/Tanzschule.jpg',
       'assets/images/muenchner_geheimtipps/Kosmetische_Akupunktur.jpg',
-      'assets/images/muenchner_geheimtipps/Personal_Training.jpg',
       'assets/images/muenchner_geheimtipps/Papeterie.jpg',
       'assets/images/muenchner_geheimtipps/Unterhaltung.jpg',
       'assets/images/muenchner_geheimtipps/Trauringe.jpg',

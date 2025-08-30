@@ -29,17 +29,15 @@
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>NSCameraUsageDescription</key>
-	<string>This app needs camera access to take profile pictures</string>
+	<string>We use your camera to capture profile pictures, event moments, and wedding memories.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>This app needs access to location when open to pick a location.</string>
+	<string>Your location helps you choose and share wedding venues or nearby event spots.</string>
 	<key>NSUserNotificationUsageDescription</key>
-	<string>This app uses notifications to remind you of important events.</string>
-	<key>NSUserNotificationsUsageDescription</key>
-	<string>This app uses notifications to remind you of important wedding events and appointments.</string>
+	<string>We send notifications so you never miss important wedding events, reminders, or schedule updates.</string>
 	<key>NSMicrophoneUsageDescription</key>
-	<string>This app needs microphone access for videos</string>
+	<string>We use your microphone to record audio in wedding videos and event clips.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
-	<string>This app needs photos access to select profile pictures</string>
+	<string>We access your photo library so you can select profile pictures and upload wedding photos.</string>
 	<key>GMSApiKey</key>
 	<string>AIzaSyDR_QZaW3xiJfLLNFybEd6e6HunqDkUjJg</string>
 	<key>UIApplicationSupportsIndirectInputEvents</key>

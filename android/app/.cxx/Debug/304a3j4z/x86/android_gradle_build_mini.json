@@ -6,14 +6,14 @@
     [
       "/Users/gulzarsoft/Library/Android/sdk/cmake/3.22.1/bin/ninja",
       "-C",
-      "/Users/gulzarsoft/FlutterProjects/four_secrets_app-elena-waseem-merge-2/android/app/.cxx/Debug/304a3j4z/x86",
+      "/Users/gulzarsoft/FlutterProjects/four_secrets_app/android/app/.cxx/Debug/304a3j4z/x86",
       "clean"
     ]
   ],
   "buildTargetsCommandComponents": [
     "/Users/gulzarsoft/Library/Android/sdk/cmake/3.22.1/bin/ninja",
     "-C",
-    "/Users/gulzarsoft/FlutterProjects/four_secrets_app-elena-waseem-merge-2/android/app/.cxx/Debug/304a3j4z/x86",
+    "/Users/gulzarsoft/FlutterProjects/four_secrets_app/android/app/.cxx/Debug/304a3j4z/x86",
     "{LIST_OF_TARGETS_TO_BUILD}"
   ],
   "libraries": {}
