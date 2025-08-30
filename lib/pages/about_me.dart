@@ -54,7 +54,7 @@ class _AboutMeState extends State<AboutMe> {
         drawer: Menue.getInstance(),
         appBar: AppBar(
           foregroundColor: Color.fromARGB(255, 255, 255, 255),
-          title: const Text('About me'),
+          title: const Text('Über mich'),
           backgroundColor: const Color.fromARGB(255, 107, 69, 106),
         ),
         body: SingleChildScrollView(
@@ -239,7 +239,7 @@ class _AboutMeState extends State<AboutMe> {
                     ),
                     Positioned(
                       top:
-                          520, // Passe diesen Wert ggf. an, damit das Bild direkt unter dem Text erscheint
+                          530, // Passe diesen Wert ggf. an, damit das Bild direkt unter dem Text erscheint
                       left: 20,
                       right: 20,
                       child: Image.asset(

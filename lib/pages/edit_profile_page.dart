@@ -40,11 +40,14 @@ class _EditProfilePageState extends State<EditProfilePage> {
   void initState() {
     super.initState();
     _nameController = TextEditingController(text: widget.currentName);
-    // Force black status bar when page initializes
-    SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
-      statusBarColor: Colors.black,
-      statusBarIconBrightness: Brightness.light,
-    ));
+    // Set status bar for Huawei compatibility
+    // SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
+    //   statusBarColor: Colors.transparent,
+    //   statusBarIconBrightness: Brightness.light,
+    //   statusBarBrightness: Brightness.dark,
+    //   systemNavigationBarColor: Colors.white,
+    //   systemNavigationBarIconBrightness: Brightness.dark,
+    // ));
   }
 
   @override
@@ -503,273 +506,264 @@ class _EditProfilePageState extends State<EditProfilePage> {
 
   @override
   Widget build(BuildContext context) {
-    // Force black status bar on every build
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
-        statusBarColor: Colors.black,
-        statusBarIconBrightness: Brightness.light,
-      ));
-    });
-
     final screenHeight = MediaQuery.of(context).size.height;
     final headerHeight = screenHeight / 3;
 
-    return Scaffold(
-      backgroundColor: Colors.white,
-      drawer: Menue.getInstance(),
-      appBar: AppBar(
-        systemOverlayStyle: const SystemUiOverlayStyle(
-          statusBarColor: Colors.black,
-          statusBarIconBrightness: Brightness.light,
+    return SafeArea(
+      child: Scaffold(
+        // backgroundColor: Colors.white,
+        drawer: Menue.getInstance(),
+        appBar: AppBar(
+          foregroundColor: Colors.white,
+          title: const Text(AppConstants.editProfileTitle),
+          backgroundColor: const Color.fromARGB(255, 107, 69, 106),
         ),
-        foregroundColor: Colors.white,
-        title: const Text(AppConstants.editProfileTitle),
-        backgroundColor: const Color.fromARGB(255, 107, 69, 106),
-      ),
-      body: Column(
-        children: [
-          // Top colored section with profile image (now slightly smaller to account for app bar)
-          Container(
-            height: headerHeight - AppBar().preferredSize.height,
-            width: double.infinity,
-            color: const Color.fromARGB(255, 107, 69, 106),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                // Profile image with edit icon
-                GestureDetector(
-                  onTap: _pickImage,
-                  child: Stack(
-                    children: [
-                      Container(
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          border: Border.all(color: Colors.white, width: 3.0),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black.withOpacity(0.2),
-                              spreadRadius: 1,
-                              blurRadius: 5,
-                              offset: const Offset(0, 3),
-                            ),
-                          ],
-                        ),
-                        child: CircleAvatar(
-                          radius: 60, // Increased from 50
-                          backgroundColor: Colors.white,
-                          backgroundImage: _newProfilePicture != null
-                              ? FileImage(_newProfilePicture!)
-                              : (widget.currentProfilePicUrl != null
-                                  ? NetworkImage(widget.currentProfilePicUrl!)
-                                  : null) as ImageProvider?,
-                          child: (_newProfilePicture == null &&
-                                  widget.currentProfilePicUrl == null)
-                              ? const Icon(Icons.person,
-                                  size: 60, // Increased from 50
-                                  color: Color.fromARGB(255, 107, 69, 106))
-                              : null,
-                        ),
-                      ),
-                      Positioned(
-                        bottom: 0,
-                        right: 0,
-                        child: Container(
-                          padding: const EdgeInsets.all(4),
+        body: Column(
+          children: [
+            // Top colored section with profile image (now slightly smaller to account for app bar)
+            Container(
+              height: headerHeight - AppBar().preferredSize.height,
+              width: double.infinity,
+              color: const Color.fromARGB(255, 107, 69, 106),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  // Profile image with edit icon
+                  GestureDetector(
+                    onTap: _pickImage,
+                    child: Stack(
+                      children: [
+                        Container(
                           decoration: BoxDecoration(
-                            color: Colors.white,
                             shape: BoxShape.circle,
-                            border: Border.all(
-                              color: const Color.fromARGB(255, 107, 69, 106),
-                              width: 1,
-                            ),
+                            border: Border.all(color: Colors.white, width: 3.0),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withOpacity(0.2),
+                                spreadRadius: 1,
+                                blurRadius: 5,
+                                offset: const Offset(0, 3),
+                              ),
+                            ],
                           ),
-                          child: const Icon(
-                            Icons.edit,
-                            color: Color.fromARGB(255, 107, 69, 106),
-                            size: 20, // Slightly increased from 18
+                          child: CircleAvatar(
+                            radius: 60, // Increased from 50
+                            backgroundColor: Colors.white,
+                            backgroundImage: _newProfilePicture != null
+                                ? FileImage(_newProfilePicture!)
+                                : (widget.currentProfilePicUrl != null
+                                    ? NetworkImage(widget.currentProfilePicUrl!)
+                                    : null) as ImageProvider?,
+                            child: (_newProfilePicture == null &&
+                                    widget.currentProfilePicUrl == null)
+                                ? const Icon(Icons.person,
+                                    size: 60, // Increased from 50
+                                    color: Color.fromARGB(255, 107, 69, 106))
+                                : null,
                           ),
                         ),
-                      ),
-                      if (_isUploadingImage)
-                        const Positioned.fill(
-                          child: Align(
-                            alignment: Alignment.center,
-                            child: SizedBox(
-                              width: 40,
-                              height: 40,
-                              child: CircularProgressIndicator(
-                                strokeWidth: 3,
-                                valueColor: AlwaysStoppedAnimation<Color>(
-                                    Color.fromARGB(255, 107, 69, 106)),
+                        Positioned(
+                          bottom: 0,
+                          right: 0,
+                          child: Container(
+                            padding: const EdgeInsets.all(4),
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              shape: BoxShape.circle,
+                              border: Border.all(
+                                color: const Color.fromARGB(255, 107, 69, 106),
+                                width: 1,
+                              ),
+                            ),
+                            child: const Icon(
+                              Icons.edit,
+                              color: Color.fromARGB(255, 107, 69, 106),
+                              size: 20, // Slightly increased from 18
+                            ),
+                          ),
+                        ),
+                        if (_isUploadingImage)
+                          const Positioned.fill(
+                            child: Align(
+                              alignment: Alignment.center,
+                              child: SizedBox(
+                                width: 40,
+                                height: 40,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 3,
+                                  valueColor: AlwaysStoppedAnimation<Color>(
+                                      Color.fromARGB(255, 107, 69, 106)),
+                                ),
+                              ),
+                            ),
+                          ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 8), // Reduced from 16
+
+                  // User name in white
+                  Text(
+                    widget.currentName,
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+
+            // Bottom section with form fields and buttons
+            Expanded(
+              child: Container(
+                color: Colors.white,
+                child: SingleChildScrollView(
+                  padding: const EdgeInsets.all(24.0),
+                  child: Form(
+                    key: _editProfileFormKey,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          AppConstants.editProfileTitle,
+                          style: const TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                            color: Color.fromARGB(255, 107, 69, 106),
+                          ),
+                        ),
+                        const SizedBox(height: 24),
+
+                        // Name field
+                        TextFormField(
+                          controller: _nameController,
+                          decoration: InputDecoration(
+                            labelText: 'Name',
+                            filled: true,
+                            fillColor: Colors.grey[100],
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(8),
+                              borderSide: BorderSide.none,
+                            ),
+                            enabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(8),
+                              borderSide: BorderSide.none,
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(8),
+                              borderSide: BorderSide(color: Colors.grey[300]!),
+                            ),
+                          ),
+                          validator: (value) {
+                            if (value == null || value.trim().isEmpty) {
+                              return 'Bitte geben Sie Ihren Namen ein';
+                            }
+                            return null;
+                          },
+                        ),
+                        const SizedBox(height: 24),
+
+                        // Change Password Button
+                        SizedBox(
+                          width: double.infinity,
+                          height: 50,
+                          child: ElevatedButton.icon(
+                            icon: const Icon(Icons.lock_outline),
+                            label: Text(
+                              AppConstants.changePasswordButton,
+                              style: const TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            onPressed:
+                                _isLoading ? null : _showChangePasswordDialog,
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.grey[200],
+                              foregroundColor:
+                                  const Color.fromARGB(255, 107, 69, 106),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              disabledBackgroundColor:
+                                  Colors.grey[200]!.withOpacity(0.6),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 16),
+
+                        // Save profile button
+                        SizedBox(
+                          width: double.infinity,
+                          height: 50,
+                          child: ElevatedButton(
+                            onPressed: _isLoading ? null : _updateProfile,
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor:
+                                  const Color.fromARGB(255, 107, 69, 106),
+                              foregroundColor: Colors.white,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              disabledBackgroundColor:
+                                  const Color.fromARGB(255, 107, 69, 106)
+                                      .withOpacity(0.6),
+                            ),
+                            child: _isLoading
+                                ? const SizedBox(
+                                    height: 20,
+                                    width: 20,
+                                    child: CircularProgressIndicator(
+                                      strokeWidth: 2,
+                                      valueColor: AlwaysStoppedAnimation<Color>(
+                                          Colors.white),
+                                    ),
+                                  )
+                                : Text(
+                                    AppConstants.saveChangesButton,
+                                    style: const TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                          ),
+                        ),
+                        const SizedBox(height: 16),
+
+                        // Delete account button
+                        SizedBox(
+                          width: double.infinity,
+                          height: 50,
+                          child: OutlinedButton(
+                            onPressed: _isLoading
+                                ? null
+                                : _showDeleteConfirmationDialog,
+                            style: OutlinedButton.styleFrom(
+                              foregroundColor: Colors.red,
+                              side: const BorderSide(color: Colors.red),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                            ),
+                            child: const Text(
+                              'Konto löschen',
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
                               ),
                             ),
                           ),
                         ),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 8), // Reduced from 16
-
-                // User name in white
-                Text(
-                  widget.currentName,
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ],
-            ),
-          ),
-
-          // Bottom section with form fields and buttons
-          Expanded(
-            child: Container(
-              color: Colors.white,
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.all(24.0),
-                child: Form(
-                  key: _editProfileFormKey,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        AppConstants.editProfileTitle,
-                        style: const TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                          color: Color.fromARGB(255, 107, 69, 106),
-                        ),
-                      ),
-                      const SizedBox(height: 24),
-
-                      // Name field
-                      TextFormField(
-                        controller: _nameController,
-                        decoration: InputDecoration(
-                          labelText: 'Name',
-                          filled: true,
-                          fillColor: Colors.grey[100],
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(8),
-                            borderSide: BorderSide.none,
-                          ),
-                          enabledBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(8),
-                            borderSide: BorderSide.none,
-                          ),
-                          focusedBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(8),
-                            borderSide: BorderSide(color: Colors.grey[300]!),
-                          ),
-                        ),
-                        validator: (value) {
-                          if (value == null || value.trim().isEmpty) {
-                            return 'Bitte geben Sie Ihren Namen ein';
-                          }
-                          return null;
-                        },
-                      ),
-                      const SizedBox(height: 24),
-
-                      // Change Password Button
-                      SizedBox(
-                        width: double.infinity,
-                        height: 50,
-                        child: ElevatedButton.icon(
-                          icon: const Icon(Icons.lock_outline),
-                          label: Text(
-                            AppConstants.changePasswordButton,
-                            style: const TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          onPressed:
-                              _isLoading ? null : _showChangePasswordDialog,
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.grey[200],
-                            foregroundColor:
-                                const Color.fromARGB(255, 107, 69, 106),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            disabledBackgroundColor:
-                                Colors.grey[200]!.withOpacity(0.6),
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: 16),
-
-                      // Save profile button
-                      SizedBox(
-                        width: double.infinity,
-                        height: 50,
-                        child: ElevatedButton(
-                          onPressed: _isLoading ? null : _updateProfile,
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor:
-                                const Color.fromARGB(255, 107, 69, 106),
-                            foregroundColor: Colors.white,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            disabledBackgroundColor:
-                                const Color.fromARGB(255, 107, 69, 106)
-                                    .withOpacity(0.6),
-                          ),
-                          child: _isLoading
-                              ? const SizedBox(
-                                  height: 20,
-                                  width: 20,
-                                  child: CircularProgressIndicator(
-                                    strokeWidth: 2,
-                                    valueColor: AlwaysStoppedAnimation<Color>(
-                                        Colors.white),
-                                  ),
-                                )
-                              : Text(
-                                  AppConstants.saveChangesButton,
-                                  style: const TextStyle(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                        ),
-                      ),
-                      const SizedBox(height: 16),
-
-                      // Delete account button
-                      SizedBox(
-                        width: double.infinity,
-                        height: 50,
-                        child: OutlinedButton(
-                          onPressed:
-                              _isLoading ? null : _showDeleteConfirmationDialog,
-                          style: OutlinedButton.styleFrom(
-                            foregroundColor: Colors.red,
-                            side: const BorderSide(color: Colors.red),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                          ),
-                          child: const Text(
-                            'Konto löschen',
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

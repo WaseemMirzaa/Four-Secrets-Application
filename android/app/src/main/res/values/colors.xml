@@ -2,4 +2,6 @@
 <resources>
     <!-- Notification color for FCM -->
     <color name="notification_color">#FF6B35</color>
+    <!-- Launcher icon background color - White for better visibility -->
+    <color name="ic_launcher_background">#FFFFFF</color>
 </resources>

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import '../config/theme/auth_theme.dart';
 
-class AuthTextField extends StatelessWidget {
+class AuthTextField extends StatefulWidget {
   final String label;
   final TextEditingController controller;
   final bool obscureText;
@@ -18,15 +18,28 @@ class AuthTextField extends StatelessWidget {
   }) : super(key: key);
 
   @override
+  State<AuthTextField> createState() => _AuthTextFieldState();
+}
+
+class _AuthTextFieldState extends State<AuthTextField> {
+  late bool _isObscured;
+
+  @override
+  void initState() {
+    super.initState();
+    _isObscured = widget.obscureText;
+  }
+
+  @override
   Widget build(BuildContext context) {
     return TextFormField(
-      controller: controller,
-      obscureText: obscureText,
-      keyboardType: keyboardType,
-      validator: validator,
+      controller: widget.controller,
+      obscureText: _isObscured,
+      keyboardType: widget.keyboardType,
+      validator: widget.validator,
       style:
           const TextStyle(color: Colors.black), // Changed from white to black
-      decoration: AuthTheme.textFieldDecoration(label).copyWith(
+      decoration: AuthTheme.textFieldDecoration(widget.label).copyWith(
         // Make error text more visible
         errorStyle: const TextStyle(
           color: Color(
@@ -34,12 +47,26 @@ class AuthTextField extends StatelessWidget {
           fontSize: 12,
           fontWeight: FontWeight.w500,
         ),
+        // Add eye icon for password fields
+        suffixIcon: widget.obscureText
+            ? IconButton(
+                icon: Icon(
+                  _isObscured ? Icons.visibility_off : Icons.visibility,
+                  color: Colors.grey[600],
+                ),
+                onPressed: () {
+                  setState(() {
+                    _isObscured = !_isObscured;
+                  });
+                },
+              )
+            : null,
       ),
     );
   }
 }
 
-class WhiteOutlinedTextField extends StatelessWidget {
+class WhiteOutlinedTextField extends StatefulWidget {
   final String label;
   final TextEditingController controller;
   final bool obscureText;
@@ -60,24 +87,51 @@ class WhiteOutlinedTextField extends StatelessWidget {
   }) : super(key: key);
 
   @override
+  State<WhiteOutlinedTextField> createState() => _WhiteOutlinedTextFieldState();
+}
+
+class _WhiteOutlinedTextFieldState extends State<WhiteOutlinedTextField> {
+  late bool _isObscured;
+
+  @override
+  void initState() {
+    super.initState();
+    _isObscured = widget.obscureText;
+  }
+
+  @override
   Widget build(BuildContext context) {
     return TextFormField(
-      controller: controller,
-      obscureText: obscureText,
-      keyboardType: keyboardType,
-      validator: validator,
-      onChanged: onChanged,
+      controller: widget.controller,
+      obscureText: _isObscured,
+      keyboardType: widget.keyboardType,
+      validator: widget.validator,
+      onChanged: widget.onChanged,
       style: const TextStyle(color: Colors.black),
       decoration: InputDecoration(
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(8.0),
         ),
-        hintText: hintText ?? label,
+        hintText: widget.hintText ?? widget.label,
         fillColor: const Color.fromARGB(255, 255, 255, 255),
         filled: true,
-        labelText: label,
+        labelText: widget.label,
         contentPadding:
             const EdgeInsets.symmetric(horizontal: 12, vertical: 16),
+        // Add eye icon for password fields
+        suffixIcon: widget.obscureText
+            ? IconButton(
+                icon: Icon(
+                  _isObscured ? Icons.visibility_off : Icons.visibility,
+                  color: Colors.grey[600],
+                ),
+                onPressed: () {
+                  setState(() {
+                    _isObscured = !_isObscured;
+                  });
+                },
+              )
+            : null,
       ),
     );
   }

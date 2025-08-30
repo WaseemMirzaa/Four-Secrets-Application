@@ -320,11 +320,10 @@ class _ToDoPageState extends State<ToDoPage> {
             content: ClipRRect(
               borderRadius: BorderRadius.circular(12),
               child: Container(
+                height: 500,
                 width: double.maxFinite,
                 color: Colors.grey.shade100,
                 child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     Container(
                       padding:
@@ -386,395 +385,464 @@ class _ToDoPageState extends State<ToDoPage> {
                         },
                       ),
                     ),
-                    // Error message display
-                    if (errorMessage != null)
-                      Container(
-                        margin:
+                    // Content area - takes remaining space between header and button
+                    Expanded(
+                      child: Padding(
+                        padding:
                             EdgeInsets.symmetric(horizontal: 15, vertical: 8),
-                        padding: EdgeInsets.all(12),
-                        decoration: BoxDecoration(
-                          color: Colors.red.shade50,
-                          border: Border.all(color: Colors.red.shade300),
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: Row(
+                        child: Column(
                           children: [
-                            Icon(Icons.error_outline,
-                                color: Colors.red, size: 20),
-                            const SizedBox(width: 8),
-                            Expanded(
-                              child: Text(
-                                errorMessage!,
-                                style: TextStyle(
-                                  color: Colors.red.shade700,
-                                  fontSize: 14,
+                            // Error message display
+                            if (errorMessage != null)
+                              Container(
+                                margin: EdgeInsets.only(bottom: 8),
+                                padding: EdgeInsets.all(12),
+                                decoration: BoxDecoration(
+                                  color: Colors.red.shade50,
+                                  border:
+                                      Border.all(color: Colors.red.shade300),
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                child: Row(
+                                  children: [
+                                    Icon(Icons.error_outline,
+                                        color: Colors.red, size: 20),
+                                    const SizedBox(width: 8),
+                                    Expanded(
+                                      child: Text(
+                                        errorMessage!,
+                                        style: TextStyle(
+                                          color: Colors.red.shade700,
+                                          fontSize: 14,
+                                        ),
+                                      ),
+                                    ),
+                                    IconButton(
+                                      icon: Icon(Icons.close,
+                                          color: Colors.red, size: 18),
+                                      onPressed: () {
+                                        setState(() {
+                                          errorMessage = null;
+                                        });
+                                      },
+                                      padding: EdgeInsets.zero,
+                                      constraints: BoxConstraints(),
+                                    ),
+                                  ],
                                 ),
                               ),
-                            ),
-                            IconButton(
-                              icon: Icon(Icons.close,
-                                  color: Colors.red, size: 18),
-                              onPressed: () {
-                                setState(() {
-                                  errorMessage = null;
-                                });
-                              },
-                              padding: EdgeInsets.zero,
-                              constraints: BoxConstraints(),
+                            // Main content area - ListView
+                            Expanded(
+                              child: isSearching
+                                  ? Center(child: CircularProgressIndicator())
+                                  : (!isSearching && searchResults.isNotEmpty)
+                                      ? ListView.builder(
+                                          shrinkWrap: true,
+                                          itemCount: searchResults.length,
+                                          itemBuilder: (context, index) {
+                                            final user = searchResults[index];
+                                            return ListTile(
+                                              title: Text(user['name']),
+                                              subtitle: Text(user['email']),
+                                              trailing: sentInvitations
+                                                      .contains(user['email'])
+                                                  ? Container(
+                                                      padding:
+                                                          EdgeInsets.symmetric(
+                                                              horizontal: 8,
+                                                              vertical: 4),
+                                                      decoration: BoxDecoration(
+                                                        color: Colors.green,
+                                                        borderRadius:
+                                                            BorderRadius
+                                                                .circular(12),
+                                                      ),
+                                                      child: Text(
+                                                        'Gesendet',
+                                                        style: TextStyle(
+                                                          color: Colors.white,
+                                                          fontSize: 12,
+                                                          fontWeight:
+                                                              FontWeight.bold,
+                                                        ),
+                                                      ),
+                                                    )
+                                                  : (isSendingInvite &&
+                                                          currentlyInvitingEmail ==
+                                                              user['email'])
+                                                      ? SizedBox(
+                                                          width: 24,
+                                                          height: 24,
+                                                          child:
+                                                              CircularProgressIndicator(
+                                                                  strokeWidth:
+                                                                      2))
+                                                      : Container(
+                                                          height: 50,
+                                                          width: 50,
+                                                          child: IconButton(
+                                                            icon: Icon(
+                                                                Icons
+                                                                    .person_add,
+                                                                color: Color
+                                                                    .fromARGB(
+                                                                        255,
+                                                                        107,
+                                                                        69,
+                                                                        106)),
+                                                            onPressed:
+                                                                isSendingInvite
+                                                                    ? null
+                                                                    : () async {
+                                                                        print(
+                                                                            '[INVITE_LOG] ${DateTime.now().millisecondsSinceEpoch}: Starting setState for isSendingInvite = true');
+                                                                        setState(
+                                                                            () {
+                                                                          isSendingInvite =
+                                                                              true;
+                                                                          currentlyInvitingEmail =
+                                                                              user['email'];
+                                                                        });
+                                                                        print(
+                                                                            '[INVITE_LOG] ${DateTime.now().millisecondsSinceEpoch}: setState completed for isSendingInvite = true');
+                                                                        try {
+                                                                          print(
+                                                                              '[INVITE_LOG] ${DateTime.now().millisecondsSinceEpoch}: Starting sendInvitationForAllTodos');
+                                                                          // Send main invitation (this is the critical part)
+                                                                          await collaborationService
+                                                                              .sendInvitationForAllTodos(
+                                                                            inviteeEmail:
+                                                                                user['email'],
+                                                                            inviteeName:
+                                                                                user['name'],
+                                                                          );
+                                                                          print(
+                                                                              '[INVITE_LOG] ${DateTime.now().millisecondsSinceEpoch}: sendInvitationForAllTodos completed');
+
+                                                                          print(
+                                                                              '[INVITE_LOG] ${DateTime.now().millisecondsSinceEpoch}: Invitation sent to registered user - todoUnreadStatus handled by collaboration service');
+
+                                                                          print(
+                                                                              '[INVITE_LOG] ${DateTime.now().millisecondsSinceEpoch}: Starting email notification');
+                                                                          // Try to send email notification (but don't fail if this fails)
+                                                                          try {
+                                                                            emailService.sendInvitationEmail(
+                                                                              email: user['email'],
+                                                                              inviterName: user['name'],
+                                                                            );
+                                                                            print('[INVITE_LOG] ${DateTime.now().millisecondsSinceEpoch}: Email notification sent successfully');
+                                                                          } catch (emailError) {
+                                                                            print('[INVITE_LOG] ${DateTime.now().millisecondsSinceEpoch}: Email sending failed but invitation was successful: $emailError');
+                                                                          }
+
+                                                                          // Refresh the data
+
+                                                                          // Reset loader state and mark as sent
+                                                                          if (mounted) {
+                                                                            setState(() {
+                                                                              isSendingInvite = false;
+                                                                              currentlyInvitingEmail = null;
+                                                                              sentInvitations.add(user['email']);
+                                                                            });
+
+                                                                            // Show green success snackbar
+                                                                            ScaffoldMessenger.of(context).showSnackBar(
+                                                                              SnackBar(
+                                                                                content: Text('✓ Einladung für alle Listen gesendet'),
+                                                                                backgroundColor: Colors.green,
+                                                                                duration: Duration(seconds: 2),
+                                                                              ),
+                                                                            );
+                                                                            if (mounted) {
+                                                                              print('[INVITE_LOG] ${DateTime.now().millisecondsSinceEpoch}: Starting _loadAndInitCategories');
+                                                                              await _loadAndInitCategories();
+                                                                              print('[INVITE_LOG] ${DateTime.now().millisecondsSinceEpoch}: _loadAndInitCategories completed');
+
+                                                                              print('[INVITE_LOG] ${DateTime.now().millisecondsSinceEpoch}: Popping dialog');
+                                                                              Navigator.of(context).pop();
+                                                                              print('[INVITE_LOG] ${DateTime.now().millisecondsSinceEpoch}: Dialog popped successfully');
+                                                                            }
+                                                                          }
+                                                                        } catch (e) {
+                                                                          print(
+                                                                              '[INVITE_LOG] ${DateTime.now().millisecondsSinceEpoch}: Main invitation failed: $e');
+                                                                          // if (mounted) {
+                                                                          print(
+                                                                              '[INVITE_LOG] ${DateTime.now().millisecondsSinceEpoch}: Starting error setState');
+                                                                          setState(
+                                                                              () {
+                                                                            isSendingInvite =
+                                                                                false;
+                                                                            currentlyInvitingEmail =
+                                                                                null;
+                                                                            errorMessage =
+                                                                                "Fehler beim Senden der Einladung: $e";
+                                                                          });
+                                                                          print(
+                                                                              '[INVITE_LOG] ${DateTime.now().millisecondsSinceEpoch}: Error setState completed');
+                                                                          print(
+                                                                              '[INVITE_LOG] ${DateTime.now().millisecondsSinceEpoch}: Error message set in dialog');
+                                                                          // }
+                                                                        }
+
+                                                                        setState(
+                                                                            () {
+                                                                          isSendingInvite =
+                                                                              false;
+                                                                          currentlyInvitingEmail =
+                                                                              null;
+                                                                        });
+                                                                      },
+                                                          ),
+                                                        ),
+                                            );
+                                          },
+                                        )
+                                      : (!isSearching &&
+                                              searchController
+                                                  .text.isNotEmpty &&
+                                              searchResults.isEmpty)
+                                          ? Padding(
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                      horizontal: 15.0,
+                                                      vertical: 10),
+                                              child: Container(
+                                                // color: Colors.orange,
+                                                height: 60,
+                                                child: Row(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment
+                                                          .spaceBetween,
+                                                  children: [
+                                                    // E‑Mail-Text
+                                                    Expanded(
+                                                      // height: 0,
+                                                      // color: Colors.amber,
+                                                      child: Column(
+                                                        crossAxisAlignment:
+                                                            CrossAxisAlignment
+                                                                .start,
+                                                        mainAxisAlignment:
+                                                            MainAxisAlignment
+                                                                .start,
+                                                        children: [
+                                                          Text(
+                                                            searchController
+                                                                .text,
+                                                            style: TextStyle(
+                                                                fontSize: 14,
+                                                                color: Colors
+                                                                    .black),
+                                                            overflow:
+                                                                TextOverflow
+                                                                    .ellipsis,
+                                                          ),
+                                                          Text(
+                                                            "Einladen",
+                                                            style: TextStyle(
+                                                                fontSize: 12,
+                                                                color: Colors
+                                                                    .grey[600]),
+                                                          ),
+                                                        ],
+                                                      ),
+                                                    ),
+                                                    // Success message, loader, or invite button
+                                                    Column(
+                                                      mainAxisAlignment:
+                                                          MainAxisAlignment
+                                                              .start,
+                                                      children: [
+                                                        sentInvitations.contains(
+                                                                searchController
+                                                                    .text)
+                                                            ? Container(
+                                                                padding: EdgeInsets
+                                                                    .symmetric(
+                                                                        horizontal:
+                                                                            8,
+                                                                        vertical:
+                                                                            4),
+                                                                decoration:
+                                                                    BoxDecoration(
+                                                                  color: Colors
+                                                                      .green,
+                                                                  borderRadius:
+                                                                      BorderRadius
+                                                                          .circular(
+                                                                              12),
+                                                                ),
+                                                                child: Text(
+                                                                  'Gesendet',
+                                                                  style:
+                                                                      TextStyle(
+                                                                    color: Colors
+                                                                        .white,
+                                                                    fontSize:
+                                                                        12,
+                                                                    fontWeight:
+                                                                        FontWeight
+                                                                            .bold,
+                                                                  ),
+                                                                ),
+                                                              )
+                                                            : isSendingInvite
+                                                                ? SizedBox(
+                                                                    width: 24,
+                                                                    height: 24,
+                                                                    child: CircularProgressIndicator(
+                                                                        strokeWidth:
+                                                                            2),
+                                                                  )
+                                                                : IconButton(
+                                                                    icon: Icon(
+                                                                        Icons
+                                                                            .person_add,
+                                                                        color: Color.fromARGB(
+                                                                            255,
+                                                                            107,
+                                                                            69,
+                                                                            106)),
+                                                                    onPressed:
+                                                                        () async {
+                                                                      // Validate email before sending
+                                                                      final email = searchController
+                                                                          .text
+                                                                          .trim();
+                                                                      if (!_isValidEmail(
+                                                                          email)) {
+                                                                        setState(
+                                                                            () {
+                                                                          errorMessage =
+                                                                              "Ungültige E-Mail-Adresse";
+                                                                        });
+                                                                        return;
+                                                                      }
+
+                                                                      // Clear any previous error messages
+                                                                      setState(
+                                                                          () {
+                                                                        errorMessage =
+                                                                            null;
+                                                                      });
+
+                                                                      setState(() =>
+                                                                          isSendingInvite =
+                                                                              true);
+                                                                      final name = email
+                                                                          .split(
+                                                                              '@')
+                                                                          .first;
+                                                                      try {
+                                                                        final userName =
+                                                                            name[0].toUpperCase() +
+                                                                                name.substring(1);
+
+                                                                        // Send main invitation (this is the critical part)
+                                                                        await collaborationService
+                                                                            .sendInvitationForAllTodos(
+                                                                          inviteeEmail:
+                                                                              email,
+                                                                          inviteeName:
+                                                                              userName,
+                                                                        );
+
+                                                                        // Save to non_registered_users collection
+                                                                        final nonRegisteredUser =
+                                                                            NonRegisteredUser(
+                                                                          email:
+                                                                              email,
+                                                                          name:
+                                                                              userName,
+                                                                          invitedAt:
+                                                                              DateTime.now(),
+                                                                          todoUnreadStatus:
+                                                                              true, // Set to true when inviting
+                                                                        );
+                                                                        await FirebaseFirestore
+                                                                            .instance
+                                                                            .collection('non_registered_users')
+                                                                            .doc(nonRegisteredUser.email)
+                                                                            .set(nonRegisteredUser.toMap());
+
+                                                                        // Try to send email notification (but don't fail if this fails)
+                                                                        try {
+                                                                          emailService
+                                                                              .sendInvitationEmail(
+                                                                            email:
+                                                                                email,
+                                                                            inviterName:
+                                                                                userName,
+                                                                          );
+                                                                        } catch (emailError) {
+                                                                          print(
+                                                                              'Email sending failed but invitation was successful: $emailError');
+                                                                        }
+
+                                                                        // Refresh the data
+
+                                                                        // Reset loader state and mark as sent
+                                                                        // if (mounted) {
+                                                                        setState(
+                                                                            () {
+                                                                          isSendingInvite =
+                                                                              false;
+                                                                          sentInvitations
+                                                                              .add(email);
+                                                                        });
+
+                                                                        // Show green success snackbar
+                                                                        ScaffoldMessenger.of(context)
+                                                                            .showSnackBar(
+                                                                          SnackBar(
+                                                                            content:
+                                                                                Text('✓ Einladung gesendet'),
+                                                                            backgroundColor:
+                                                                                Colors.green,
+                                                                            duration:
+                                                                                Duration(seconds: 2),
+                                                                          ),
+                                                                        );
+
+                                                                        _loadAndInitCategories();
+                                                                        // Close dialog after showing success message
+                                                                        Future.delayed(
+                                                                            Duration(milliseconds: 500),
+                                                                            () {
+                                                                          if (mounted &&
+                                                                              Navigator.canPop(context)) {
+                                                                            Navigator.of(context).pop();
+                                                                          }
+                                                                        });
+                                                                        // }
+                                                                      } catch (e) {
+                                                                        print(
+                                                                            'Main invitation failed: $e');
+                                                                        // if (mounted) {
+                                                                        setState(
+                                                                            () {
+                                                                          isSendingInvite =
+                                                                              false;
+                                                                          errorMessage =
+                                                                              "Fehler: ${e.toString().replaceAll('Exception:', '')}";
+                                                                        });
+                                                                        // }
+                                                                      }
+                                                                    },
+                                                                  ),
+                                                      ],
+                                                    )
+                                                  ],
+                                                ),
+                                              ),
+                                            )
+                                          : SizedBox.shrink(),
                             ),
                           ],
                         ),
                       ),
-                    if (isSearching)
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: CircularProgressIndicator(),
-                      ),
-                    (!isSearching && searchResults.isNotEmpty)
-                        ? Container(
-                            constraints: BoxConstraints(maxHeight: 200),
-                            child: ListView.builder(
-                              shrinkWrap: true,
-                              itemCount: searchResults.length,
-                              itemBuilder: (context, index) {
-                                final user = searchResults[index];
-                                return ListTile(
-                                  title: Text(user['name']),
-                                  subtitle: Text(user['email']),
-                                  trailing: sentInvitations
-                                          .contains(user['email'])
-                                      ? Container(
-                                          padding: EdgeInsets.symmetric(
-                                              horizontal: 8, vertical: 4),
-                                          decoration: BoxDecoration(
-                                            color: Colors.green,
-                                            borderRadius:
-                                                BorderRadius.circular(12),
-                                          ),
-                                          child: Text(
-                                            'Gesendet',
-                                            style: TextStyle(
-                                              color: Colors.white,
-                                              fontSize: 12,
-                                              fontWeight: FontWeight.bold,
-                                            ),
-                                          ),
-                                        )
-                                      : (isSendingInvite &&
-                                              currentlyInvitingEmail ==
-                                                  user['email'])
-                                          ? SizedBox(
-                                              width: 24,
-                                              height: 24,
-                                              child: CircularProgressIndicator(
-                                                  strokeWidth: 2))
-                                          : IconButton(
-                                              icon: Icon(Icons.person_add,
-                                                  color: Color.fromARGB(
-                                                      255, 107, 69, 106)),
-                                              onPressed: isSendingInvite
-                                                  ? null
-                                                  : () async {
-                                                      print(
-                                                          '[INVITE_LOG] ${DateTime.now().millisecondsSinceEpoch}: Starting setState for isSendingInvite = true');
-                                                      setState(() {
-                                                        isSendingInvite = true;
-                                                        currentlyInvitingEmail =
-                                                            user['email'];
-                                                      });
-                                                      print(
-                                                          '[INVITE_LOG] ${DateTime.now().millisecondsSinceEpoch}: setState completed for isSendingInvite = true');
-                                                      try {
-                                                        print(
-                                                            '[INVITE_LOG] ${DateTime.now().millisecondsSinceEpoch}: Starting sendInvitationForAllTodos');
-                                                        // Send main invitation (this is the critical part)
-                                                        await collaborationService
-                                                            .sendInvitationForAllTodos(
-                                                          inviteeEmail:
-                                                              user['email'],
-                                                          inviteeName:
-                                                              user['name'],
-                                                        );
-                                                        print(
-                                                            '[INVITE_LOG] ${DateTime.now().millisecondsSinceEpoch}: sendInvitationForAllTodos completed');
-
-                                                        print(
-                                                            '[INVITE_LOG] ${DateTime.now().millisecondsSinceEpoch}: Invitation sent to registered user - todoUnreadStatus handled by collaboration service');
-
-                                                        print(
-                                                            '[INVITE_LOG] ${DateTime.now().millisecondsSinceEpoch}: Starting email notification');
-                                                        // Try to send email notification (but don't fail if this fails)
-                                                        try {
-                                                          emailService
-                                                              .sendInvitationEmail(
-                                                            email:
-                                                                user['email'],
-                                                            inviterName:
-                                                                user['name'],
-                                                          );
-                                                          print(
-                                                              '[INVITE_LOG] ${DateTime.now().millisecondsSinceEpoch}: Email notification sent successfully');
-                                                        } catch (emailError) {
-                                                          print(
-                                                              '[INVITE_LOG] ${DateTime.now().millisecondsSinceEpoch}: Email sending failed but invitation was successful: $emailError');
-                                                        }
-
-                                                        // Refresh the data
-
-                                                        // Reset loader state and mark as sent
-                                                        if (mounted) {
-                                                          setState(() {
-                                                            isSendingInvite =
-                                                                false;
-                                                            currentlyInvitingEmail =
-                                                                null;
-                                                            sentInvitations.add(
-                                                                user['email']);
-                                                          });
-
-                                                          // Show green success snackbar
-                                                          ScaffoldMessenger.of(
-                                                                  context)
-                                                              .showSnackBar(
-                                                            SnackBar(
-                                                              content: Text(
-                                                                  '✓ Einladung für alle Listen gesendet'),
-                                                              backgroundColor:
-                                                                  Colors.green,
-                                                              duration:
-                                                                  Duration(
-                                                                      seconds:
-                                                                          2),
-                                                            ),
-                                                          );
-                                                          if (mounted) {
-                                                            print(
-                                                                '[INVITE_LOG] ${DateTime.now().millisecondsSinceEpoch}: Starting _loadAndInitCategories');
-                                                            await _loadAndInitCategories();
-                                                            print(
-                                                                '[INVITE_LOG] ${DateTime.now().millisecondsSinceEpoch}: _loadAndInitCategories completed');
-
-                                                            print(
-                                                                '[INVITE_LOG] ${DateTime.now().millisecondsSinceEpoch}: Popping dialog');
-                                                            Navigator.of(
-                                                                    context)
-                                                                .pop();
-                                                            print(
-                                                                '[INVITE_LOG] ${DateTime.now().millisecondsSinceEpoch}: Dialog popped successfully');
-                                                          }
-                                                        }
-                                                      } catch (e) {
-                                                        print(
-                                                            '[INVITE_LOG] ${DateTime.now().millisecondsSinceEpoch}: Main invitation failed: $e');
-                                                        // if (mounted) {
-                                                        print(
-                                                            '[INVITE_LOG] ${DateTime.now().millisecondsSinceEpoch}: Starting error setState');
-                                                        setState(() {
-                                                          isSendingInvite =
-                                                              false;
-                                                          currentlyInvitingEmail =
-                                                              null;
-                                                          errorMessage =
-                                                              "Fehler beim Senden der Einladung: $e";
-                                                        });
-                                                        print(
-                                                            '[INVITE_LOG] ${DateTime.now().millisecondsSinceEpoch}: Error setState completed');
-                                                        print(
-                                                            '[INVITE_LOG] ${DateTime.now().millisecondsSinceEpoch}: Error message set in dialog');
-                                                        // }
-                                                      }
-
-                                                      setState(() {
-                                                        isSendingInvite = false;
-                                                        currentlyInvitingEmail =
-                                                            null;
-                                                      });
-                                                    },
-                                            ),
-                                );
-                              },
-                            ),
-                          )
-                        : (!isSearching &&
-                                searchController.text.isNotEmpty &&
-                                searchResults.isEmpty)
-                            ? Padding(
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 15.0, vertical: 10),
-                                child: Row(
-                                  children: [
-                                    // E‑Mail-Text
-                                    Expanded(
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          Text(
-                                            searchController.text,
-                                            style: TextStyle(
-                                                fontSize: 16,
-                                                color: Colors.black),
-                                          ),
-                                          Text(
-                                            "Einladen",
-                                            style: TextStyle(
-                                                fontSize: 14,
-                                                color: Colors.black),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                    // Success message, loader, or invite button
-                                    sentInvitations
-                                            .contains(searchController.text)
-                                        ? Container(
-                                            padding: EdgeInsets.symmetric(
-                                                horizontal: 8, vertical: 4),
-                                            decoration: BoxDecoration(
-                                              color: Colors.green,
-                                              borderRadius:
-                                                  BorderRadius.circular(12),
-                                            ),
-                                            child: Text(
-                                              'Gesendet',
-                                              style: TextStyle(
-                                                color: Colors.white,
-                                                fontSize: 12,
-                                                fontWeight: FontWeight.bold,
-                                              ),
-                                            ),
-                                          )
-                                        : isSendingInvite
-                                            ? SizedBox(
-                                                width: 24,
-                                                height: 24,
-                                                child:
-                                                    CircularProgressIndicator(
-                                                        strokeWidth: 2),
-                                              )
-                                            : IconButton(
-                                                icon: Icon(Icons.person_add,
-                                                    color: Color.fromARGB(
-                                                        255, 107, 69, 106)),
-                                                onPressed: () async {
-                                                  // Validate email before sending
-                                                  final email = searchController
-                                                      .text
-                                                      .trim();
-                                                  if (!_isValidEmail(email)) {
-                                                    setState(() {
-                                                      errorMessage =
-                                                          "Ungültige E-Mail-Adresse";
-                                                    });
-                                                    return;
-                                                  }
-
-                                                  // Clear any previous error messages
-                                                  setState(() {
-                                                    errorMessage = null;
-                                                  });
-
-                                                  setState(() =>
-                                                      isSendingInvite = true);
-                                                  final name =
-                                                      email.split('@').first;
-                                                  try {
-                                                    final userName =
-                                                        name[0].toUpperCase() +
-                                                            name.substring(1);
-
-                                                    // Send main invitation (this is the critical part)
-                                                    await collaborationService
-                                                        .sendInvitationForAllTodos(
-                                                      inviteeEmail: email,
-                                                      inviteeName: userName,
-                                                    );
-
-                                                    // Save to non_registered_users collection
-                                                    final nonRegisteredUser =
-                                                        NonRegisteredUser(
-                                                      email: email,
-                                                      name: userName,
-                                                      invitedAt: DateTime.now(),
-                                                      todoUnreadStatus:
-                                                          true, // Set to true when inviting
-                                                    );
-                                                    await FirebaseFirestore
-                                                        .instance
-                                                        .collection(
-                                                            'non_registered_users')
-                                                        .doc(nonRegisteredUser
-                                                            .email)
-                                                        .set(nonRegisteredUser
-                                                            .toMap());
-
-                                                    // Try to send email notification (but don't fail if this fails)
-                                                    try {
-                                                      emailService
-                                                          .sendInvitationEmail(
-                                                        email: email,
-                                                        inviterName: userName,
-                                                      );
-                                                    } catch (emailError) {
-                                                      print(
-                                                          'Email sending failed but invitation was successful: $emailError');
-                                                    }
-
-                                                    // Refresh the data
-
-                                                    // Reset loader state and mark as sent
-                                                    // if (mounted) {
-                                                    setState(() {
-                                                      isSendingInvite = false;
-                                                      sentInvitations
-                                                          .add(email);
-                                                    });
-
-                                                    // Show green success snackbar
-                                                    ScaffoldMessenger.of(
-                                                            context)
-                                                        .showSnackBar(
-                                                      SnackBar(
-                                                        content: Text(
-                                                            '✓ Einladung gesendet'),
-                                                        backgroundColor:
-                                                            Colors.green,
-                                                        duration: Duration(
-                                                            seconds: 2),
-                                                      ),
-                                                    );
-
-                                                    _loadAndInitCategories();
-                                                    // Close dialog after showing success message
-                                                    Future.delayed(
-                                                        Duration(
-                                                            milliseconds: 500),
-                                                        () {
-                                                      if (mounted &&
-                                                          Navigator.canPop(
-                                                              context)) {
-                                                        Navigator.of(context)
-                                                            .pop();
-                                                      }
-                                                    });
-                                                    // }
-                                                  } catch (e) {
-                                                    print(
-                                                        'Main invitation failed: $e');
-                                                    // if (mounted) {
-                                                    setState(() {
-                                                      isSendingInvite = false;
-                                                      errorMessage =
-                                                          "Fehler: ${e.toString().replaceAll('Exception:', '')}";
-                                                    });
-                                                    // }
-                                                  }
-                                                },
-                                              ),
-                                  ],
-                                ),
-                              )
-                            : SizedBox.shrink(),
+                    ),
                     Padding(
                       padding: const EdgeInsets.all(15.0),
                       child: Row(
@@ -1038,21 +1106,23 @@ class _ToDoPageState extends State<ToDoPage> {
                     );
                   },
                 ),
-                IconButton(
-                  icon: Icon(Icons.person_add),
-                  tooltip: 'Alle Listen teilen',
-                  onPressed: () async {
-                    // Check subscription before allowing invitations
-                    final subscriptionService = SubscriptionService();
-                    final canSend =
-                        await subscriptionService.canSendInvitations(context);
+                Container(
+                  child: IconButton(
+                    icon: Icon(Icons.person_add),
+                    tooltip: 'Alle Listen teilen',
+                    onPressed: () async {
+                      // Check subscription before allowing invitations
+                      final subscriptionService = SubscriptionService();
+                      final canSend =
+                          await subscriptionService.canSendInvitations(context);
 
-                    if (!canSend) {
-                      return; // Subscription dialog already shown
-                    }
+                      if (!canSend) {
+                        return; // Subscription dialog already shown
+                      }
 
-                    _showInviteDialog();
-                  },
+                      _showInviteDialog();
+                    },
+                  ),
                 ),
                 if (selectedItems.isNotEmpty)
                   IconButton(
@@ -1301,8 +1371,12 @@ class _ToDoPageState extends State<ToDoPage> {
                     SpacerWidget(height: 1),
                     listToDoModel.isEmpty
                         ? AbsorbPointer()
-                        : FourSecretsDivider(),
-                    SpacerWidget(height: 10),
+                        : Column(
+                            children: [
+                              FourSecretsDivider(),
+                              SizedBox(height: 60),
+                            ],
+                          ),
                   ],
                 ),
               )

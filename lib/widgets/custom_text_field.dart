@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import '../config/theme/auth_theme.dart';
 import '../constants/app_constants.dart';
 
-class CustomTextField extends StatelessWidget {
+class CustomTextField extends StatefulWidget {
   final TextEditingController controller;
   final String label;
   final String? hint;
@@ -43,40 +43,66 @@ class CustomTextField extends StatelessWidget {
   }) : super(key: key);
 
   @override
+  State<CustomTextField> createState() => _CustomTextFieldState();
+}
+
+class _CustomTextFieldState extends State<CustomTextField> {
+  late bool _isObscured;
+
+  @override
+  void initState() {
+    super.initState();
+    _isObscured = widget.obscureText;
+  }
+
+  @override
   Widget build(BuildContext context) {
     final decoration =
-        (inputDecoration ?? AuthTheme.textFieldDecoration(label)).copyWith(
-      hintText: hint,
-      hintStyle: hintStyle,
+        (widget.inputDecoration ?? AuthTheme.textFieldDecoration(widget.label))
+            .copyWith(
+      hintText: widget.hint,
+      hintStyle: widget.hintStyle,
+      // Add eye icon for password fields
+      suffixIcon: widget.obscureText
+          ? IconButton(
+              icon: Icon(
+                _isObscured ? Icons.visibility_off : Icons.visibility,
+                color: Colors.grey[600],
+              ),
+              onPressed: () {
+                setState(() {
+                  _isObscured = !_isObscured;
+                });
+              },
+            )
+          : null,
     );
 
     // Force read-only for date fields when global setting is enabled
-    final shouldBeReadOnly =
-        isReadOnly || (isDateField && AppConstants.disableDateManualEntry);
+    final shouldBeReadOnly = widget.isReadOnly ||
+        (widget.isDateField && AppConstants.disableDateManualEntry);
 
     return TextFormField(
-      controller: controller,
-      maxLines: maxLines ?? 1,
+      controller: widget.controller,
+      maxLines: widget.maxLines ?? 1,
       style: TextStyle(fontSize: 16),
       readOnly: shouldBeReadOnly,
-      enabled: enabled,
+      enabled: widget.enabled,
       onTapOutside: (event) {
         FocusScope.of(context).unfocus();
       },
-      onFieldSubmitted: onSubmit,
-      onChanged: onchanged,
+      onFieldSubmitted: widget.onSubmit,
+      onChanged: widget.onchanged,
       decoration: decoration,
-      obscureText: obscureText,
-      keyboardType: keyboardType,
-      validator: validator,
-      maxLength: maxLength,
+      obscureText: _isObscured,
+      keyboardType: widget.keyboardType,
+      validator: widget.validator,
+      maxLength: widget.maxLength,
     );
   }
 }
 
-
-
-class CustomTextField1 extends StatelessWidget {
+class CustomTextField1 extends StatefulWidget {
   final TextEditingController controller;
   final String label;
   final String? hint;
@@ -117,33 +143,61 @@ class CustomTextField1 extends StatelessWidget {
   }) : super(key: key);
 
   @override
+  State<CustomTextField1> createState() => _CustomTextField1State();
+}
+
+class _CustomTextField1State extends State<CustomTextField1> {
+  late bool _isObscured;
+
+  @override
+  void initState() {
+    super.initState();
+    _isObscured = widget.obscureText;
+  }
+
+  @override
   Widget build(BuildContext context) {
     final decoration =
-        (inputDecoration ?? AuthTheme.textFieldDecoration(label)).copyWith(
-      hintText: hint,
-      hintStyle: hintStyle,
+        (widget.inputDecoration ?? AuthTheme.textFieldDecoration(widget.label))
+            .copyWith(
+      hintText: widget.hint,
+      hintStyle: widget.hintStyle,
+      // Add eye icon for password fields
+      suffixIcon: widget.obscureText
+          ? IconButton(
+              icon: Icon(
+                _isObscured ? Icons.visibility_off : Icons.visibility,
+                color: Colors.grey[600],
+              ),
+              onPressed: () {
+                setState(() {
+                  _isObscured = !_isObscured;
+                });
+              },
+            )
+          : null,
     );
 
     // Force read-only for date fields when global setting is enabled
-    final shouldBeReadOnly =
-        isReadOnly || (isDateField && AppConstants.disableDateManualEntry);
+    final shouldBeReadOnly = widget.isReadOnly ||
+        (widget.isDateField && AppConstants.disableDateManualEntry);
 
     return TextFormField(
-      controller: controller,
-      maxLines: maxLines ?? 1,
+      controller: widget.controller,
+      maxLines: widget.maxLines ?? 1,
       style: TextStyle(fontSize: 16),
       readOnly: shouldBeReadOnly,
-      enabled: enabled,
+      enabled: widget.enabled,
       onTapOutside: (event) {
         FocusScope.of(context).unfocus();
       },
-      onFieldSubmitted: onSubmit,
-      onChanged: onchanged,
+      onFieldSubmitted: widget.onSubmit,
+      onChanged: widget.onchanged,
       decoration: decoration,
-      obscureText: obscureText,
-      keyboardType: keyboardType,
-      validator: validator,
-      maxLength: maxLength,
+      obscureText: _isObscured,
+      keyboardType: widget.keyboardType,
+      validator: widget.validator,
+      maxLength: widget.maxLength,
     );
   }
 }
