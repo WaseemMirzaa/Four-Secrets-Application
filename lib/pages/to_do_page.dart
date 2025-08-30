@@ -1113,12 +1113,12 @@ class _ToDoPageState extends State<ToDoPage> {
                     onPressed: () async {
                       // Check subscription before allowing invitations
                       final subscriptionService = SubscriptionService();
-                      final canSend =
-                          await subscriptionService.canSendInvitations(context);
+                      // final canSend =
+                      //     await subscriptionService.canSendInvitations(context);
 
-                      if (!canSend) {
-                        return; // Subscription dialog already shown
-                      }
+                      // if (!canSend) {
+                      //   return; // Subscription dialog already shown
+                      // }
 
                       _showInviteDialog();
                     },
