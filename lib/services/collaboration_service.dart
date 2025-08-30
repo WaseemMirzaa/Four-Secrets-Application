@@ -624,7 +624,7 @@ class CollaborationService {
     final todos =
         todosSnapshot.docs.map((doc) => ToDoModel.fromFirestore(doc)).toList();
     if (todos.isEmpty) {
-      throw Exception('No todos to share');
+      throw Exception('Keine Aufgaben zum Teilen');
     }
     final todoIds = todos.map((t) => t.id).toList();
     final todoNames = todos.map((t) => t.toDoName ?? '').toList();

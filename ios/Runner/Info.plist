@@ -67,6 +67,9 @@
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
+	<!-- FORCE LIGHT MODE: Disable dark mode completely on iOS -->
+	<key>UIUserInterfaceStyle</key>
+	<string>Light</string>
 	<!-- Enable file sharing and Files app integration -->
 	<key>UIFileSharingEnabled</key>
 	<true/>

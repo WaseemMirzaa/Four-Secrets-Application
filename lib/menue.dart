@@ -277,7 +277,8 @@ class MenueState extends State<Menue> {
               '[Menu Debug] ✅ Red dot is NOT showing - No matching notifications');
         }
 
-        return Drawer(
+        return SafeArea(
+            child: Drawer(
           width: 225,
           backgroundColor: Colors.white70,
           child: ListView(
@@ -588,7 +589,7 @@ class MenueState extends State<Menue> {
               const SpacerWidget(height: 10),
             ],
           ),
-        );
+        ));
       },
     );
   }

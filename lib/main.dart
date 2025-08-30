@@ -7,6 +7,7 @@ import 'package:four_secrets_wedding_app/firebase_options.dart';
 import 'package:four_secrets_wedding_app/routes/routes.dart';
 import 'package:four_secrets_wedding_app/services/notification_alaram-service.dart';
 import 'package:four_secrets_wedding_app/services/push_notification_service.dart';
+import 'package:four_secrets_wedding_app/services/theme_service.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -110,12 +111,47 @@ Future<void> main() async {
     debugPrint('❌ Failed to set device orientation: $e');
   }
 
+  // Initialize ThemeService for force light mode (especially for Huawei)
+  try {
+    await ThemeService.initialize();
+    print('🌞 ThemeService initialized for force light mode');
+  } catch (e) {
+    debugPrint('❌ Failed to initialize ThemeService: $e');
+  }
+
+  // Force light mode on all platforms including Huawei
+  try {
+    SystemChrome.setSystemUIOverlayStyle(
+      const SystemUiOverlayStyle(
+        statusBarColor: Colors.transparent,
+        statusBarIconBrightness: Brightness.dark,
+        statusBarBrightness: Brightness.light,
+        systemNavigationBarColor: Colors.white,
+        systemNavigationBarIconBrightness: Brightness.dark,
+      ),
+    );
+    print('🌞 System UI forced to light mode');
+  } catch (e) {
+    debugPrint('❌ Failed to set system UI overlay style: $e');
+  }
+
   runApp(
     MaterialApp(
       title: '4secrets - Wedding Planner',
-      theme: ThemeData(
-        textTheme: GoogleFonts.openSansTextTheme(),
+      // Use ThemeService for consistent light theme with Google Fonts
+      theme: ThemeService.getLightTheme().copyWith(
+        textTheme: GoogleFonts.openSansTextTheme(
+          ThemeService.getLightTheme().textTheme,
+        ),
       ),
+      // Force light theme - disable dark theme completely
+      // Even if user has dark mode enabled, app will stay light
+      darkTheme: ThemeService.getLightTheme().copyWith(
+        textTheme: GoogleFonts.openSansTextTheme(
+          ThemeService.getLightTheme().textTheme,
+        ),
+      ),
+      themeMode: ThemeMode.light, // Force light mode always
       initialRoute: RouteManager.splashScreen,
       onGenerateRoute: RouteManager.generateRoute,
       debugShowCheckedModeBanner: false,
