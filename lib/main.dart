@@ -7,6 +7,7 @@ import 'package:four_secrets_wedding_app/firebase_options.dart';
 import 'package:four_secrets_wedding_app/routes/routes.dart';
 import 'package:four_secrets_wedding_app/services/notification_alaram-service.dart';
 import 'package:four_secrets_wedding_app/services/push_notification_service.dart';
+import 'package:four_secrets_wedding_app/theme/theme_service.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -110,7 +111,15 @@ Future<void> main() async {
     debugPrint('❌ Failed to set device orientation: $e');
   }
 
-  // Set global system UI overlay style for better Huawei compatibility
+  // Initialize ThemeService for force light mode (especially for Huawei)
+  try {
+    await ThemeService.initialize();
+    print('🌞 ThemeService initialized for force light mode');
+  } catch (e) {
+    debugPrint('❌ Failed to initialize ThemeService: $e');
+  }
+
+  // Force light mode on all platforms including Huawei
   try {
     SystemChrome.setSystemUIOverlayStyle(
       const SystemUiOverlayStyle(
@@ -121,7 +130,7 @@ Future<void> main() async {
         systemNavigationBarIconBrightness: Brightness.dark,
       ),
     );
-    print('🎨 Global system UI overlay style set for Huawei compatibility');
+    print('🌞 System UI forced to light mode');
   } catch (e) {
     debugPrint('❌ Failed to set system UI overlay style: $e');
   }
@@ -129,23 +138,17 @@ Future<void> main() async {
   runApp(
     MaterialApp(
       title: '4secrets - Wedding Planner',
-      theme: ThemeData(
-        textTheme: GoogleFonts.openSansTextTheme(),
-        // Global AppBar theme for consistent status bar handling
-        appBarTheme: const AppBarTheme(
-          systemOverlayStyle: SystemUiOverlayStyle(
-            statusBarColor: Colors.transparent,
-            statusBarIconBrightness:
-                Brightness.light, // White icons for dark AppBar
-            statusBarBrightness: Brightness.dark, // For iOS
-            systemNavigationBarColor: Colors.white,
-            systemNavigationBarIconBrightness: Brightness.dark,
-          ),
-          backgroundColor: Color.fromARGB(255, 107, 69, 106),
-          foregroundColor: Colors.white,
-          elevation: 0,
+      theme: ThemeService.getLightTheme().copyWith(
+        textTheme: GoogleFonts.openSansTextTheme(
+          ThemeService.getLightTheme().textTheme,
         ),
       ),
+      darkTheme: ThemeService.getLightTheme().copyWith(
+        textTheme: GoogleFonts.openSansTextTheme(
+          ThemeService.getLightTheme().textTheme,
+        ),
+      ),
+      themeMode: ThemeMode.light,
       initialRoute: RouteManager.splashScreen,
       onGenerateRoute: RouteManager.generateRoute,
       debugShowCheckedModeBanner: false,

@@ -122,7 +122,7 @@ class _SubscriptionManagementScreenState
                   valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF6B456A)),
                 ),
               )
-            : _userData != null && !_userData!.isSubscribed
+            : _userData != null && _userData!.isSubscribed
                 ? _buildSubscriptionDetails()
                 : _buildNoSubscription(),
       ),

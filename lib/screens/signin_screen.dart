@@ -113,6 +113,7 @@ class _SignInScreenState extends State<SignInScreen> {
           RouteManager.emailVerificationPage,
           (route) => false,
         );
+
         return;
       }
 
@@ -213,6 +214,13 @@ class _SignInScreenState extends State<SignInScreen> {
         );
       }
     }
+  }
+
+  @override
+  dispose() {
+    _emailController.dispose();
+    _passwordController.dispose();
+    super.dispose();
   }
 
   @override
