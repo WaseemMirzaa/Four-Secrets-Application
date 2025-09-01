@@ -129,6 +129,12 @@ class _CardWidgetState extends State<CardWidget> with TickerProviderStateMixin {
                             fontSize: 14,
                           ),
                         ),
+                        SizedBox(height: 5),
+                        Text(
+                          '← Nach links/rechts wischen →',
+                          style:
+                              TextStyle(color: Colors.grey[500], fontSize: 12),
+                        )
                       ],
                     ),
                   ),
@@ -147,7 +153,7 @@ class _CardWidgetState extends State<CardWidget> with TickerProviderStateMixin {
                       ),
                     ),
                   ),
-                )
+                ),
               ],
             ),
           ),

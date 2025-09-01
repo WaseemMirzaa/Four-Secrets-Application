@@ -898,8 +898,6 @@ class _TablesManagementPageState extends State<TablesManagementPage> {
                 child: Image.asset(
                   AppConstants.tableManagementBackground,
                   fit: BoxFit.cover,
-                  filterQuality: FilterQuality.medium,
-                  cacheWidth: MediaQuery.of(context).size.width.toInt(),
                 ),
               ),
               FourSecretsDivider(),

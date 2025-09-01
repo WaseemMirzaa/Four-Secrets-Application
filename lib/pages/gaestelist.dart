@@ -297,9 +297,6 @@ class _GaestelistState extends State<Gaestelist> {
                 AppConstants.gaestelistBackground,
                 fit: BoxFit.cover,
                 // Optimize image quality for better performance
-                filterQuality: FilterQuality.medium,
-                // Add caching for better performance
-                cacheWidth: MediaQuery.of(context).size.width.toInt(),
               ),
             ),
             FourSecretsDivider(),

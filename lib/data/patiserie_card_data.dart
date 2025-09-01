@@ -10,7 +10,7 @@ class PatiserieCardData {
     "avatar": "assets/images/card/wir_machen_cupcakes_card.jpg",
     "vorname": "Wir Machen",
     "nachname": "Cupcakes",
-    "bezeichnung": "Patiserie",
+    "bezeichnung": "Pâtisserie",
     "backCardTaetigkeit": "Hochzeitstorten-Design",
     "slogan": "Süße Kunst - meisterhaft kreiert.",
   };

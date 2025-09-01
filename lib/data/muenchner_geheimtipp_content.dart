@@ -9,7 +9,7 @@ class MuenchnerGeheimtippContent {
       'Gesang',
       'Band / DJ',
       'Floristik',
-      'Patiserie',
+      'Pâtisserie',
       'Trauredner',
       'Fotografie',
       'Tanzschule',

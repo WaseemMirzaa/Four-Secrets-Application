@@ -117,7 +117,7 @@ class AppConstants {
 
   // Image Assets
   static const String gaestelistBackground =
-      'assets/images/gaestelist/gaesteliste.png';
+      'assets/images/gaestelist/gaesteliste.jpg';
   static const String appLogo = 'assets/images/logo/secrets-logo.jpg';
 
   // Sign In Screen

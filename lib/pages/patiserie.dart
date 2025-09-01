@@ -15,7 +15,7 @@ class Patiserie extends StatelessWidget {
         appBar: AppBar(
           // automaticallyImplyLeading: false,
           foregroundColor: Color.fromARGB(255, 255, 255, 255),
-          title: const Text('Patiserie'),
+          title: const Text('Pâtisserie'),
           backgroundColor: const Color.fromARGB(255, 107, 69, 106),
         ),
         body: Container(

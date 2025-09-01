@@ -128,7 +128,7 @@ class Assets {
   static const String dividerWeddingRings =
       'assets/images/divider/wedding_rings.png';
   static const String gaestelistGaesteliste =
-      'assets/images/gaestelist/gaesteliste.png';
+      'assets/images/gaestelist/gaesteliste.jpg';
   static const String hairMakeupHairMakeup1 =
       'assets/images/hair_makeup/hair_makeup_1.png';
   static const String hairMakeupHairMakeup10 =

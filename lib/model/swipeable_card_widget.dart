@@ -532,28 +532,28 @@ class _SwipeableCardWidgetState extends State<SwipeableCardWidget>
           //     widget.images.length > 1 &&
           //     index == 0 &&
           //     swipeProgress < 0.1)
-          // Positioned(
-          //   bottom: widget.showIndicators ? 30 : 10,
-          //   left: 0,
-          //   right: 0,
-          //   child: Center(
-          //     child: Container(
-          //       padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-          //       decoration: BoxDecoration(
-          //         color: Colors.black.withValues(alpha: 0.5),
-          //         borderRadius: BorderRadius.circular(15),
-          //       ),
-          //       child: Text(
-          //         "← Swipe →",
-          //         style: TextStyle(
-          //           color: Colors.white,
-          //           fontSize: 12,
-          //           fontWeight: FontWeight.bold,
+          //   Positioned(
+          //     bottom: widget.showIndicators ? 30 : 10,
+          //     left: 0,
+          //     right: 0,
+          //     child: Center(
+          //       child: Container(
+          //         padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+          //         decoration: BoxDecoration(
+          //           color: Colors.black.withValues(alpha: 0.5),
+          //           borderRadius: BorderRadius.circular(15),
+          //         ),
+          //         child: Text(
+          //           "← Swipe →",
+          //           style: TextStyle(
+          //             color: Colors.white,
+          //             fontSize: 12,
+          //             fontWeight: FontWeight.bold,
+          //           ),
           //         ),
           //       ),
           //     ),
           //   ),
-          // ),
         ],
       ),
     );

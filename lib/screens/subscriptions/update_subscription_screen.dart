@@ -463,18 +463,15 @@ class _UpdateSubscriptionScreenState extends State<UpdateSubscriptionScreen> {
                     ],
                   ),
 
-                  const SizedBox(height: 10),
+                  const SizedBox(height: 6),
 
-                  const Text(
-                    'Mit dem Kauf stimmen Sie unseren Nutzungsbedingungen und unserer Datenschutzrichtlinie zu.',
+                  Text(
+                    'Hinweis: Dein Jahresabo läuft bis zum Ende der Laufzeit. Danach startet automatisch das Monatsabo, falls du gewechselt hast. Wechsel vom Monats- zum Jahresabo wird sofort übernommen.',
                     textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: Colors.white70,
-                    ),
+                    style: TextStyle(fontSize: 12, color: Colors.white70),
                   ),
 
-                  const SizedBox(height: 6),
+                  SizedBox(height: 6),
 
                   const Text(
                     'Abos verlängern sich automatisch, wenn sie nicht mind. 24 Std. vorher gekündigt werden. Verwaltung & Kündigung über App Store oder Google Play.',

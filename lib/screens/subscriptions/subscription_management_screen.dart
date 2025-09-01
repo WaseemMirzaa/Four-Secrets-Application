@@ -122,7 +122,7 @@ class _SubscriptionManagementScreenState
                   valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF6B456A)),
                 ),
               )
-            : _userData != null && _userData!.isSubscribed
+            : _userData != null && !_userData!.isSubscribed
                 ? _buildSubscriptionDetails()
                 : _buildNoSubscription(),
       ),
@@ -336,7 +336,7 @@ class _SubscriptionManagementScreenState
                 ),
                 const SizedBox(height: 12),
                 const Text(
-                  'Sie können auf ein anderes Abonnement upgraden oder downgraden.',
+                  'Hinweis: Dein Jahresabo läuft bis zum Ende der Laufzeit. Danach startet automatisch das Monatsabo, falls du gewechselt hast. Wechsel vom Monats- zum Jahresabo wird sofort übernommen..',
                   style: TextStyle(
                     fontSize: 14,
                     color: Colors.black87,

@@ -16,7 +16,7 @@ class AddGuestBg extends StatelessWidget {
       height: MediaQuery.of(context).size.height,
       decoration: const BoxDecoration(
         image: DecorationImage(
-          image: AssetImage('assets/images/gaestelist/gaesteliste.png'),
+          image: AssetImage('assets/images/gaestelist/gaesteliste.jpg'),
           fit: BoxFit.fitWidth, // Changed from cover to contain
         ),
       ),
