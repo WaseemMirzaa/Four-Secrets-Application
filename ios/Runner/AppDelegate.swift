@@ -24,7 +24,7 @@ import flutter_local_notifications
     UNUserNotificationCenter.current().delegate = self
 
     // Request notification permissions
-    let authOptions: UNAuthorizationOptions = [.alert, .badge, .sound, .criticalAlert]
+    let authOptions: UNAuthorizationOptions = [.alert, .badge, .sound]
     UNUserNotificationCenter.current().requestAuthorization(options: authOptions) { granted, error in
       if let error = error {
         print("❌ Notification permission error: \(error)")

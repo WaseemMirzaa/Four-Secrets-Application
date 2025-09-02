@@ -15,6 +15,7 @@ class ThemeService {
   static bool _isInitialized = false;
   static String? _deviceBrand;
   static String? _deviceModel;
+  static int? _sdkInt;
 
   /// Initialize theme service and detect device information
   static Future<void> initialize() async {
@@ -27,8 +28,10 @@ class ThemeService {
         final androidInfo = await deviceInfo.androidInfo;
         _deviceBrand = androidInfo.brand.toLowerCase();
         _deviceModel = androidInfo.model.toLowerCase();
+        _sdkInt = androidInfo.version.sdkInt;
 
-        print('🔍 Device detected: $_deviceBrand $_deviceModel');
+        print(
+            '🔍 Device detected: $_deviceBrand $_deviceModel (SDK: $_sdkInt)');
 
         // Special handling for Huawei devices
         if (_deviceBrand?.contains('huawei') == true ||
@@ -36,9 +39,9 @@ class ThemeService {
           print(
               '📱 Huawei/Honor device detected - applying enhanced light mode');
           await _applyHuaweiSpecificSettings();
+        } else {
+          await _forceAndroidLightMode();
         }
-
-        await _forceAndroidLightMode();
       } else if (Platform.isIOS) {
         final iosInfo = await deviceInfo.iosInfo;
         _deviceBrand = 'apple';
@@ -58,17 +61,28 @@ class ThemeService {
   /// Force light mode on Android devices
   static Future<void> _forceAndroidLightMode() async {
     try {
-      // Set system UI overlay style for light mode
-      SystemChrome.setSystemUIOverlayStyle(
-        const SystemUiOverlayStyle(
-          statusBarColor: Colors.transparent,
-          statusBarIconBrightness: Brightness.dark,
-          statusBarBrightness: Brightness.light,
-          systemNavigationBarColor: Colors.white,
-          systemNavigationBarIconBrightness: Brightness.dark,
-          systemNavigationBarDividerColor: Colors.transparent,
-        ),
-      );
+      // For Android SDK 23+ (Marshmallow), we can use system UI overlay style
+      if (_sdkInt != null && _sdkInt! >= 23) {
+        SystemChrome.setSystemUIOverlayStyle(
+          const SystemUiOverlayStyle(
+            statusBarColor: Colors.white,
+            statusBarIconBrightness: Brightness.dark,
+            statusBarBrightness: Brightness.light,
+            systemNavigationBarColor: Colors.white,
+            systemNavigationBarIconBrightness: Brightness.dark,
+            systemNavigationBarDividerColor: Colors.transparent,
+          ),
+        );
+      } else {
+        // For older Android versions, use a different approach
+        SystemChrome.setSystemUIOverlayStyle(
+          const SystemUiOverlayStyle(
+            statusBarColor: Colors.black, // Dark background for light icons
+            statusBarIconBrightness: Brightness.light,
+            statusBarBrightness: Brightness.dark,
+          ),
+        );
+      }
 
       print('✅ Android light mode applied');
     } catch (e) {
@@ -79,10 +93,10 @@ class ThemeService {
   /// Special settings for Huawei devices
   static Future<void> _applyHuaweiSpecificSettings() async {
     try {
-      // Huawei devices sometimes need additional system UI calls
+      // Huawei devices often need a more aggressive approach
       SystemChrome.setSystemUIOverlayStyle(
         const SystemUiOverlayStyle(
-          statusBarColor: Colors.transparent,
+          statusBarColor: Colors.white,
           statusBarIconBrightness: Brightness.dark,
           statusBarBrightness: Brightness.light,
           systemNavigationBarColor: Colors.white,
@@ -92,12 +106,12 @@ class ThemeService {
       );
 
       // Additional delay for Huawei EMUI to process the changes
-      await Future.delayed(const Duration(milliseconds: 100));
+      await Future.delayed(const Duration(milliseconds: 200));
 
       // Apply again to ensure it sticks on EMUI
       SystemChrome.setSystemUIOverlayStyle(
         const SystemUiOverlayStyle(
-          statusBarColor: Colors.transparent,
+          statusBarColor: Colors.white,
           statusBarIconBrightness: Brightness.dark,
           statusBarBrightness: Brightness.light,
           systemNavigationBarColor: Colors.white,
@@ -133,7 +147,7 @@ class ThemeService {
       if (Platform.isAndroid) {
         SystemChrome.setSystemUIOverlayStyle(
           const SystemUiOverlayStyle(
-            statusBarColor: Colors.transparent,
+            statusBarColor: Colors.white,
             statusBarIconBrightness: Brightness.dark,
             statusBarBrightness: Brightness.light,
             systemNavigationBarColor: Colors.white,
@@ -153,7 +167,6 @@ class ThemeService {
     }
   }
 
-  /// Get the forced light theme data
   /// Get the forced light theme data
   static ThemeData getLightTheme() {
     return ThemeData(
@@ -181,8 +194,8 @@ class ThemeService {
           fontWeight: FontWeight.w500,
         ),
         systemOverlayStyle: const SystemUiOverlayStyle(
-          statusBarColor: Colors.transparent,
-          statusBarIconBrightness: Brightness.dark,
+          statusBarColor: Colors.white,
+          statusBarIconBrightness: Brightness.light,
           statusBarBrightness: Brightness.light,
         ),
         elevation: 0,

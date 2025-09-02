@@ -8,7 +8,7 @@ import 'package:four_secrets_wedding_app/routes/routes.dart';
 import 'package:four_secrets_wedding_app/services/notification_alaram-service.dart';
 import 'package:four_secrets_wedding_app/services/push_notification_service.dart';
 import 'package:four_secrets_wedding_app/theme/theme_service.dart';
-import 'package:google_fonts/google_fonts.dart';
+
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:timezone/data/latest.dart' as tz;
@@ -119,35 +119,11 @@ Future<void> main() async {
     debugPrint('❌ Failed to initialize ThemeService: $e');
   }
 
-  // Force light mode on all platforms including Huawei
-  try {
-    SystemChrome.setSystemUIOverlayStyle(
-      const SystemUiOverlayStyle(
-        statusBarColor: Colors.transparent,
-        statusBarIconBrightness: Brightness.dark,
-        statusBarBrightness: Brightness.light,
-        systemNavigationBarColor: Colors.white,
-        systemNavigationBarIconBrightness: Brightness.dark,
-      ),
-    );
-    print('🌞 System UI forced to light mode');
-  } catch (e) {
-    debugPrint('❌ Failed to set system UI overlay style: $e');
-  }
-
   runApp(
     MaterialApp(
       title: '4secrets - Wedding Planner',
-      theme: ThemeService.getLightTheme().copyWith(
-        textTheme: GoogleFonts.openSansTextTheme(
-          ThemeService.getLightTheme().textTheme,
-        ),
-      ),
-      darkTheme: ThemeService.getLightTheme().copyWith(
-        textTheme: GoogleFonts.openSansTextTheme(
-          ThemeService.getLightTheme().textTheme,
-        ),
-      ),
+      theme: ThemeService.getLightTheme(),
+      darkTheme: ThemeService.getLightTheme(),
       themeMode: ThemeMode.light,
       initialRoute: RouteManager.splashScreen,
       onGenerateRoute: RouteManager.generateRoute,
