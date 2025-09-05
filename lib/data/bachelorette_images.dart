@@ -2,6 +2,7 @@ class BacheloretteImages {
   // List with all assets images
   static List<String> getImages() {
     final List<String> images = [
+      'assets/images/bachelorette_party/bachelorette_party_1.jpg',
       'assets/images/bachelorette_party/bachelorette_party_2.jpg',
       'assets/images/bachelorette_party/bachelorette_party_3.jpg',
       'assets/images/bachelorette_party/bachelorette_party_4.jpg',

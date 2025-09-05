@@ -2,6 +2,7 @@ import 'package:four_secrets_wedding_app/model/url_email_instagram.dart';
 import 'package:four_secrets_wedding_app/routes/routes.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:four_secrets_wedding_app/utils/snackbar_helper.dart';
 
 // ignore: must_be_immutable
 class FooterButtons extends StatelessWidget {
@@ -28,6 +29,27 @@ class FooterButtons extends StatelessWidget {
     required this.iconSize,
   });
 
+  // Helper method to check if video is available
+  bool get isVideoAvailable {
+    return (videoAsset?.isNotEmpty == true && videoAsset != "null") ||
+        (videoUri?.isNotEmpty == true && videoUri != "null");
+  }
+
+  void _handleVideoPress(BuildContext context) {
+    if (isVideoAvailable) {
+      Navigator.of(context).pushNamed(
+        RouteManager.videoPlayer2,
+        arguments: {
+          'asset': videoAsset,
+          'uri': videoUri?.trim(),
+          'ratio': videoRatio,
+        },
+      );
+    } else {
+      SnackBarHelper.showErrorSnackBar(context, "Video noch nicht verfügbar");
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Row(
@@ -40,7 +62,7 @@ class FooterButtons extends StatelessWidget {
               size: iconSize,
             ),
             onPressed: () {
-              if (urlHomepage.isNotEmpty) {
+              if (urlHomepage?.isNotEmpty == true && urlHomepage != "null") {
                 UrlEmailInstagram.getLaunchHomepage(
                   url: urlHomepage,
                   modeString: urlMode,
@@ -62,7 +84,7 @@ class FooterButtons extends StatelessWidget {
               size: iconSize,
             ),
             onPressed: () {
-              if (mailAdress.isNotEmpty) {
+              if (mailAdress?.isNotEmpty == true && mailAdress != "null") {
                 UrlEmailInstagram.sendEmail(toEmail: mailAdress);
               }
             },
@@ -80,24 +102,13 @@ class FooterButtons extends StatelessWidget {
               Icons.play_circle,
               size: iconSize,
             ),
-            onPressed: () {
-              print('Video Asset: $videoAsset');
-              print('Video Uri: $videoUri');
-              if (videoAsset.isNotEmpty || videoUri.isNotEmpty) {
-                Navigator.of(context).pushNamed(
-                  RouteManager.videoPlayer2,
-                  arguments: {
-                    'asset': videoAsset,
-                    'uri': videoUri.trim(),
-                    'ratio': videoRatio,
-                  },
-                );
-              }
-            },
+            onPressed: () => _handleVideoPress(context),
             style: ElevatedButton.styleFrom(
                 shape: CircleBorder(),
                 backgroundColor: Colors.white,
-                foregroundColor: Color.fromARGB(255, 107, 69, 106),
+                foregroundColor: isVideoAvailable
+                    ? Color.fromARGB(255, 107, 69, 106)
+                    : Colors.grey, // Grey out if no video
                 fixedSize: Size(buttonSize, buttonSize),
                 elevation: 2.5),
           ),
@@ -109,7 +120,7 @@ class FooterButtons extends StatelessWidget {
               size: iconSize,
             ),
             onPressed: () {
-              if (urlInstagram.isNotEmpty) {
+              if (urlInstagram?.isNotEmpty == true && urlInstagram != "null") {
                 UrlEmailInstagram.getlaunchInstagram(
                     url: urlInstagram, modeString: urlMode);
               }
