@@ -1,4 +1,3 @@
-// screens/subscription_screen.dart
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:four_secrets_wedding_app/services/subscription/revenuecat_purchase_exception.dart';

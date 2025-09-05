@@ -344,13 +344,13 @@ class MenueState extends State<Menue> {
   @override
   Widget build(BuildContext context) {
     // Set status bar for drawer - Huawei compatible
-    // SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
-    //   statusBarColor: Colors.transparent,
-    //   statusBarIconBrightness: Brightness.light,
-    //   statusBarBrightness: Brightness.dark,
-    //   systemNavigationBarColor: Color.fromARGB(255, 107, 69, 106),
-    //   systemNavigationBarIconBrightness: Brightness.light,
-    // ));
+    SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
+      statusBarColor: Colors.transparent,
+      statusBarIconBrightness: Brightness.light,
+      statusBarBrightness: Brightness.dark,
+      systemNavigationBarColor: Color.fromARGB(255, 107, 69, 106),
+      systemNavigationBarIconBrightness: Brightness.light,
+    ));
 
     return StreamBuilder<bool>(
       stream: _hasNewCollabNotificationStream,

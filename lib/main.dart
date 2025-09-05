@@ -7,7 +7,7 @@ import 'package:four_secrets_wedding_app/firebase_options.dart';
 import 'package:four_secrets_wedding_app/routes/routes.dart';
 import 'package:four_secrets_wedding_app/services/notification_alaram-service.dart';
 import 'package:four_secrets_wedding_app/services/push_notification_service.dart';
-import 'package:four_secrets_wedding_app/theme/theme_service.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -111,20 +111,12 @@ Future<void> main() async {
     debugPrint('❌ Failed to set device orientation: $e');
   }
 
-  // Initialize ThemeService for force light mode (especially for Huawei)
-  try {
-    await ThemeService.initialize();
-    print('🌞 ThemeService initialized for force light mode');
-  } catch (e) {
-    debugPrint('❌ Failed to initialize ThemeService: $e');
-  }
-
   runApp(
     MaterialApp(
       title: '4secrets - Wedding Planner',
-      theme: ThemeService.getLightTheme(),
-      darkTheme: ThemeService.getLightTheme(),
-      themeMode: ThemeMode.light,
+      theme: ThemeData(
+        textTheme: GoogleFonts.openSansTextTheme(),
+      ),
       initialRoute: RouteManager.splashScreen,
       onGenerateRoute: RouteManager.generateRoute,
       debugShowCheckedModeBanner: false,

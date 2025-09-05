@@ -5,7 +5,6 @@ import 'package:device_info_plus/device_info_plus.dart';
 import 'package:four_secrets_wedding_app/config/theme/app_theme.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-/// Service to force light mode across all platforms
 /// Especially important for Huawei devices and other Android OEMs
 class ThemeService {
   static final ThemeService _instance = ThemeService._internal();

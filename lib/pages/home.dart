@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:four_secrets_wedding_app/menue.dart';
 import 'package:four_secrets_wedding_app/routes/routes.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -42,6 +43,13 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
+    SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
+      statusBarColor: Colors.transparent,
+      statusBarIconBrightness: Brightness.light,
+      statusBarBrightness: Brightness.dark,
+      systemNavigationBarColor: Color.fromARGB(255, 107, 69, 106),
+      systemNavigationBarIconBrightness: Brightness.light,
+    ));
     return SafeArea(
       child: Scaffold(
         drawer: Menue.getInstance(), // Use the singleton instance
@@ -54,6 +62,7 @@ class _HomePageState extends State<HomePage> {
               pinned: false,
               floating: true,
               backgroundColor: Color.fromARGB(255, 107, 69, 106),
+              elevation: 0,
             ),
             SliverPersistentHeader(
               pinned: true,

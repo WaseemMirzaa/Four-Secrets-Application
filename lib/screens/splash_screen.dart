@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/services.dart';
 import 'package:four_secrets_wedding_app/pages/home.dart';
 import 'package:four_secrets_wedding_app/screens/email_verification_screen.dart';
 import 'package:four_secrets_wedding_app/screens/subscriptions/subscription_preview_screen.dart';
@@ -139,6 +140,13 @@ class _SplashScreenState extends State<SplashScreen>
 
   @override
   Widget build(BuildContext context) {
+    SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
+      statusBarColor: Colors.transparent,
+      statusBarIconBrightness: Brightness.light,
+      statusBarBrightness: Brightness.dark,
+      systemNavigationBarColor: Color.fromARGB(255, 107, 69, 106),
+      systemNavigationBarIconBrightness: Brightness.light,
+    ));
     return SafeArea(
       child: Scaffold(
         backgroundColor: const Color.fromARGB(255, 255, 255, 255),

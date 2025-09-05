@@ -286,6 +286,7 @@ class _WeddingSchedulePageState extends State<WeddingSchedulePage> {
           foregroundColor: Colors.white,
           title: Text(AppConstants.weddingAddPageTitle),
           backgroundColor: const Color.fromARGB(255, 107, 69, 106),
+          elevation: 0,
           actions: [
             IconButton(
                 onPressed: () async {
