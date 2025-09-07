@@ -214,7 +214,7 @@ class _AddWeddingSchedulePageState extends State<AddWeddingSchedulePage> {
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: CustomTextWidget(
-                      text: _titleController ?? "Titel auswählen...",
+                      text: _titleController ?? "Titel auswählen",
                       fontSize: 16,
                       color: _titleController == null ? Colors.grey : null,
                     ),
@@ -253,7 +253,7 @@ class _AddWeddingSchedulePageState extends State<AddWeddingSchedulePage> {
                         child: GestureDetector(
                           onTap: _selectEventTime,
                           child: CustomTextWidget(
-                            text: _selectedTimeText ?? "Uhrzeit auswählen...",
+                            text: _selectedTimeText ?? "Uhrzeit auswählen",
                             fontSize: 16,
                             color:
                                 _selectedTimeText == null ? Colors.grey : null,

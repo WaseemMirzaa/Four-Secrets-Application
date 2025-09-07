@@ -47,7 +47,6 @@ class _HomePageState extends State<HomePage> {
       statusBarColor: Colors.transparent,
       statusBarIconBrightness: Brightness.light,
       statusBarBrightness: Brightness.dark,
-      systemNavigationBarColor: Color.fromARGB(255, 107, 69, 106),
       systemNavigationBarIconBrightness: Brightness.light,
     ));
     return SafeArea(

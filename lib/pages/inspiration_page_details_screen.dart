@@ -149,7 +149,7 @@ class _InspirationDetailPageState extends State<InspirationDetailPage> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          "Keine Beschreibung verfügbar.",
+                          "Beschreibung",
                           style: TextStyle(
                               color: Colors.black,
                               fontWeight: FontWeight.bold,

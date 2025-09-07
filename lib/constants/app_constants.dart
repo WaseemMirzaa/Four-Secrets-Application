@@ -229,13 +229,13 @@ class AppConstants {
 
 //wedding schedulePage
   static const String weddingAddPageTitle = "Tagesablauf";
-  static const String weddingSchedulePageTitle = "Programmpunkt / Titel";
+  static const String weddingSchedulePageTitle = "Programmpunkt/Titel";
   static const String weddingSchedulePageDescription = "Beschreibung";
   static const String weddingSchedulePageResponsiblePerson =
       "Zuständige Person";
   static const String weddingSchedulePageNotes = "Notizen";
   static const String weddingSchedulePageTime = "Uhrzeit";
-  static const String weddingSchedulePageDate = "Uhrzeit auswählen";
+  static const String weddingSchedulePageDate = "Uhrzeit";
   static const String weddingSchedulePageLocation = "Ort";
   static const String weddingSchedulePageReminderDate =
       "Erinnerungsdatum auswählen";

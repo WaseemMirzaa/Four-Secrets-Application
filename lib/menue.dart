@@ -173,19 +173,19 @@ class MenueState extends State<Menue> {
   Future<void> _handleNavigation(String itemName) async {
     // Define which menu items require active subscription
     const premiumFeatures = [
-      "Münchner Geheimtipp",
-      "Budget",
-      "Checkliste",
-      "Gästeliste",
-      "Tischverwaltung",
-      "Showroom",
-      "KI-Assistent",
-      "Mitgestalter",
-      "Hochzeitskit",
-      "Inspirationen",
-      "Tagesablauf",
-      "Abonnement",
-      "Eigene Dienstleister"
+      // "Münchner Geheimtipp",
+      // "Budget",
+      // "Checkliste",
+      // "Gästeliste",
+      // "Tischverwaltung",
+      // "Showroom",
+      // "KI-Assistent",
+      // "Mitgestalter",
+      // "Hochzeitskit",
+      // "Inspirationen",
+      // "Tagesablauf",
+      // "Abonnement",
+      // "Eigene Dienstleister"
     ];
 
     final isPremiumFeature = premiumFeatures.contains(itemName);
@@ -348,7 +348,6 @@ class MenueState extends State<Menue> {
       statusBarColor: Colors.transparent,
       statusBarIconBrightness: Brightness.light,
       statusBarBrightness: Brightness.dark,
-      systemNavigationBarColor: Color.fromARGB(255, 107, 69, 106),
       systemNavigationBarIconBrightness: Brightness.light,
     ));
 

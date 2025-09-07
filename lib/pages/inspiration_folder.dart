@@ -166,20 +166,20 @@ class _InspirationFolderState extends State<InspirationFolder> {
                                   text: AppConstants
                                       .inspirationFolderPageImageUpdate),
 
-                            SpacerWidget(height: 3),
+                            SpacerWidget(height: 1),
                             Padding(
                               padding: EdgeInsets.symmetric(
-                                  horizontal: 15, vertical: 15),
+                                  horizontal: 15, vertical: 5),
                               child: TextField(
                                 controller: _controller,
                                 decoration: InputDecoration(
                                   border: OutlineInputBorder(
                                     borderRadius: BorderRadius.circular(8.0),
                                   ),
-                                  hintText:
-                                      "${AppConstants.inspirationFolderPageImageTitle} eingeben",
+                                  hintText: "Beschreibung eingeben",
                                   fillColor: Color.fromARGB(255, 255, 255, 255),
                                 ),
+                                maxLines: 3,
                               ),
                             ),
                             // Buttons row
