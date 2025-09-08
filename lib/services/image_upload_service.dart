@@ -41,29 +41,27 @@ class ImageUploadService {
         return ImageUploadResponse.fromJson(jsonResponse);
       } else {
         throw HttpException(
-          'Failed to upload image: ${response.statusCode}',
+          'Bild-Upload fehlgeschlagen: ${response.statusCode}',
           uri: uri,
         );
       }
-    } on SocketException catch (e) {
-      print('Network error uploading image: $e');
-      throw NetworkException('No internet connection or server is down');
-    } on TimeoutException catch (e) {
-      print('Timeout uploading image: $e');
-      throw NetworkException('Request timed out. Please try again.');
-    } on http.ClientException catch (e) {
-      print('HTTP client error uploading image: $e');
+    } on SocketException catch (_) {
       throw NetworkException(
-          'Network error occurred. Please check your connection.');
-    } on FormatException catch (e) {
-      print('Invalid response format: $e');
-      throw AppException('Invalid server response. Please try again.');
+          'Keine Internetverbindung oder Server nicht erreichbar');
+    } on TimeoutException catch (_) {
+      throw NetworkException(
+          'Zeitüberschreitung der Anfrage. Bitte versuchen Sie es erneut.');
+    } on http.ClientException catch (_) {
+      throw NetworkException(
+          'Netzwerkfehler aufgetreten. Bitte überprüfen Sie Ihre Verbindung.');
+    } on FormatException catch (_) {
+      throw AppException(
+          'Ungültige Serverantwort. Bitte versuchen Sie es erneut.');
     } on HttpException catch (e) {
-      print('HTTP error: $e');
-      throw AppException('Server error: ${e.message}');
-    } catch (e) {
-      print('Unexpected error uploading image: $e');
-      throw AppException('Failed to upload image. Please try again.');
+      throw AppException('Serverfehler: ${e.message}');
+    } catch (_) {
+      throw AppException(
+          'Bild-Upload fehlgeschlagen. Bitte versuchen Sie es erneut.');
     }
   }
 
@@ -101,29 +99,27 @@ class ImageUploadService {
         return ImageUploadResponse.fromJson(jsonResponse);
       } else {
         throw HttpException(
-          'Failed to upload file: ${response.statusCode}',
+          'Datei-Upload fehlgeschlagen: ${response.statusCode}',
           uri: uri,
         );
       }
-    } on SocketException catch (e) {
-      print('Network error uploading file: $e');
-      throw NetworkException('No internet connection or server is down');
-    } on TimeoutException catch (e) {
-      print('Timeout uploading file: $e');
-      throw NetworkException('Request timed out. Please try again.');
-    } on http.ClientException catch (e) {
-      print('HTTP client error uploading file: $e');
+    } on SocketException catch (_) {
       throw NetworkException(
-          'Network error occurred. Please check your connection.');
-    } on FormatException catch (e) {
-      print('Invalid response format: $e');
-      throw AppException('Invalid server response. Please try again.');
+          'Keine Internetverbindung oder Server nicht erreichbar');
+    } on TimeoutException catch (_) {
+      throw NetworkException(
+          'Zeitüberschreitung der Anfrage. Bitte versuchen Sie es erneut.');
+    } on http.ClientException catch (_) {
+      throw NetworkException(
+          'Netzwerkfehler aufgetreten. Bitte überprüfen Sie Ihre Verbindung.');
+    } on FormatException catch (_) {
+      throw AppException(
+          'Ungültige Serverantwort. Bitte versuchen Sie es erneut.');
     } on HttpException catch (e) {
-      print('HTTP error: $e');
-      throw AppException('Server error: ${e.message}');
-    } catch (e) {
-      print('Unexpected error uploading file: $e');
-      throw AppException('Failed to upload file. Please try again.');
+      throw AppException('Serverfehler: ${e.message}');
+    } catch (_) {
+      throw AppException(
+          'Datei-Upload fehlgeschlagen. Bitte versuchen Sie es erneut.');
     }
   }
 
@@ -157,29 +153,27 @@ class ImageUploadService {
         return ImageUploadResponse.fromJson(json.decode(response.body));
       } else {
         throw HttpException(
-          'Upload & update failed: ${response.statusCode}',
+          'Upload & Aktualisierung fehlgeschlagen: ${response.statusCode}',
           uri: uri,
         );
       }
-    } on SocketException catch (e) {
-      print('Network error in uploadImageAndUpdateImage: $e');
-      throw NetworkException('No internet connection or server is down');
-    } on TimeoutException catch (e) {
-      print('Timeout in uploadImageAndUpdateImage: $e');
-      throw NetworkException('Request timed out. Please try again.');
-    } on http.ClientException catch (e) {
-      print('HTTP client error in uploadImageAndUpdateImage: $e');
+    } on SocketException catch (_) {
       throw NetworkException(
-          'Network error occurred. Please check your connection.');
-    } on FormatException catch (e) {
-      print('Invalid response format: $e');
-      throw AppException('Invalid server response. Please try again.');
+          'Keine Internetverbindung oder Server nicht erreichbar');
+    } on TimeoutException catch (_) {
+      throw NetworkException(
+          'Zeitüberschreitung der Anfrage. Bitte versuchen Sie es erneut.');
+    } on http.ClientException catch (_) {
+      throw NetworkException(
+          'Netzwerkfehler aufgetreten. Bitte überprüfen Sie Ihre Verbindung.');
+    } on FormatException catch (_) {
+      throw AppException(
+          'Ungültige Serverantwort. Bitte versuchen Sie es erneut.');
     } on HttpException catch (e) {
-      print('HTTP error: $e');
-      throw AppException('Server error: ${e.message}');
-    } catch (e) {
-      print('Unexpected error in uploadImageAndUpdateImage: $e');
-      throw AppException('Failed to update image. Please try again.');
+      throw AppException('Serverfehler: ${e.message}');
+    } catch (_) {
+      throw AppException(
+          'Bildaktualisierung fehlgeschlagen. Bitte versuchen Sie es erneut.');
     }
   }
 
@@ -195,36 +189,31 @@ class ImageUploadService {
           )
           .timeout(timeoutDuration);
 
-      print(resp.body);
-
       if (resp.statusCode == 200) {
-        print("deleted");
         return ImageDeleteResponse.fromJson(json.decode(resp.body));
       } else {
         throw HttpException(
-          'Delete failed: ${resp.statusCode}',
+          'Löschen fehlgeschlagen: ${resp.statusCode}',
           uri: uri,
         );
       }
-    } on SocketException catch (e) {
-      print('Network error deleting image: $e');
-      throw NetworkException('No internet connection or server is down');
-    } on TimeoutException catch (e) {
-      print('Timeout deleting image: $e');
-      throw NetworkException('Request timed out. Please try again.');
-    } on http.ClientException catch (e) {
-      print('HTTP client error deleting image: $e');
+    } on SocketException catch (_) {
       throw NetworkException(
-          'Network error occurred. Please check your connection.');
-    } on FormatException catch (e) {
-      print('Invalid response format: $e');
-      throw AppException('Invalid server response. Please try again.');
+          'Keine Internetverbindung oder Server nicht erreichbar');
+    } on TimeoutException catch (_) {
+      throw NetworkException(
+          'Zeitüberschreitung der Anfrage. Bitte versuchen Sie es erneut.');
+    } on http.ClientException catch (_) {
+      throw NetworkException(
+          'Netzwerkfehler aufgetreten. Bitte überprüfen Sie Ihre Verbindung.');
+    } on FormatException catch (_) {
+      throw AppException(
+          'Ungültige Serverantwort. Bitte versuchen Sie es erneut.');
     } on HttpException catch (e) {
-      print('HTTP error: $e');
-      throw AppException('Server error: ${e.message}');
-    } catch (e) {
-      print('Unexpected error deleting image: $e');
-      throw AppException('Failed to delete image. Please try again.');
+      throw AppException('Serverfehler: ${e.message}');
+    } catch (_) {
+      throw AppException(
+          'Löschen des Bildes fehlgeschlagen. Bitte versuchen Sie es erneut.');
     }
   }
 }
