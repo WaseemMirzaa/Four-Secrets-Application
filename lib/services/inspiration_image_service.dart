@@ -15,37 +15,45 @@ class InspirationImageService {
   String? get userId => _auth.currentUser?.uid;
 
   // Create initial data for first-time users
+
   Future<void> addImageToDB(String title, File imageFile) async {
     if (userId == null) {
       print("Cannot create initial data: User not logged in");
       return;
     }
 
-    String? imageUrl;
+    try {
+      String? imageUrl;
 
-    final uploadResponse =
-        await imageUploadService.uploadImageAndUpdateImage(imageFile);
+      final uploadResponse =
+          await imageUploadService.uploadImageAndUpdateImage(imageFile);
 
-    imageUrl = uploadResponse.image.getFullImageUrl();
+      imageUrl = uploadResponse.image.getFullImageUrl();
 
-    final inspirationModel = InspirationImageModel(
-        title: title,
-        imageUrl: imageUrl,
-        createdAt: DateTime.now(),
-        userId: userId!);
+      final inspirationModel = InspirationImageModel(
+          title: title,
+          imageUrl: imageUrl,
+          createdAt: DateTime.now(),
+          userId: userId!);
 
-    // Use a batch write for better performance
+      final docRef = await _firestore
+          .collection('users')
+          .doc(userId)
+          .collection('inspiration')
+          .add(inspirationModel.toMap());
 
-    final docRef = await _firestore
-        .collection('users')
-        .doc(userId)
-        .collection('inspiration')
-        .add(inspirationModel.toMap()); // Auto-generate document ID
-
-    final inspirationWithId = inspirationModel.copyWith(id: docRef.id);
-    inspirationImagesList.insert(0, inspirationWithId);
-
-    print("data added to the collection for user: $userId");
+      final inspirationWithId = inspirationModel.copyWith(id: docRef.id);
+      inspirationImagesList.insert(0, inspirationWithId);
+    } on NetworkException catch (e) {
+      print('Network error adding image: $e');
+      rethrow; // Re-throw so UI can handle it
+    } on AppException catch (e) {
+      print('App error adding image: $e');
+      rethrow; // Re-throw so UI can handle it
+    } catch (e) {
+      print('Unexpected error adding image: $e');
+      throw AppException('Failed to add image. Please try again.');
+    }
   }
 
   // Load data from Firebase

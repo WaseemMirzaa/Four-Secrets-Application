@@ -8,6 +8,7 @@ import 'package:four_secrets_wedding_app/menue.dart';
 import 'package:four_secrets_wedding_app/model/checklist_button.dart';
 import 'package:four_secrets_wedding_app/model/four_secrets_divider.dart';
 import 'package:four_secrets_wedding_app/routes/routes.dart';
+import 'package:four_secrets_wedding_app/services/image_upload_service.dart';
 import 'package:four_secrets_wedding_app/services/inspiration_image_service.dart';
 import 'package:four_secrets_wedding_app/utils/snackbar_helper.dart';
 import 'package:four_secrets_wedding_app/widgets/custom_button_widget.dart';
@@ -210,47 +211,71 @@ class _InspirationFolderState extends State<InspirationFolder> {
                                   // cancel button
 
                                   Expanded(
-                                    child: CustomButtonWidget(
-                                        text: AppConstants
-                                            .inspirationFolderPageSave,
-                                        isLoading: _isLoading,
-                                        textColor: Colors.white,
-                                        onPressed: () async {
-                                          stateDialog(() => _isLoading = true);
-
-                                          if (_controller.text.isEmpty ||
-                                              imageFile == null) {
+                                      child: CustomButtonWidget(
+                                          text: AppConstants
+                                              .inspirationFolderPageSave,
+                                          isLoading: _isLoading,
+                                          textColor: Colors.white,
+                                          onPressed: () async {
                                             stateDialog(
-                                                () => _isLoading = false);
-                                            if (_controller.text.isEmpty) {
-                                              SnackBarHelper.showErrorSnackBar(
-                                                  context,
-                                                  AppConstants
-                                                      .inspirationFolderPageImageTitleError);
-                                            } else if (imageFile == null) {
-                                              SnackBarHelper.showErrorSnackBar(
-                                                  context,
-                                                  AppConstants
-                                                      .inspirationFolderPageImageSelectError);
-                                            } else {
-                                              SnackBarHelper.showErrorSnackBar(
-                                                  context,
-                                                  AppConstants
-                                                      .inspirationFolderPageImageSelectError2);
-                                            }
-                                            return;
-                                          }
+                                                () => _isLoading = true);
 
-                                          // Add task to Firebase
-                                          await sp.addImageToDB(
-                                              _controller.text, imageFile!);
-                                          Navigator.of(context).pop();
-                                          loadDataFromFirebase();
-                                          _controller.clear();
-                                          imageFile = null;
-                                          stateDialog(() => _isLoading = false);
-                                        }),
-                                  ),
+                                            if (_controller.text.isEmpty ||
+                                                imageFile == null) {
+                                              stateDialog(
+                                                  () => _isLoading = false);
+                                              if (_controller.text.isEmpty) {
+                                                SnackBarHelper.showErrorSnackBar(
+                                                    context,
+                                                    AppConstants
+                                                        .inspirationFolderPageImageTitleError);
+                                              } else if (imageFile == null) {
+                                                SnackBarHelper.showErrorSnackBar(
+                                                    context,
+                                                    AppConstants
+                                                        .inspirationFolderPageImageSelectError);
+                                              } else {
+                                                SnackBarHelper.showErrorSnackBar(
+                                                    context,
+                                                    AppConstants
+                                                        .inspirationFolderPageImageSelectError2);
+                                              }
+                                              return;
+                                            }
+
+                                            try {
+                                              // Add task to Firebase
+                                              await sp.addImageToDB(
+                                                  _controller.text, imageFile!);
+
+                                              Navigator.of(context).pop();
+                                              loadDataFromFirebase();
+                                              _controller.clear();
+                                              imageFile = null;
+
+                                              SnackBarHelper.showSuccessSnackBar(
+                                                  context,
+                                                  'Bild erfolgreich hochgeladen!');
+                                            } on NetworkException catch (e) {
+                                              // Handle network errors
+                                              SnackBarHelper.showErrorSnackBar(
+                                                  context,
+                                                  'Netzwerkfehler: ${e.message}');
+                                            } on AppException catch (e) {
+                                              // Handle app errors
+                                              SnackBarHelper.showErrorSnackBar(
+                                                  context,
+                                                  'Fehler: ${e.message}');
+                                            } catch (e) {
+                                              // Handle unexpected errors
+                                              SnackBarHelper.showErrorSnackBar(
+                                                  context,
+                                                  'Ein unerwarteter Fehler ist aufgetreten. Bitte versuchen Sie es erneut.');
+                                            } finally {
+                                              stateDialog(
+                                                  () => _isLoading = false);
+                                            }
+                                          })),
                                 ],
                               ),
                             ),
