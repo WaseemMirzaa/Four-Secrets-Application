@@ -4,7 +4,7 @@ description: "4secrets - Wedding Planner"
 # Prevent accidental publishing to pub.dev
 publish_to: "none"
 
-version: 1.0.3+10
+version: 1.0.3+11
 
 environment:
   sdk: ">=3.2.3 <4.0.0"
@@ -82,6 +82,7 @@ dependencies:
   flutter_local_notifications: ^19.2.1
   timezone: ^0.10.1
   android_alarm_manager_plus: ^4.0.7
+  
 
   # PDF & Document Handling
   pdf: ^3.11.3

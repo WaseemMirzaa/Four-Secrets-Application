@@ -6,6 +6,7 @@ import 'package:four_secrets_wedding_app/menue.dart';
 import 'package:four_secrets_wedding_app/model/four_secrets_divider.dart';
 import 'package:four_secrets_wedding_app/model/swipeable_card_widget.dart';
 import 'package:four_secrets_wedding_app/routes/routes.dart';
+import 'package:four_secrets_wedding_app/utils/snackbar_helper.dart';
 
 // ignore: must_be_immutable
 class ShowroomEvent extends StatelessWidget {
@@ -107,7 +108,6 @@ class ShowroomEvent extends StatelessWidget {
                   SwipeableCardWidget(
                     images: images,
                     height: 480,
-
                     useImageDimensions: true,
                     widthRatio: 0.67, // 67% of screen width
                   ),
@@ -132,6 +132,9 @@ class ShowroomEvent extends StatelessWidget {
                                 'ratio': videoRatio,
                               },
                             );
+                          } else {
+                            SnackBarHelper.showErrorSnackBar(
+                                context, "Video ist derzeit nicht verfügbar");
                           }
                         },
                         style: ElevatedButton.styleFrom(

@@ -142,7 +142,7 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
                   const Text(
                     'Bestätigen Sie Ihre E-Mail',
                     style: TextStyle(
-                      fontSize: 32,
+                      fontSize: 24,
                       fontWeight: FontWeight.bold,
                       color: Colors.white,
                     ),

@@ -34,6 +34,7 @@ class ImageUploadService {
       // Send the request with timeout
       final streamedResponse = await request.send().timeout(timeoutDuration);
       final response = await http.Response.fromStream(streamedResponse);
+      print(response.body);
 
       // Accept both 200 and 201 status codes as success
       if (response.statusCode == 200 || response.statusCode == 201) {
@@ -45,7 +46,8 @@ class ImageUploadService {
           uri: uri,
         );
       }
-    } on SocketException catch (_) {
+    } on SocketException catch (e) {
+      print(e);
       throw NetworkException(
           'Keine Internetverbindung oder Server nicht erreichbar');
     } on TimeoutException catch (_) {
@@ -148,6 +150,7 @@ class ImageUploadService {
       // Send the request with timeout
       final streamed = await request.send().timeout(timeoutDuration);
       final response = await http.Response.fromStream(streamed);
+      print(response.body);
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         return ImageUploadResponse.fromJson(json.decode(response.body));
@@ -157,7 +160,8 @@ class ImageUploadService {
           uri: uri,
         );
       }
-    } on SocketException catch (_) {
+    } on SocketException catch (e) {
+      print(e);
       throw NetworkException(
           'Keine Internetverbindung oder Server nicht erreichbar');
     } on TimeoutException catch (_) {

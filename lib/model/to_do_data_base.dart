@@ -77,7 +77,8 @@ class ToDoDataBase {
       // 0-1 Monat vor Hochzeit
       TodoItem(task: "Rückmeldungen Gäste final prüfen", category: 0),
       TodoItem(task: "Ablaufplan finalisieren", category: 0),
-      TodoItem(task: "Notfallset für Braut & Bräutigam vorbereiten", category: 0),
+      TodoItem(
+          task: "Notfallset für Braut & Bräutigam vorbereiten", category: 0),
       TodoItem(task: "Schuhe einlaufen", category: 0),
       TodoItem(task: "Letzte Anprobe von Kleid & Anzug", category: 0),
       TodoItem(task: "Generalprobe (Trauung & Location)", category: 0),
@@ -115,8 +116,8 @@ class ToDoDataBase {
       // 7-9 Monate vor Hochzeit
       TodoItem(task: "Brautkleid aussuchen", category: 3),
       TodoItem(task: "Brautkleid Anprobe vereinbaren", category: 3),
-      TodoItem(task: "Brätigam Anzug aussuchen", category: 3),
-      TodoItem(task: "Brätigam Anprobe vereinbaren", category: 3),
+      TodoItem(task: "Bräutigam Anzug aussuchen", category: 3),
+      TodoItem(task: "Bräutigam Anprobe vereinbaren", category: 3),
       TodoItem(task: "Save-the-Date Karten versenden", category: 3),
       TodoItem(task: "Gästeliste finalisieren", category: 3),
       TodoItem(task: "Unterkunft für Gäste organisieren", category: 3),
@@ -375,7 +376,8 @@ class ToDoDataBase {
   // === SYNC-METHODEN (Cloud-Sync zwischen Hive und Firestore) ===
 
   // Konvertiere lokale TodoItem zu Firestore ChecklistItemModel
-  ChecklistItemModel todoItemToChecklistModel(TodoItem todoItem, String userId) {
+  ChecklistItemModel todoItemToChecklistModel(
+      TodoItem todoItem, String userId) {
     return ChecklistItemModel(
       id: '', // Firestore generiert die ID
       taskName: todoItem.task,
