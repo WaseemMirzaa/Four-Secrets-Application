@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -163,20 +164,44 @@ class _SignInScreenState extends State<SignInScreen> {
 
   Future<void> _checkSubscriptionAndNavigate(UserModel userModel) async {
     try {
-      // Initialize RevenueCat with user ID
+      // Reviewer bypass (hardcoded email check)
+      if (userModel.email.toLowerCase().trim() == "offfahad1@gmail.com") {
+        print("✅ Reviewer account detected — bypassing subscription");
+
+        // 👉 Manually update subscription info in Firestore
+        await FirebaseFirestore.instance
+            .collection('users')
+            .doc(userModel.uid)
+            .update({
+          'isSubscribed': true,
+          'subscriptionExpiryDate':
+              DateTime.now().add(const Duration(days: 30)).toIso8601String(),
+          'subscriptionPlan': 'monthly',
+          'lastSubscriptionCheck': FieldValue.serverTimestamp(),
+          'subscriptionPlatform': 'android',
+        });
+
+        SnackBarHelper.showSuccessSnackBar(
+            context, AppConstants.welcomeBackMessage);
+
+        Navigator.of(context).pushNamedAndRemoveUntil(
+          RouteManager.homePage,
+          (route) => false,
+        );
+        return; // Stop here, don’t check RevenueCat
+      }
+
+      // --- Normal flow for other users ---
       final revenueCatService = RevenueCatService();
       await revenueCatService.initialize(userModel.uid);
 
-      // Check if user has active subscription
       final hasActiveSubscription =
           await revenueCatService.hasActiveSubscription();
 
-      // Update Firebase with current subscription status
       await revenueCatService.updateSubscriptionStatusInFirebase(
           await revenueCatService.getCustomerInfo());
 
       if (hasActiveSubscription) {
-        // User has active subscription - navigate to home
         SnackBarHelper.showSuccessSnackBar(
             context, AppConstants.welcomeBackMessage);
 
@@ -193,9 +218,7 @@ class _SignInScreenState extends State<SignInScreen> {
     } catch (e) {
       print('❌ Error checking subscription: $e');
 
-      // Fallback: Check the subscription status from Firestore
       if (userModel.isSubscribed) {
-        // Use Firestore data if RevenueCat check fails
         SnackBarHelper.showSuccessSnackBar(
             context, AppConstants.welcomeBackMessage);
 
@@ -204,7 +227,6 @@ class _SignInScreenState extends State<SignInScreen> {
           (route) => false,
         );
       } else {
-        // Redirect to subscription screen
         SnackBarHelper.showInfoSnackBar(
             context, 'Bitte wählen Sie ein Abonnement, um fortzufahren');
 

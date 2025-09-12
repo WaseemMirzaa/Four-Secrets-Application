@@ -1,6 +1,6 @@
-// subscription_manager.dart
+import 'package:firebase_auth/firebase_auth.dart';
 
-import 'package:four_secrets_wedding_app/services/subscription/revenuecat_subscription_service.dart';
+import 'revenuecat_subscription_service.dart';
 
 class SubscriptionManager {
   static final SubscriptionManager _instance = SubscriptionManager._internal();
@@ -12,11 +12,20 @@ class SubscriptionManager {
 
   Future<void> initialize(String userId) async {
     await _revenueCatService.initialize(userId);
-    await checkSubscriptionStatus();
+    await checkSubscriptionStatus(userId: userId);
   }
 
-  Future<bool> checkSubscriptionStatus() async {
+  Future<bool> checkSubscriptionStatus({String? userId}) async {
     try {
+      final currentUser = FirebaseAuth.instance.currentUser;
+      if ((currentUser?.email ?? "") == "offfahad1@gmail.com") {
+        _hasActiveSubscription = true;
+        print(
+            "✅ Tester override: subscription forced active for ${currentUser?.email}");
+        return _hasActiveSubscription;
+      }
+
+      // otherwise check normally
       _hasActiveSubscription = await _revenueCatService.hasActiveSubscription();
       return _hasActiveSubscription;
     } catch (e) {

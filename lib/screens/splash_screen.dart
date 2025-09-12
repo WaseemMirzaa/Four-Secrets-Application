@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/services.dart';
@@ -51,40 +52,52 @@ class _SplashScreenState extends State<SplashScreen>
       final user = FirebaseAuth.instance.currentUser;
 
       if (user != null) {
-        // Reload user to get latest verification status
         await user.reload();
 
-        // Initialize RevenueCat with user ID
-        await _revenueCatService.initialize(user.uid);
+        // If this is the tester/reviewer account, skip RevenueCat and force subscribed
+        final emailLower = (user.email ?? '').toLowerCase();
+        const testerEmail = 'offfahad1@gmail.com';
+        final isTester = emailLower == testerEmail;
 
-        // Check subscription status
-        await _revenueCatService.checkSubscriptionStatus();
+        if (isTester) {
+          print('✅ Firestore review account detected, skipping RevenueCat.');
 
-        // Fetch and save user data using AuthService
-        final userModel = await _authService.getCurrentUser();
+          // Save to local prefs / userModel for consistency
+          final userModel = await _authService.getCurrentUser();
+          if (userModel != null) {
+            await _authService.saveUserToPrefs(userModel);
+          }
 
-        if (userModel != null) {
-          // Save user data to SharedPreferences using the public method
-          await _authService.saveUserToPrefs(userModel);
-
-          // Load both wedding schedule services to set up notifications
+          // Load schedule services, then navigate to Home
           try {
             final scheduleService = WeddingDayScheduleService();
             await scheduleService.loadData();
-            print('🟢 Original wedding schedule service loaded in splash');
-
             final scheduleService1 = WeddingDayScheduleService1();
             await scheduleService1.loadData();
-            print('🟢 Eigene Dienstleister schedule service loaded in splash');
           } catch (e) {
-            print('🔴 Error loading schedule services in splash: $e');
+            print('🔴 Error loading schedule services for review account: $e');
           }
 
           if (!mounted) return;
+          Navigator.of(context).pushReplacement(
+            PageTransition(
+              duration: const Duration(seconds: 1),
+              curve: Curves.easeIn,
+              type: PageTransitionType.rightToLeft,
+              child: const HomePage(),
+            ),
+          );
+          return;
+        }
 
-          // Check if email is verified
+        // Normal flow: initialize RC and check status
+        await _revenueCatService.initialize(user.uid);
+        await _revenueCatService.checkSubscriptionStatus();
+
+        final userModel = await _authService.getCurrentUser();
+        if (userModel != null) {
+          await _authService.saveUserToPrefs(userModel);
           if (!user.emailVerified) {
-            // Navigate to verification screen if email is not verified
             Navigator.of(context).pushReplacement(
               PageTransition(
                 duration: const Duration(seconds: 1),
@@ -96,9 +109,7 @@ class _SplashScreenState extends State<SplashScreen>
             return;
           }
 
-          // Check subscription status before allowing access to dashboard
           if (!userModel.isSubscribed) {
-            // Navigate to subscription screen if not subscribed
             Navigator.of(context).pushReplacement(
               PageTransition(
                 duration: const Duration(seconds: 1),
@@ -112,7 +123,6 @@ class _SplashScreenState extends State<SplashScreen>
         }
 
         if (!mounted) return;
-
         Navigator.of(context).pushReplacement(
           PageTransition(
             duration: const Duration(seconds: 1),
