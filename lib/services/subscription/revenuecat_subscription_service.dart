@@ -8,7 +8,7 @@ import 'package:flutter/services.dart';
 import 'package:four_secrets_wedding_app/constants/revenuecat_consts.dart';
 import 'package:four_secrets_wedding_app/services/subscription/revenucecat_purchase_result.dart';
 import 'package:four_secrets_wedding_app/services/subscription/revenuecat_purchase_exception.dart';
-import 'package:purchases_flutter/purchases_flutter.dart';
+import 'package:purchases_flutter/purchases_flutter.dart' hide PurchaseResult;
 
 class RevenueCatService {
   static const String _iosApiKey = RevenuecatConsts.appleRevenueCatId;
@@ -65,9 +65,9 @@ class RevenueCatService {
       final purchaserInfo = await Purchases.purchasePackage(package);
 
       // Update Firebase after successful purchase
-      await updateSubscriptionStatusInFirebase(purchaserInfo);
+      await updateSubscriptionStatusInFirebase(purchaserInfo.customerInfo);
 
-      return PurchaseResult(info: purchaserInfo);
+      return PurchaseResult(info: purchaserInfo.customerInfo);
     } on PlatformException catch (e) {
       final errorCode = PurchasesErrorHelper.getErrorCode(e);
       String errorMessage;
