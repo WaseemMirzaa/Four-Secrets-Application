@@ -320,7 +320,7 @@ class _ToDoPageState extends State<ToDoPage> {
             content: ClipRRect(
               borderRadius: BorderRadius.circular(12),
               child: Container(
-                height: 500,
+                height: MediaQuery.of(context).size.height * 0.30,
                 width: double.maxFinite,
                 color: Colors.grey.shade100,
                 child: Column(
