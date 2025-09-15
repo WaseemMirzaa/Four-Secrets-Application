@@ -1,5 +1,5 @@
 buildscript {
-    ext.kotlin_version = '1.9.25'  // Reverted to compatible version
+    ext.kotlin_version = '2.1.0'  // Updated to support newer dependencies and 16KB page size
     repositories {
         google()
         mavenCentral()
@@ -7,7 +7,7 @@ buildscript {
     }
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:8.3.2'
+        classpath 'com.android.tools.build:gradle:8.6.0'  // Updated for 16KB page size support
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
         classpath 'com.google.gms:google-services:4.4.0'
     }

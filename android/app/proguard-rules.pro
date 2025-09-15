@@ -49,3 +49,37 @@
 -dontwarn kotlin.Unit
 -dontwarn retrofit2.KotlinExtensions
 -dontwarn retrofit2.KotlinExtensions$*
+
+# 16KB page size support rules
+-keep class androidx.** { *; }
+-keep interface androidx.** { *; }
+-dontwarn androidx.**
+
+# Native library alignment for 16KB page size
+-keep class **.native.** { *; }
+-keepclassmembers class **.native.** { *; }
+
+# Memory alignment optimizations
+-optimizations !code/simplification/arithmetic,!code/simplification/cast,!field/*,!class/merging/*
+-optimizationpasses 5
+-allowaccessmodification
+-dontpreverify
+
+# Keep native methods for 16KB alignment
+-keepclasseswithmembernames class * {
+    native <methods>;
+}
+
+# Additional 16KB page size compatibility
+-keep class j$.util.concurrent.ConcurrentHashMap$TreeBin {
+  int lockState;
+}
+-keep class j$.util.concurrent.ConcurrentHashMap {
+  int sizeCtl;
+  int transferIndex;
+  long baseCount;
+  int cellsBusy;
+}
+-keep class j$.util.concurrent.ConcurrentHashMap$CounterCell {
+  long value;
+}

@@ -35,7 +35,9 @@
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
-        android:localeConfig="@xml/locales_config">
+        android:localeConfig="@xml/locales_config"
+        android:extractNativeLibs="true"
+        android:hardwareAccelerated="true">
         
         <meta-data android:name="com.google.android.geo.API_KEY"
            android:value="AIzaSyDR_QZaW3xiJfLLNFybEd6e6HunqDkUjJg"/>
@@ -137,7 +139,16 @@
             android:name="flutterEmbedding"
             android:value="2" />
 
-        
+        <!-- 16KB page size support metadata -->
+        <meta-data
+            android:name="android.app.supports_16kb_page_size"
+            android:value="true" />
+
+        <meta-data
+            android:name="android.app.page_size_compatibility"
+            android:value="16kb" />
+
+
     </application>
     <!-- Required to query activities that can process text, see:
          https://developer.android.com/training/package-visibility and

@@ -7,7 +7,7 @@ plugins {
     id "com.google.gms.google-services"
 }
 
-ext.kotlin_version = '1.9.25'
+ext.kotlin_version = '2.1.0'
 
 
 def localProperties = new Properties()
@@ -41,8 +41,8 @@ if (keystorePropertiesFile.exists()) {
 
 android {
     namespace "com.app.four_secrets_wedding_app"
-    compileSdkVersion 35
-    ndkVersion "28.0.12433566"
+    compileSdk = 36  // Updated to support newer plugins
+    ndkVersion flutter.ndkVersion
 
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_17
@@ -52,6 +52,10 @@ android {
 
     kotlinOptions {
         jvmTarget = '17'
+        freeCompilerArgs += [
+            "-Xopt-in=kotlin.RequiresOptIn",
+            "-Xjvm-default=all"
+        ]
     }
 
     sourceSets {
@@ -60,17 +64,21 @@ android {
 
     defaultConfig {
         applicationId "com.app.four_secrets_wedding_app" // This should match your Firebase config
-        minSdkVersion 23
-        targetSdkVersion 35
-        compileSdk 35
+        minSdkVersion flutter.minSdkVersion
+        targetSdkVersion 36
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
         multiDexEnabled true
 
-        // Android 15 specific configurations
+        // Android 15+ specific configurations for 16KB page size support
         manifestPlaceholders = [
             'appAuthRedirectScheme': 'com.app.four_secrets_wedding_app'
         ]
+
+        // Enhanced NDK configuration for 16KB page size support
+        ndk {
+            abiFilters 'arm64-v8a', 'armeabi-v7a', 'x86_64'
+        }
     }
 
     signingConfigs {
@@ -88,12 +96,31 @@ android {
             minifyEnabled false
             shrinkResources false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+
+            // 16KB page size optimizations for release builds
+            ndk {
+                debugSymbolLevel 'SYMBOL_TABLE'
+            }
         }
         debug {
             signingConfig signingConfigs.debug
             minifyEnabled false
             shrinkResources false
+
+            // 16KB page size optimizations for debug builds
+            ndk {
+                debugSymbolLevel 'FULL'
+            }
         }
+    }
+
+    // Additional configurations for 16KB page size support
+    packagingOptions {
+        pickFirst '**/libc++_shared.so'
+        pickFirst '**/libjsc.so'
+        pickFirst '**/libfbjni.so'
+        pickFirst '**/libflutter.so'
+        pickFirst '**/libapp.so'
     }
 
     lint {
@@ -107,28 +134,41 @@ flutter {
 
 dependencies {
     coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:2.1.4'
-    implementation platform('com.google.firebase:firebase-bom:32.7.0')
+    implementation platform('com.google.firebase:firebase-bom:33.7.0')  // Updated for 16KB support
     implementation 'com.google.firebase:firebase-messaging'
     implementation 'com.google.firebase:firebase-appcheck-playintegrity'
-    implementation 'com.google.firebase:firebase-appcheck-debug:17.1.1'
-    implementation 'com.google.android.play:integrity:1.1.0'
+    implementation 'com.google.firebase:firebase-appcheck-debug'
+    implementation 'com.google.android.play:integrity:1.4.0'  // Updated for 16KB support
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
     implementation 'androidx.multidex:multidex:2.0.1'
-    implementation 'androidx.annotation:annotation:1.7.1'
-    implementation 'androidx.core:core:1.13.1'
-    implementation 'androidx.core:core-ktx:1.13.1'
-    implementation 'androidx.appcompat:appcompat:1.6.1'
-    implementation 'com.google.android.material:material:1.11.0'
-    implementation "androidx.activity:activity:1.7.2"
-    implementation "androidx.fragment:fragment:1.6.1"
+    implementation 'androidx.annotation:annotation:1.8.2'  // Updated for 16KB support
+    implementation 'androidx.core:core:1.15.0'  // Updated for 16KB support
+    implementation 'androidx.core:core-ktx:1.15.0'  // Updated for 16KB support
+    implementation 'androidx.appcompat:appcompat:1.7.0'  // Updated for 16KB support
+    implementation 'com.google.android.material:material:1.12.0'  // Updated for 16KB support
+    implementation "androidx.activity:activity:1.9.3"  // Updated for 16KB support
+    implementation "androidx.fragment:fragment:1.8.5"  // Updated for 16KB support
     implementation 'com.github.yalantis:ucrop:2.2.8'
-    implementation 'com.revenuecat.purchases:purchases:7.0.0' 
-    implementation 'com.android.billingclient:billing:6.2.0'
+    implementation 'com.revenuecat.purchases:purchases:8.10.0'  // Updated for 16KB support
+    implementation 'com.android.billingclient:billing:7.1.1'  // Updated for 16KB support
 }
 
 configurations.all {
     resolutionStrategy {
-        force "androidx.core:core:1.13.1"
-        force "androidx.core:core-ktx:1.13.1"
+        force "androidx.core:core:1.15.0"
+        force "androidx.core:core-ktx:1.15.0"
+        force "androidx.activity:activity:1.9.3"
+        force "androidx.fragment:fragment:1.8.5"
+        force "androidx.appcompat:appcompat:1.7.0"
+
+        // Force 16KB page size compatible versions
+        eachDependency { details ->
+            if (details.requested.group == 'androidx.activity') {
+                details.useVersion "1.9.3"
+            }
+            if (details.requested.group == 'androidx.fragment') {
+                details.useVersion "1.8.5"
+            }
+        }
     }
 }
