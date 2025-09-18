@@ -43,12 +43,14 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
-      statusBarColor: Colors.transparent,
-      statusBarIconBrightness: Brightness.light,
-      statusBarBrightness: Brightness.dark,
-      systemNavigationBarIconBrightness: Brightness.light,
-    ));
+    SystemChrome.setSystemUIOverlayStyle(
+      const SystemUiOverlayStyle(
+        statusBarColor: Colors.transparent,
+        statusBarIconBrightness: Brightness.light,
+        statusBarBrightness: Brightness.dark,
+        systemNavigationBarIconBrightness: Brightness.light,
+      ),
+    );
     return SafeArea(
       child: Scaffold(
         drawer: Menue.getInstance(), // Use the singleton instance
@@ -77,16 +79,8 @@ class _HomePageState extends State<HomePage> {
                 ),
               ),
             ),
-            const SliverToBoxAdapter(
-              child: const SizedBox(
-                height: 30,
-              ),
-            ),
-            const SliverToBoxAdapter(
-              child: const SizedBox(
-                height: 10,
-              ),
-            ),
+            const SliverToBoxAdapter(child: const SizedBox(height: 30)),
+            const SliverToBoxAdapter(child: const SizedBox(height: 10)),
             SliverToBoxAdapter(
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -105,22 +99,16 @@ class _HomePageState extends State<HomePage> {
                     ),
                     onPressed: () async {
                       buttonIsPressed(1);
-
-                      final hasActiveSubscription =
-                          SubscriptionManager().hasActiveSubscription;
-
-                      if (hasActiveSubscription) {
-                        Navigator.of(context)
-                            .pushNamed(RouteManager.muenchnerGeheimtippPage);
-                      } else {
-                        Navigator.of(context)
-                            .pushNamed(RouteManager.subscriptionPreviewScreen);
-                      }
+                      Navigator.of(
+                        context,
+                      ).pushNamed(RouteManager.muenchnerGeheimtippPage);
                     },
                     label: const Text(
                       'let´s go',
-                      style:
-                          TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16,
+                      ),
                     ),
                     icon: const Icon(Icons.arrow_forward_ios_sharp),
                   ),
@@ -154,12 +142,7 @@ class _HomePageState extends State<HomePage> {
             // SliverToBoxAdapter(
             //   child: NotificationTestWidget(),
             // ),
-
-            const SliverToBoxAdapter(
-              child: const SizedBox(
-                height: 40,
-              ),
-            ),
+            const SliverToBoxAdapter(child: const SizedBox(height: 40)),
           ],
         ),
       ),
@@ -173,7 +156,10 @@ const _minExtendHeader = 70.0;
 class _HeaderSliver extends SliverPersistentHeaderDelegate {
   @override
   Widget build(
-      BuildContext context, double shrinkOffset, bool overlapsContent) {
+    BuildContext context,
+    double shrinkOffset,
+    bool overlapsContent,
+  ) {
     return Container(
       alignment: Alignment.center,
       padding: const EdgeInsets.all(8),
@@ -181,10 +167,7 @@ class _HeaderSliver extends SliverPersistentHeaderDelegate {
       width: MediaQuery.of(context).size.width,
       color: Colors.white,
       child: DefaultTextStyle(
-        style: const TextStyle(
-          fontSize: 20,
-          color: Colors.black,
-        ),
+        style: const TextStyle(fontSize: 20, color: Colors.black),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -193,9 +176,7 @@ class _HeaderSliver extends SliverPersistentHeaderDelegate {
               color: Color.fromARGB(255, 107, 69, 106),
               size: 32,
             ),
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: 2.5),
-            ),
+            Padding(padding: EdgeInsets.symmetric(horizontal: 2.5)),
             Text(
               "LICH WILLKOMMEN",
               textAlign: TextAlign.center,

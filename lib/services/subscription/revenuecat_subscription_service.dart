@@ -62,7 +62,9 @@ class RevenueCatService {
 
   Future<PurchaseResult> purchasePackage(Package package) async {
     try {
-      final purchaserInfo = await Purchases.purchasePackage(package);
+      final purchaserInfo = await Purchases.purchase(
+        PurchaseParams.package(package),
+      );
 
       // Update Firebase after successful purchase
       await updateSubscriptionStatusInFirebase(purchaserInfo.customerInfo);
@@ -107,7 +109,9 @@ class RevenueCatService {
   Future<bool> hasActiveSubscription() async {
     final customerInfo = await getCustomerInfo();
     return customerInfo
-            .entitlements.all[RevenuecatConsts.entitlementsName]?.isActive ??
+            .entitlements
+            .all[RevenuecatConsts.entitlementsName]
+            ?.isActive ??
         false;
   }
 
@@ -183,7 +187,8 @@ class RevenueCatService {
   }
 
   Future<void> updateSubscriptionStatusInFirebase(
-      CustomerInfo customerInfo) async {
+    CustomerInfo customerInfo,
+  ) async {
     try {
       final user = FirebaseAuth.instance.currentUser;
       if (user == null) return;
@@ -212,12 +217,12 @@ class RevenueCatService {
           .collection('users')
           .doc(user.uid)
           .update({
-        'isSubscribed': isActive,
-        'subscriptionExpiryDate': expiryDate?.toIso8601String(),
-        'subscriptionPlan': planIdentifier,
-        'lastSubscriptionCheck': FieldValue.serverTimestamp(),
-        'subscriptionPlatform': _getPlatform(),
-      });
+            'isSubscribed': isActive,
+            'subscriptionExpiryDate': expiryDate?.toIso8601String(),
+            'subscriptionPlan': planIdentifier,
+            'lastSubscriptionCheck': FieldValue.serverTimestamp(),
+            'subscriptionPlatform': _getPlatform(),
+          });
 
       print('✅ Subscription status updated in Firebase: $isActive');
     } catch (e) {

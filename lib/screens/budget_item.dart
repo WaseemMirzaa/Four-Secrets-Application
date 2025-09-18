@@ -29,15 +29,22 @@ class BudgetItem extends StatefulWidget {
 class _BudgetItemState extends State<BudgetItem> {
   final double padValue = 15;
   late bool _switchOn;
-  final node1 = FocusNode();
+  final FocusNode node1 = FocusNode();
   final TextEditingController _amountController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
     _switchOn = widget.initialPaidStatus;
-    _amountController.text =
-        widget.initialAmount > 0 ? widget.initialAmount.toString() : '';
+    _amountController.text = widget.initialAmount > 0
+        ? widget.initialAmount.toString()
+        : '';
+  }
+
+  dispose() {
+    _amountController.dispose();
+    node1.dispose();
+    super.dispose();
   }
 
   @override
@@ -64,10 +71,7 @@ class _BudgetItemState extends State<BudgetItem> {
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(10),
               gradient: LinearGradient(
-                colors: [
-                  Colors.grey.shade200,
-                  Colors.grey.shade300,
-                ],
+                colors: [Colors.grey.shade200, Colors.grey.shade300],
               ),
             ),
             child: Stack(
@@ -81,14 +85,10 @@ class _BudgetItemState extends State<BudgetItem> {
                         widget.taskName,
                         overflow: TextOverflow.clip,
                         softWrap: true,
-                        style: TextStyle(
-                          fontSize: 18,
-                        ),
+                        style: TextStyle(fontSize: 18),
                       ),
                     ),
-                    Padding(
-                      padding: EdgeInsets.symmetric(vertical: 3.5),
-                    ),
+                    Padding(padding: EdgeInsets.symmetric(vertical: 3.5)),
                     Row(
                       crossAxisAlignment: CrossAxisAlignment.end,
                       children: [
@@ -116,14 +116,16 @@ class _BudgetItemState extends State<BudgetItem> {
                                     ? Text(
                                         "Betrag",
                                         style: TextStyle(
-                                            fontSize: 14,
-                                            color: Colors.grey[500]),
+                                          fontSize: 14,
+                                          color: Colors.grey[500],
+                                        ),
                                       )
                                     : Text(
                                         "bezahlt",
                                         style: TextStyle(
-                                            fontSize: 14,
-                                            color: Colors.grey[500]),
+                                          fontSize: 14,
+                                          color: Colors.grey[500],
+                                        ),
                                       ),
                                 isCollapsed: true,
                                 prefixIcon: Icon(
@@ -133,8 +135,9 @@ class _BudgetItemState extends State<BudgetItem> {
                                 focusedBorder: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(15),
                                   borderSide: BorderSide(
-                                      color: Color.fromARGB(255, 126, 80, 123),
-                                      width: 2),
+                                    color: Color.fromARGB(255, 126, 80, 123),
+                                    width: 2,
+                                  ),
                                 ),
                                 border: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(15),
@@ -143,9 +146,7 @@ class _BudgetItemState extends State<BudgetItem> {
                             ),
                           ),
                         ),
-                        Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 25),
-                        ),
+                        Padding(padding: EdgeInsets.symmetric(horizontal: 25)),
                         FlutterSwitch(
                           height: 25,
                           width: 50,
@@ -164,9 +165,7 @@ class _BudgetItemState extends State<BudgetItem> {
                             }
                           },
                         ),
-                        Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 5),
-                        ),
+                        Padding(padding: EdgeInsets.symmetric(horizontal: 5)),
                         Text("bezahlt"),
                       ],
                     ),

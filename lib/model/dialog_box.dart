@@ -65,7 +65,7 @@ class DialogBox extends StatelessWidget {
                         color: Colors.white,
                         textColor: Colors.black,
                         onPressed: isLoading ? null : onCancel,
-                        isLoading: !isLoading,
+                        isLoading: false,
                       ),
                     ),
 

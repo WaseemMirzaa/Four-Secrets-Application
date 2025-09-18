@@ -1,3 +1,4 @@
+import 'package:flutter/services.dart';
 import 'package:four_secrets_wedding_app/menue.dart';
 import 'package:four_secrets_wedding_app/screens/budget_item.dart';
 import 'package:four_secrets_wedding_app/screens/dialog_box.dart';
@@ -17,7 +18,8 @@ class _BudgetState extends State<Budget> {
   // text controller
   final _controller = TextEditingController();
   final _wholeBudgetController = TextEditingController();
-  final node1 = FocusNode();
+  final FocusNode _wholeBudgetFocusNode = FocusNode();
+
   int wholeBudget = 0;
   int _tempBudget = 0;
   int _maxWholeBudget = 999999;
@@ -149,12 +151,13 @@ class _BudgetState extends State<Budget> {
       context: context,
       builder: (context) {
         return DialogBox(
-            controller: _controller,
-            onSave: saveNewTask,
-            onCancel: () => Navigator.of(context).pop(),
-            isToDo: false,
-            isGuest: false,
-            isBudget: true);
+          controller: _controller,
+          onSave: saveNewTask,
+          onCancel: () => Navigator.of(context).pop(),
+          isToDo: false,
+          isGuest: false,
+          isBudget: true,
+        );
       },
     );
   }
@@ -162,8 +165,9 @@ class _BudgetState extends State<Budget> {
   void saveNewTask() {
     if (_controller.text.isNotEmpty) {
       // Check if category already exists
-      bool categoryExists =
-          budgetList.any((item) => item[0] == _controller.text);
+      bool categoryExists = budgetList.any(
+        (item) => item[0] == _controller.text,
+      );
 
       if (categoryExists) {
         // Show error message if category already exists
@@ -179,7 +183,7 @@ class _BudgetState extends State<Budget> {
         budgetList.add([
           _controller.text,
           0,
-          false
+          false,
         ]); // Add with default paid status as false
         _controller.clear();
       });
@@ -230,11 +234,21 @@ class _BudgetState extends State<Budget> {
     _saveBudgetData(); // Save to Firestore
   }
 
+  @override
   void dispose() {
-    // Wichtig: Den Listener entfernen, um Speicherlecks zu vermeiden
+    _wholeBudgetFocusNode.dispose();
     _controller.dispose();
     _wholeBudgetController.dispose();
     super.dispose();
+  }
+
+  void _hideKeyboard() {
+    // Unfocus everything in the current focus scope
+    FocusScope.of(context).unfocus();
+    // Also call the platform text input channel to ensure keyboard is hidden
+    SystemChannels.textInput.invokeMethod('TextInput.hide');
+    // If you want, also unfocus specific node:
+    _wholeBudgetFocusNode.unfocus();
   }
 
   @override
@@ -252,12 +266,10 @@ class _BudgetState extends State<Budget> {
           child: const Icon(Icons.add),
         ),
         body: _isLoading
-            ? Center(
-                child: CircularProgressIndicator(),
-              )
+            ? Center(child: CircularProgressIndicator())
             : GestureDetector(
                 onTap: () {
-                  FocusScope.of(context).unfocus();
+                  _hideKeyboard();
                   int tempCosts = calculateCosts();
                   calculateBudget(tempCosts);
                 },
@@ -289,7 +301,9 @@ class _BudgetState extends State<Budget> {
                             width: 120,
                             child: GestureDetector(
                               child: TextField(
+                                autofocus: false,
                                 controller: _wholeBudgetController,
+                                focusNode: _wholeBudgetFocusNode,
                                 keyboardType: TextInputType.number,
                                 textAlign: TextAlign.center,
                                 textAlignVertical: TextAlignVertical.center,
@@ -297,7 +311,9 @@ class _BudgetState extends State<Budget> {
                                   label: Text(
                                     "Betrag",
                                     style: TextStyle(
-                                        fontSize: 14, color: Colors.grey[500]),
+                                      fontSize: 14,
+                                      color: Colors.grey[500],
+                                    ),
                                   ),
                                   isCollapsed: true,
                                   prefixIcon: Icon(
@@ -307,9 +323,9 @@ class _BudgetState extends State<Budget> {
                                   focusedBorder: OutlineInputBorder(
                                     borderRadius: BorderRadius.circular(15),
                                     borderSide: BorderSide(
-                                        color:
-                                            Color.fromARGB(255, 126, 80, 123),
-                                        width: 2),
+                                      color: Color.fromARGB(255, 126, 80, 123),
+                                      width: 2,
+                                    ),
                                   ),
                                   border: OutlineInputBorder(
                                     borderRadius: BorderRadius.circular(15),
@@ -399,18 +415,20 @@ class _BudgetState extends State<Budget> {
                                   Text(
                                     "Guthaben:",
                                     style: TextStyle(
-                                        color: Colors.black,
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 16),
+                                      color: Colors.black,
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 16,
+                                    ),
                                   ),
                                   Text(
                                     _isOverBudget
                                         ? "-${_overspentAmount.toString()} €"
                                         : "${_tempBudget.toString()} €",
                                     style: TextStyle(
-                                        color: Colors.black,
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 16),
+                                      color: Colors.black,
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 16,
+                                    ),
                                   ),
                                 ],
                               ),
@@ -434,11 +452,12 @@ class _BudgetState extends State<Budget> {
                                   Text(
                                     "${_totalCosts.toString()} €",
                                     style: TextStyle(
-                                        color: _isOverBudget
-                                            ? Colors.red
-                                            : Colors.black,
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 16),
+                                      color: _isOverBudget
+                                          ? Colors.red
+                                          : Colors.black,
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 16,
+                                    ),
                                   ),
                                 ],
                               ),
@@ -460,9 +479,7 @@ class _BudgetState extends State<Budget> {
                         ),
                       ),
                     ),
-                    Padding(
-                      padding: EdgeInsets.symmetric(vertical: 45),
-                    ),
+                    Padding(padding: EdgeInsets.symmetric(vertical: 45)),
                   ],
                 ),
               ),

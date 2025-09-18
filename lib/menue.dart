@@ -173,7 +173,7 @@ class MenueState extends State<Menue> {
   Future<void> _handleNavigation(String itemName) async {
     // Define which menu items require active subscription
     const premiumFeatures = [
-      "Münchner Geheimtipp",
+      //"Münchner Geheimtipp",
       "Budget",
       "Checkliste",
       "Gästeliste",
@@ -185,16 +185,14 @@ class MenueState extends State<Menue> {
       "Inspirationen",
       "Tagesablauf",
       "Abonnement",
-      "Eigene Dienstleister"
+      "Eigene Dienstleister",
     ];
 
     final isPremiumFeature = premiumFeatures.contains(itemName);
     final hasSubscription = SubscriptionManager().hasActiveSubscription;
 
     if (isPremiumFeature && !hasSubscription) {
-      Navigator.of(context).pushNamed(
-        RouteManager.subscriptionPreviewScreen,
-      );
+      Navigator.of(context).pushNamed(RouteManager.subscriptionPreviewScreen);
     } else {
       // Proceed with normal navigation
       _select(itemName);
@@ -244,7 +242,7 @@ class MenueState extends State<Menue> {
     }
   }
 
-// Optimized navigation method to eliminate Timer delays
+  // Optimized navigation method to eliminate Timer delays
   void _navigateTo(String routeName) {
     if (!mounted) return;
     // Close the drawer first
@@ -274,21 +272,22 @@ class MenueState extends State<Menue> {
 
   Future<void> _handleLogout(BuildContext context) async {
     try {
-      // Close the drawer first
-      Navigator.of(context).pop();
-
+      // 3. Sign out
       await _authService.signOut();
       MenuService().selectedItem = null;
+
+      // 4. Clear all routes and go to login
       if (mounted) {
-        Navigator.of(context).pushNamedAndRemoveUntil(
-          RouteManager.signinPage,
-          (route) => false,
-        );
+        Navigator.of(
+          context,
+        ).pushNamedAndRemoveUntil(RouteManager.signinPage, (route) => false);
       }
     } catch (e) {
       if (mounted) {
         SnackBarHelper.showErrorSnackBar(
-            context, 'Logout failed: ${e.toString()}');
+          context,
+          'Logout failed: ${e.toString()}',
+        );
       }
     }
   }
@@ -333,7 +332,8 @@ class MenueState extends State<Menue> {
         if (type != 'invitation' && type != 'comment') {
           await doc.reference.update({'read': true});
           print(
-              '[Menu Debug] Marked non-invitation/comment notification as read: ${doc.id} (type: $type)');
+            '[Menu Debug] Marked non-invitation/comment notification as read: ${doc.id} (type: $type)',
+          );
         }
       }
     } catch (e) {
@@ -344,12 +344,14 @@ class MenueState extends State<Menue> {
   @override
   Widget build(BuildContext context) {
     // Set status bar for drawer - Huawei compatible
-    SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
-      statusBarColor: Colors.transparent,
-      statusBarIconBrightness: Brightness.light,
-      statusBarBrightness: Brightness.dark,
-      systemNavigationBarIconBrightness: Brightness.light,
-    ));
+    SystemChrome.setSystemUIOverlayStyle(
+      const SystemUiOverlayStyle(
+        statusBarColor: Colors.transparent,
+        statusBarIconBrightness: Brightness.light,
+        statusBarBrightness: Brightness.dark,
+        systemNavigationBarIconBrightness: Brightness.light,
+      ),
+    );
 
     return StreamBuilder<bool>(
       stream: _hasNewCollabNotificationStream,
@@ -362,270 +364,292 @@ class MenueState extends State<Menue> {
         // Additional debug info
         if (hasNewCollabNotification) {
           print(
-              '[Menu Debug] ⚠️ RED DOT IS SHOWING - This means there are matching notifications');
+            '[Menu Debug] ⚠️ RED DOT IS SHOWING - This means there are matching notifications',
+          );
         } else {
           print(
-              '[Menu Debug] ✅ Red dot is NOT showing - No matching notifications');
+            '[Menu Debug] ✅ Red dot is NOT showing - No matching notifications',
+          );
         }
 
         return SafeArea(
-            child: Drawer(
-          width: 225,
-          backgroundColor: Colors.white70,
-          child: ListView(
-            children: [
-              SizedBox(
-                height: 180,
-                child: DrawerHeader(
-                  padding: const EdgeInsets.all(16.0),
-                  margin: const EdgeInsets.all(0.0),
-                  decoration: const BoxDecoration(
-                    color: Color.fromARGB(255, 107, 69, 106),
-                  ),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      _isLoading
-                          ? Center(
-                              child: CircularProgressIndicator(
-                              color: Colors.white,
-                            ))
-                          : CircleAvatar(
-                              radius: 55,
-                              backgroundColor: Colors.white,
-                              child: Container(
-                                decoration: BoxDecoration(
-                                  shape: BoxShape.circle,
-                                  border: Border.all(
-                                      color: Colors.white, width: 2.0),
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color:
-                                          Colors.black.withValues(alpha: 0.2),
-                                      spreadRadius: 1,
-                                      blurRadius: 3,
-                                      offset: const Offset(0, 2),
-                                    ),
-                                  ],
+          child: Drawer(
+            width: 225,
+            backgroundColor: Colors.white70,
+            child: ListView(
+              children: [
+                SizedBox(
+                  height: 180,
+                  child: DrawerHeader(
+                    padding: const EdgeInsets.all(16.0),
+                    margin: const EdgeInsets.all(0.0),
+                    decoration: const BoxDecoration(
+                      color: Color.fromARGB(255, 107, 69, 106),
+                    ),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        _isLoading
+                            ? Center(
+                                child: CircularProgressIndicator(
+                                  color: Colors.white,
                                 ),
-                                child: ClipOval(
-                                  child: (_profilePictureUrl != null &&
-                                          _profilePictureUrl!.isNotEmpty
-                                      ? Image.network(
-                                          _profilePictureUrl!,
-                                          width: 100,
-                                          height: 100,
-                                          fit: BoxFit.cover,
-                                          loadingBuilder: (context, child,
-                                              loadingProgress) {
-                                            if (loadingProgress == null) {
-                                              return child;
-                                            }
-                                            return Center(
-                                              child: CircularProgressIndicator(
-                                                color: const Color.fromARGB(
-                                                    255, 107, 69, 106),
-                                                value: loadingProgress
-                                                            .expectedTotalBytes !=
-                                                        null
-                                                    ? loadingProgress
-                                                            .cumulativeBytesLoaded /
-                                                        loadingProgress
-                                                            .expectedTotalBytes!
-                                                    : null,
-                                              ),
-                                            );
-                                          },
-                                          errorBuilder:
-                                              (context, error, stackTrace) {
-                                            return Container(
-                                              width: 100,
-                                              height: 100,
-                                              child: Image.asset(
-                                                'assets/images/logo/secrets-logo.jpg',
-                                                width: 100,
-                                                height: 100,
-                                                fit: BoxFit.cover,
-                                              ),
-                                            );
-                                          },
-                                        )
-                                      : Image.asset(
-                                          'assets/images/logo/secrets-logo.jpg',
-                                          width: 100,
-                                          height: 100,
-                                          fit: BoxFit.cover,
-                                        )),
-                                ),
-                              ),
-                            ),
-                      const SizedBox(height: 6),
-                      Center(
-                        child: Text(
-                          _isLoading ? '' : (_userName ?? ''),
-                          textAlign: TextAlign.center,
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-
-              // Dynamic menu items from listDrawerModel
-              ...listDrawerModel.map((e) {
-                bool isSelected = _pressedStates[e.name]!;
-                return Card(
-                  margin: const EdgeInsets.only(
-                      left: 8, right: 8, top: 5, bottom: 0),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Stack(
-                    children: [
-                      ListTile(
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        contentPadding: const EdgeInsets.symmetric(
-                          horizontal: 10,
-                          vertical: 0,
-                        ),
-                        tileColor:
-                            isSelected ? Colors.purple[50] : Colors.white,
-                        leading: e.customIconPath != null
-                            ? Image.asset(
-                                e.customIconPath!,
-                                width: 32,
-                                height: 32,
-                                fit: BoxFit.contain,
                               )
-                            : Icon(e.icon),
-                        title: CustomTextWidget(
-                          text: e.name,
-                          fontSize: 16,
-                          color: Colors.black,
-                        ),
-                        onTap: () {
-                          _handleNavigation(e.name);
-                        },
-                      ),
-                      // Show red dot for 'Hochzeitskit' and 'Mitgestalter' based on todoUnreadStatus
-                      if (e.name == 'Hochzeitskit' || e.name == 'Mitgestalter')
-                        StreamBuilder<bool>(
-                          stream: _todoUnreadStatusStream,
-                          initialData: false,
-                          builder: (context, snapshot) {
-                            final hasUnreadTodos = snapshot.data ?? false;
-                            if (hasUnreadTodos) {
-                              print(
-                                  '[Menu Debug] Red dot showing for ${e.name} - todoUnreadStatus: true');
-                              return Positioned(
-                                right: 16,
-                                top: 12,
+                            : CircleAvatar(
+                                radius: 55,
+                                backgroundColor: Colors.white,
                                 child: Container(
-                                  width: 10,
-                                  height: 10,
                                   decoration: BoxDecoration(
-                                    color: Colors.red,
                                     shape: BoxShape.circle,
+                                    border: Border.all(
+                                      color: Colors.white,
+                                      width: 2.0,
+                                    ),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: Colors.black.withValues(
+                                          alpha: 0.2,
+                                        ),
+                                        spreadRadius: 1,
+                                        blurRadius: 3,
+                                        offset: const Offset(0, 2),
+                                      ),
+                                    ],
+                                  ),
+                                  child: ClipOval(
+                                    child:
+                                        (_profilePictureUrl != null &&
+                                            _profilePictureUrl!.isNotEmpty
+                                        ? Image.network(
+                                            _profilePictureUrl!,
+                                            width: 100,
+                                            height: 100,
+                                            fit: BoxFit.cover,
+                                            loadingBuilder: (context, child, loadingProgress) {
+                                              if (loadingProgress == null) {
+                                                return child;
+                                              }
+                                              return Center(
+                                                child: CircularProgressIndicator(
+                                                  color: const Color.fromARGB(
+                                                    255,
+                                                    107,
+                                                    69,
+                                                    106,
+                                                  ),
+                                                  value:
+                                                      loadingProgress
+                                                              .expectedTotalBytes !=
+                                                          null
+                                                      ? loadingProgress
+                                                                .cumulativeBytesLoaded /
+                                                            loadingProgress
+                                                                .expectedTotalBytes!
+                                                      : null,
+                                                ),
+                                              );
+                                            },
+                                            errorBuilder:
+                                                (context, error, stackTrace) {
+                                                  return Container(
+                                                    width: 100,
+                                                    height: 100,
+                                                    child: Image.asset(
+                                                      'assets/images/logo/secrets-logo.jpg',
+                                                      width: 100,
+                                                      height: 100,
+                                                      fit: BoxFit.cover,
+                                                    ),
+                                                  );
+                                                },
+                                          )
+                                        : Image.asset(
+                                            'assets/images/logo/secrets-logo.jpg',
+                                            width: 100,
+                                            height: 100,
+                                            fit: BoxFit.cover,
+                                          )),
                                   ),
                                 ),
-                              );
-                            } else {
-                              print(
-                                  '[Menu Debug] No red dot for ${e.name} - todoUnreadStatus: false');
-                              return SizedBox.shrink();
-                            }
+                              ),
+                        const SizedBox(height: 6),
+                        Center(
+                          child: Text(
+                            _isLoading ? '' : (_userName ?? ''),
+                            textAlign: TextAlign.center,
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+
+                // Dynamic menu items from listDrawerModel
+                ...listDrawerModel.map((e) {
+                  bool isSelected = _pressedStates[e.name]!;
+                  return Card(
+                    margin: const EdgeInsets.only(
+                      left: 8,
+                      right: 8,
+                      top: 5,
+                      bottom: 0,
+                    ),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Stack(
+                      children: [
+                        ListTile(
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          contentPadding: const EdgeInsets.symmetric(
+                            horizontal: 10,
+                            vertical: 0,
+                          ),
+                          tileColor: isSelected
+                              ? Colors.purple[50]
+                              : Colors.white,
+                          leading: e.customIconPath != null
+                              ? Image.asset(
+                                  e.customIconPath!,
+                                  width: 32,
+                                  height: 32,
+                                  fit: BoxFit.contain,
+                                )
+                              : Icon(e.icon),
+                          title: CustomTextWidget(
+                            text: e.name,
+                            fontSize: 16,
+                            color: Colors.black,
+                          ),
+                          onTap: () {
+                            _handleNavigation(e.name);
                           },
                         ),
-                    ],
-                  ),
-                );
-              }),
+                        // Show red dot for 'Hochzeitskit' and 'Mitgestalter' based on todoUnreadStatus
+                        if (e.name == 'Hochzeitskit' ||
+                            e.name == 'Mitgestalter')
+                          StreamBuilder<bool>(
+                            stream: _todoUnreadStatusStream,
+                            initialData: false,
+                            builder: (context, snapshot) {
+                              final hasUnreadTodos = snapshot.data ?? false;
+                              if (hasUnreadTodos) {
+                                print(
+                                  '[Menu Debug] Red dot showing for ${e.name} - todoUnreadStatus: true',
+                                );
+                                return Positioned(
+                                  right: 16,
+                                  top: 12,
+                                  child: Container(
+                                    width: 10,
+                                    height: 10,
+                                    decoration: BoxDecoration(
+                                      color: Colors.red,
+                                      shape: BoxShape.circle,
+                                    ),
+                                  ),
+                                );
+                              } else {
+                                print(
+                                  '[Menu Debug] No red dot for ${e.name} - todoUnreadStatus: false',
+                                );
+                                return SizedBox.shrink();
+                              }
+                            },
+                          ),
+                      ],
+                    ),
+                  );
+                }),
 
-              // Profil bearbeiten
-              Card(
-                margin:
-                    const EdgeInsets.only(left: 8, right: 8, top: 5, bottom: 0),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: ListTile(
+                // Profil bearbeiten
+                Card(
+                  margin: const EdgeInsets.only(
+                    left: 8,
+                    right: 8,
+                    top: 5,
+                    bottom: 0,
+                  ),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8),
                   ),
-                  contentPadding: const EdgeInsets.symmetric(
-                    horizontal: 10,
-                    vertical: 0,
+                  child: ListTile(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    contentPadding: const EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical: 0,
+                    ),
+                    tileColor: _pressedStates['Profil bearbeiten']!
+                        ? Colors.purple[50]
+                        : Colors.white,
+                    leading: const Icon(Icons.person),
+                    title: CustomTextWidget(
+                      text: 'Profil bearbeiten',
+                      fontSize: 16,
+                      color: Colors.black,
+                    ),
+                    onTap: () {
+                      _select('Profil bearbeiten');
+                      _navigateToEditProfile();
+                    },
                   ),
-                  tileColor: _pressedStates['Profil bearbeiten']!
-                      ? Colors.purple[50]
-                      : Colors.white,
-                  leading: const Icon(
-                    Icons.person,
-                  ),
-                  title: CustomTextWidget(
-                    text: 'Profil bearbeiten',
-                    fontSize: 16,
-                    color: Colors.black,
-                  ),
-                  onTap: () {
-                    _select('Profil bearbeiten');
-                    _navigateToEditProfile();
-                  },
                 ),
-              ),
 
-              const Divider(
-                color: Colors.grey,
-                thickness: 0.5,
-                indent: 8,
-                endIndent: 8,
-              ),
-
-              // Log Out
-              Card(
-                margin:
-                    const EdgeInsets.only(left: 8, right: 8, top: 5, bottom: 8),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8),
+                const Divider(
+                  color: Colors.grey,
+                  thickness: 0.5,
+                  indent: 8,
+                  endIndent: 8,
                 ),
-                child: ListTile(
+
+                // Log Out
+                Card(
+                  margin: const EdgeInsets.only(
+                    left: 8,
+                    right: 8,
+                    top: 5,
+                    bottom: 8,
+                  ),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8),
                   ),
-                  contentPadding: const EdgeInsets.symmetric(
-                    horizontal: 10,
-                    vertical: 0,
+                  child: ListTile(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    contentPadding: const EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical: 0,
+                    ),
+                    tileColor: _pressedStates['Logout']!
+                        ? Colors.purple[50]
+                        : Colors.white,
+                    leading: const Icon(Icons.logout, color: Colors.red),
+                    title: CustomTextWidget(
+                      text: 'Logout',
+                      fontSize: 16,
+                      color: Colors.red,
+                    ),
+                    onTap: () {
+                      _handleLogout(context);
+                    },
                   ),
-                  tileColor: _pressedStates['Logout']!
-                      ? Colors.purple[50]
-                      : Colors.white,
-                  leading: const Icon(
-                    Icons.logout,
-                    color: Colors.red,
-                  ),
-                  title: CustomTextWidget(
-                    text: 'Logout',
-                    fontSize: 16,
-                    color: Colors.red,
-                  ),
-                  onTap: () {
-                    _select('Logout');
-                    _handleLogout(context);
-                  },
                 ),
-              ),
-              const SpacerWidget(height: 10),
-            ],
+                const SpacerWidget(height: 10),
+              ],
+            ),
           ),
-        ));
+        );
       },
     );
   }

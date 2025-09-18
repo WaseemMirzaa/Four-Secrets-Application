@@ -68,6 +68,9 @@ class _SplashScreenState extends State<SplashScreen>
             await _authService.saveUserToPrefs(userModel);
           }
 
+          // Normal flow: initialize RC and check status
+          await _revenueCatService.initialize(user.uid);
+
           // Load schedule services, then navigate to Home
           try {
             final scheduleService = WeddingDayScheduleService();
@@ -150,12 +153,14 @@ class _SplashScreenState extends State<SplashScreen>
 
   @override
   Widget build(BuildContext context) {
-    SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
-      statusBarColor: Colors.transparent,
-      statusBarIconBrightness: Brightness.light,
-      statusBarBrightness: Brightness.dark,
-      systemNavigationBarIconBrightness: Brightness.light,
-    ));
+    SystemChrome.setSystemUIOverlayStyle(
+      const SystemUiOverlayStyle(
+        statusBarColor: Colors.transparent,
+        statusBarIconBrightness: Brightness.light,
+        statusBarBrightness: Brightness.dark,
+        systemNavigationBarIconBrightness: Brightness.light,
+      ),
+    );
     return SafeArea(
       child: Scaffold(
         backgroundColor: const Color.fromARGB(255, 255, 255, 255),
@@ -175,8 +180,9 @@ class _SplashScreenState extends State<SplashScreen>
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
                       border: Border.all(
-                          color: Colors.white,
-                          width: 4.0), // Slightly thicker border
+                        color: Colors.white,
+                        width: 4.0,
+                      ), // Slightly thicker border
                       boxShadow: [
                         BoxShadow(
                           color: Colors.black.withOpacity(0.2),
@@ -201,18 +207,16 @@ class _SplashScreenState extends State<SplashScreen>
             const Align(
               alignment: Alignment.center,
               child: Padding(
-                padding: EdgeInsets.symmetric(
-                  horizontal: 25.0,
-                  vertical: 0.0,
-                ),
+                padding: EdgeInsets.symmetric(horizontal: 25.0, vertical: 0.0),
                 child: Text(
                   'Perfect your Wedding with 4secrets - Wedding Planner',
                   textAlign: TextAlign.center,
                   style: TextStyle(
-                      color: Colors.black,
-                      fontSize: 20,
-                      fontFamily: 'Roboto',
-                      fontWeight: FontWeight.w300),
+                    color: Colors.black,
+                    fontSize: 20,
+                    fontFamily: 'Roboto',
+                    fontWeight: FontWeight.w300,
+                  ),
                 ),
               ),
             ),
