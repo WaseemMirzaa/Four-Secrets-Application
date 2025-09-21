@@ -52,6 +52,19 @@ class RevenueCatService {
         debugPrint('⚠️ No current offering found.');
       } else {
         debugPrint('✅ Current offering: ${offerings.current!.identifier}');
+        // 🔥 Print all available packages inside the current offering
+        for (final package in offerings.current!.availablePackages) {
+          final product = package.storeProduct;
+          debugPrint('📦 Package: ${package.identifier}');
+          debugPrint('   Title: ${product.title}');
+          debugPrint('   Description: ${product.description}');
+          debugPrint('   Price: ${product.priceString}');
+          debugPrint('   Currency: ${product.currencyCode}');
+          debugPrint('   Identifier: ${product.identifier}');
+          debugPrint(
+            '   Trial/Intro: ${product.introductoryPrice?.priceString ?? "None"}',
+          );
+        }
       }
       return offerings;
     } catch (e, st) {

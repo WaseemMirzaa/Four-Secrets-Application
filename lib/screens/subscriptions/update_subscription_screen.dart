@@ -9,7 +9,7 @@ class UpdateSubscriptionScreen extends StatefulWidget {
   final String? currentPlan;
 
   const UpdateSubscriptionScreen({Key? key, this.currentPlan})
-      : super(key: key);
+    : super(key: key);
 
   @override
   _UpdateSubscriptionScreenState createState() =>
@@ -38,7 +38,9 @@ class _UpdateSubscriptionScreenState extends State<UpdateSubscriptionScreen> {
       });
     } catch (e) {
       SnackBarHelper.showErrorSnackBar(
-          context, 'Angebote konnten nicht geladen werden');
+        context,
+        'Angebote konnten nicht geladen werden',
+      );
       setState(() => _isLoading = false);
     }
   }
@@ -52,14 +54,20 @@ class _UpdateSubscriptionScreenState extends State<UpdateSubscriptionScreen> {
       if (result.info != null) {
         Navigator.of(context).popUntil((route) => route.isFirst);
         SnackBarHelper.showSuccessSnackBar(
-            context, 'Abonnement erfolgreich geändert!');
+          context,
+          'Abonnement erfolgreich geändert!',
+        );
       }
     } on PlatformException catch (e) {
       SnackBarHelper.showErrorSnackBar(
-          context, e.message ?? 'Fehler beim Kauf');
+        context,
+        e.message ?? 'Fehler beim Kauf',
+      );
     } catch (e) {
       SnackBarHelper.showErrorSnackBar(
-          context, 'Ein unerwarteter Fehler ist aufgetreten');
+        context,
+        'Ein unerwarteter Fehler ist aufgetreten',
+      );
     } finally {
       setState(() => _purchasing = false);
     }
@@ -68,18 +76,15 @@ class _UpdateSubscriptionScreenState extends State<UpdateSubscriptionScreen> {
   Package? _getSelectedPackage() {
     if (_offerings?.current?.availablePackages == null) return null;
 
-    return _offerings!.current!.availablePackages.firstWhere(
-      (package) {
-        final identifier = package.identifier.toLowerCase();
-        return _selectedPlan == 'monthly'
-            ? identifier.contains('month')
-            : identifier.contains('year');
-      },
-      orElse: () => _offerings!.current!.availablePackages.first,
-    );
+    return _offerings!.current!.availablePackages.firstWhere((package) {
+      final identifier = package.identifier.toLowerCase();
+      return _selectedPlan == 'monthly'
+          ? identifier.contains('month')
+          : identifier.contains('year');
+    }, orElse: () => _offerings!.current!.availablePackages.first);
   }
 
-// Build plan toggle buttons
+  // Build plan toggle buttons
   Widget _buildPlanToggle() {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 4),
@@ -123,13 +128,40 @@ class _UpdateSubscriptionScreenState extends State<UpdateSubscriptionScreen> {
     );
   }
 
+  String? _getDiscountText(Package yearly, Package monthly) {
+    final yearlyPrice = yearly.storeProduct.price;
+    final monthlyPrice = monthly.storeProduct.price;
+
+    final monthlyYearCost = monthlyPrice * 12;
+    final savings = monthlyYearCost - yearlyPrice;
+    if (savings <= 0) return null;
+
+    final discountPercent = (savings / monthlyYearCost * 100).round();
+
+    final priceString = yearly.storeProduct.priceString;
+    final currencySymbol = priceString.replaceAll(RegExp(r'[0-9.,\s]'), '');
+
+    return 'Spare $currencySymbol${savings.toStringAsFixed(2)} ($discountPercent%) im Vergleich zum Monatsabo';
+  }
+
   Widget _buildSubscriptionCard(Package package) {
-    final price = _selectedPlan == 'yearly' ? '€99.00' : '€11.99';
-    final isCurrentPlan = widget.currentPlan != null &&
-        package.identifier
-            .toLowerCase()
-            .contains(widget.currentPlan!.toLowerCase());
+    final isCurrentPlan =
+        widget.currentPlan != null &&
+        package.identifier.toLowerCase().contains(
+          widget.currentPlan!.toLowerCase(),
+        );
     final isYearly = _selectedPlan == 'yearly';
+
+    // Get formatted price directly from RevenueCat
+    final price = package.storeProduct.priceString;
+    // Find both yearly & monthly packages for discount calculation
+    final yearly = _offerings?.current?.annual;
+    final monthly = _offerings?.current?.monthly;
+
+    String? discountText;
+    if (isYearly && yearly != null && monthly != null) {
+      discountText = _getDiscountText(yearly, monthly);
+    }
 
     return GlassCard(
       child: Column(
@@ -190,23 +222,21 @@ class _UpdateSubscriptionScreenState extends State<UpdateSubscriptionScreen> {
               const SizedBox(width: 12),
               Text(
                 isYearly ? 'pro Jahr' : 'pro Monat',
-                style: TextStyle(
-                  fontSize: 14,
-                  color: Colors.grey[600],
-                ),
+                style: TextStyle(fontSize: 14, color: Colors.grey[600]),
               ),
             ],
           ),
           const SizedBox(height: 8),
-          if (isYearly)
+          if (discountText != null)
             Text(
-              'Spare €44,88 (30%) im Vergleich zum Monatsabo',
-              style: TextStyle(
+              discountText,
+              style: const TextStyle(
                 fontSize: 11,
-                color: const Color(0xFF6B456A),
+                color: Color(0xFF6B456A),
                 fontWeight: FontWeight.w600,
               ),
             ),
+
           const SizedBox(height: 12),
           const Divider(color: Colors.grey, height: 1),
           const SizedBox(height: 12),
@@ -243,8 +273,9 @@ class _UpdateSubscriptionScreenState extends State<UpdateSubscriptionScreen> {
                     ),
                   )
                 : ElevatedButton(
-                    onPressed:
-                        _purchasing ? null : () => _purchasePackage(package),
+                    onPressed: _purchasing
+                        ? null
+                        : () => _purchasePackage(package),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color(0xFF6B456A),
                       foregroundColor: Colors.white,
@@ -260,8 +291,9 @@ class _UpdateSubscriptionScreenState extends State<UpdateSubscriptionScreen> {
                             height: 20,
                             child: CircularProgressIndicator(
                               strokeWidth: 2,
-                              valueColor:
-                                  AlwaysStoppedAnimation<Color>(Colors.white),
+                              valueColor: AlwaysStoppedAnimation<Color>(
+                                Colors.white,
+                              ),
                             ),
                           )
                         : const Text('ABONNIEREN'),
@@ -286,19 +318,12 @@ class _UpdateSubscriptionScreenState extends State<UpdateSubscriptionScreen> {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Icon(
-            Icons.check_circle,
-            color: Color(0xFF6B456A),
-            size: 20,
-          ),
+          const Icon(Icons.check_circle, color: Color(0xFF6B456A), size: 20),
           const SizedBox(width: 12),
           Expanded(
             child: Text(
               feature,
-              style: const TextStyle(
-                fontSize: 14,
-                color: Colors.black87,
-              ),
+              style: const TextStyle(fontSize: 14, color: Colors.black87),
             ),
           ),
         ],
@@ -395,10 +420,7 @@ class _UpdateSubscriptionScreenState extends State<UpdateSubscriptionScreen> {
 
                   const Text(
                     'Wählen Sie ein neues Abonnement',
-                    style: TextStyle(
-                      fontSize: 16,
-                      color: Colors.white70,
-                    ),
+                    style: TextStyle(fontSize: 16, color: Colors.white70),
                     textAlign: TextAlign.center,
                   ),
 
@@ -434,10 +456,13 @@ class _UpdateSubscriptionScreenState extends State<UpdateSubscriptionScreen> {
                       TextButton(
                         onPressed: () async {
                           final url = Uri.parse(
-                              'https://www.4secrets-wedding-planner.de/datenschutz-app/');
+                            'https://www.4secrets-wedding-planner.de/datenschutz-app/',
+                          );
                           if (await canLaunchUrl(url)) {
-                            await launchUrl(url,
-                                mode: LaunchMode.externalApplication);
+                            await launchUrl(
+                              url,
+                              mode: LaunchMode.externalApplication,
+                            );
                           }
                         },
                         child: const Text(
@@ -449,10 +474,13 @@ class _UpdateSubscriptionScreenState extends State<UpdateSubscriptionScreen> {
                       TextButton(
                         onPressed: () async {
                           final url = Uri.parse(
-                              'https://www.4secrets-wedding-planner.de/agb/');
+                            'https://www.4secrets-wedding-planner.de/agb/',
+                          );
                           if (await canLaunchUrl(url)) {
-                            await launchUrl(url,
-                                mode: LaunchMode.externalApplication);
+                            await launchUrl(
+                              url,
+                              mode: LaunchMode.externalApplication,
+                            );
                           }
                         },
                         child: const Text(
@@ -476,10 +504,7 @@ class _UpdateSubscriptionScreenState extends State<UpdateSubscriptionScreen> {
                   const Text(
                     'Abos verlängern sich automatisch, wenn sie nicht mind. 24 Std. vorher gekündigt werden. Verwaltung & Kündigung über App Store oder Google Play.',
                     textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: Colors.white70,
-                    ),
+                    style: TextStyle(fontSize: 12, color: Colors.white70),
                   ),
                 ],
               ),
@@ -496,7 +521,7 @@ class GlassCard extends StatelessWidget {
   final EdgeInsets? padding;
 
   const GlassCard({Key? key, required this.child, this.padding})
-      : super(key: key);
+    : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -512,10 +537,7 @@ class GlassCard extends StatelessWidget {
             offset: const Offset(0, 4),
           ),
         ],
-        border: Border.all(
-          color: Colors.white.withOpacity(0.5),
-          width: 1,
-        ),
+        border: Border.all(color: Colors.white.withOpacity(0.5), width: 1),
       ),
       child: ClipRRect(
         borderRadius: BorderRadius.circular(16),
