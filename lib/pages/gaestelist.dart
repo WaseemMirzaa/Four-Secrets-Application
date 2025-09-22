@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:four_secrets_wedding_app/constants/app_constants.dart';
 import 'package:four_secrets_wedding_app/menue.dart';
 import 'package:four_secrets_wedding_app/model/dialog_box.dart';
@@ -10,6 +11,8 @@ import 'package:four_secrets_wedding_app/model/four_secrets_divider.dart';
 import 'package:four_secrets_wedding_app/model/gaestelist_item.dart';
 import 'package:four_secrets_wedding_app/routes/routes.dart';
 import 'package:four_secrets_wedding_app/utils/snackbar_helper.dart';
+
+import '../models/contact_selection_screen.dart';
 
 class Gaestelist extends StatefulWidget {
   const Gaestelist({super.key});
@@ -48,8 +51,10 @@ class _GaestelistState extends State<Gaestelist> {
           .collection('users')
           .doc(userId)
           .collection('guests')
-          .orderBy('createdAt',
-              descending: false) // Sort by creation time, oldest first
+          .orderBy(
+            'createdAt',
+            descending: false,
+          ) // Sort by creation time, oldest first
           .get();
 
       final List<Map<String, dynamic>> loadedGuests = [];
@@ -73,10 +78,7 @@ class _GaestelistState extends State<Gaestelist> {
     }
   }
 
-  void statusChanged(
-    String selectedName,
-    int index,
-  ) async {
+  void statusChanged(String selectedName, int index) async {
     final guest = guestList[index];
     final guestId = guest['id'];
     final userId = _auth.currentUser?.uid;
@@ -178,12 +180,12 @@ class _GaestelistState extends State<Gaestelist> {
                         .doc(userId)
                         .collection('guests')
                         .add({
-                      'name': guestName,
-                      'takePart': false,
-                      'mayBeTakePart': false,
-                      'canceled': false,
-                      'createdAt': FieldValue.serverTimestamp(),
-                    });
+                          'name': guestName,
+                          'takePart': false,
+                          'mayBeTakePart': false,
+                          'canceled': false,
+                          'createdAt': FieldValue.serverTimestamp(),
+                        });
 
                     // Close dialog first
                     if (context.mounted) {
@@ -197,7 +199,9 @@ class _GaestelistState extends State<Gaestelist> {
                     if (context.mounted) {
                       Navigator.of(context).pop();
                       SnackBarHelper.showErrorSnackBar(
-                          context, 'Error adding guest: $e');
+                        context,
+                        'Error adding guest: $e',
+                      );
                     }
                   }
                 } catch (e) {
@@ -220,6 +224,50 @@ class _GaestelistState extends State<Gaestelist> {
         );
       },
     );
+  }
+
+  // Add guest directly from contacts
+  Future<void> addGuestFromContacts() async {
+    try {
+      final selectedName = await Navigator.push<String>(
+        context,
+        MaterialPageRoute(builder: (context) => const ContactSelectionScreen()),
+      );
+
+      if (selectedName != null && selectedName.isNotEmpty) {
+        await _addGuestToFirestore(selectedName);
+        await _loadGuests();
+
+        if (mounted) {
+          SnackBarHelper.showSuccessSnackBar(
+            context,
+            '$selectedName wurde zur Gästeliste hinzugefügt',
+          );
+        }
+      }
+    } catch (e) {
+      print('Fehler beim Hinzufügen aus Kontakten: $e');
+      if (mounted) {
+        SnackBarHelper.showErrorSnackBar(
+          context,
+          'Fehler beim Hinzufügen aus Kontakten: $e',
+        );
+      }
+    }
+  }
+
+  // Common method to add guest to Firestore
+  Future<void> _addGuestToFirestore(String guestName) async {
+    final userId = _auth.currentUser?.uid;
+    if (userId == null) return;
+
+    await _firestore.collection('users').doc(userId).collection('guests').add({
+      'name': guestName,
+      'takePart': false,
+      'mayBeTakePart': false,
+      'canceled': false,
+      'createdAt': FieldValue.serverTimestamp(),
+    });
   }
 
   void onDelete(int index) async {
@@ -285,9 +333,32 @@ class _GaestelistState extends State<Gaestelist> {
           title: Text(AppConstants.gaestelistTitle),
           backgroundColor: const Color.fromARGB(255, 107, 69, 106),
         ),
-        floatingActionButton: FloatingActionButton(
-          onPressed: createNewTask,
-          child: const Icon(Icons.add),
+        floatingActionButton: SpeedDial(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+          icon: Icons.add,
+          activeIcon: Icons.close,
+          backgroundColor: const Color.fromARGB(255, 107, 69, 106),
+          foregroundColor: Colors.white,
+          overlayColor: Colors.transparent,
+          overlayOpacity: 0.0,
+          children: [
+            SpeedDialChild(
+              child: Icon(Icons.person_add, color: Colors.white),
+              backgroundColor: const Color.fromARGB(255, 107, 69, 106),
+              label: 'Gast manuell hinzufügen',
+              labelStyle: TextStyle(fontSize: 16),
+              onTap: createNewTask,
+            ),
+            SpeedDialChild(
+              child: Icon(Icons.contacts, color: Colors.white),
+              backgroundColor: const Color.fromARGB(255, 107, 69, 106),
+              label: 'Aus Kontakten auswählen',
+              labelStyle: TextStyle(fontSize: 16),
+              onTap: addGuestFromContacts,
+            ),
+          ],
         ),
         body: ListView(
           children: [
@@ -321,12 +392,11 @@ class _GaestelistState extends State<Gaestelist> {
                         Text(
                           AppConstants.confirmedLabel,
                           style: TextStyle(
-                              color: Colors.white, fontWeight: FontWeight.bold),
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
-                        Icon(
-                          Icons.check_box_outlined,
-                          color: Colors.green,
-                        ),
+                        Icon(Icons.check_box_outlined, color: Colors.green),
                       ],
                     ),
                     Row(
@@ -334,12 +404,11 @@ class _GaestelistState extends State<Gaestelist> {
                         Text(
                           AppConstants.maybeLabel,
                           style: TextStyle(
-                              color: Colors.white, fontWeight: FontWeight.bold),
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
-                        Icon(
-                          Icons.check_box_outlined,
-                          color: Colors.amber,
-                        ),
+                        Icon(Icons.check_box_outlined, color: Colors.amber),
                       ],
                     ),
                     Row(
@@ -347,12 +416,11 @@ class _GaestelistState extends State<Gaestelist> {
                         Text(
                           AppConstants.declinedLabel,
                           style: TextStyle(
-                              color: Colors.white, fontWeight: FontWeight.bold),
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
-                        Icon(
-                          Icons.check_box_outlined,
-                          color: Colors.red,
-                        ),
+                        Icon(Icons.check_box_outlined, color: Colors.red),
                       ],
                     ),
                   ],
@@ -366,10 +434,7 @@ class _GaestelistState extends State<Gaestelist> {
                       child: Text(
                         AppConstants.noGuestsMessage,
                         textAlign: TextAlign.center,
-                        style: TextStyle(
-                          color: Colors.grey[600],
-                          fontSize: 16,
-                        ),
+                        style: TextStyle(color: Colors.grey[600], fontSize: 16),
                       ),
                     ),
                   )
@@ -380,13 +445,14 @@ class _GaestelistState extends State<Gaestelist> {
                     shrinkWrap: true,
                     itemBuilder: (context, index) {
                       return GaestelistItem(
-                          guestName: guestList[index]['name'],
-                          takePart: guestList[index]['takePart'],
-                          mayBeTakePart: guestList[index]['mayBeTakePart'],
-                          canceled: guestList[index]['canceled'],
-                          deleteFunction: (context) => onDelete(index),
-                          statusChanged: (context) =>
-                              statusChanged(context, index));
+                        guestName: guestList[index]['name'],
+                        takePart: guestList[index]['takePart'],
+                        mayBeTakePart: guestList[index]['mayBeTakePart'],
+                        canceled: guestList[index]['canceled'],
+                        deleteFunction: (context) => onDelete(index),
+                        statusChanged: (context) =>
+                            statusChanged(context, index),
+                      );
                     },
                   ),
             FourSecretsDivider(),
@@ -411,60 +477,56 @@ class _GaestelistState extends State<Gaestelist> {
                         Text(
                           AppConstants.guestCountLabel,
                           style: TextStyle(
-                              color: Colors.white, fontWeight: FontWeight.bold),
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
-                        Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 2.5),
-                        ),
-                        Icon(
-                          Icons.check_box_outlined,
-                          color: Colors.green,
-                        ),
+                        Padding(padding: EdgeInsets.symmetric(horizontal: 2.5)),
+                        Icon(Icons.check_box_outlined, color: Colors.green),
                         Text(
                           ":",
                           style: TextStyle(
-                              color: Colors.white, fontWeight: FontWeight.bold),
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
-                        Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 5),
-                        ),
+                        Padding(padding: EdgeInsets.symmetric(horizontal: 5)),
                         Text(
                           "${calculateAmountOfGuests().$1}",
                           style: TextStyle(
-                              color: Colors.white, fontWeight: FontWeight.bold),
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                       ],
                     ),
                     Row(
                       children: [
-                        Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 5),
-                        ),
+                        Padding(padding: EdgeInsets.symmetric(horizontal: 5)),
                         Text(
                           AppConstants.guestCountLabel,
                           style: TextStyle(
-                              color: Colors.white, fontWeight: FontWeight.bold),
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
-                        Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 2.5),
-                        ),
-                        Icon(
-                          Icons.check_box_outlined,
-                          color: Colors.amber,
-                        ),
+                        Padding(padding: EdgeInsets.symmetric(horizontal: 2.5)),
+                        Icon(Icons.check_box_outlined, color: Colors.amber),
                         Text(
                           ":",
                           style: TextStyle(
-                              color: Colors.white, fontWeight: FontWeight.bold),
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
-                        Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 5),
-                        ),
+                        Padding(padding: EdgeInsets.symmetric(horizontal: 5)),
                         Text(
                           "${calculateAmountOfGuests().$2}",
                           style: TextStyle(
-                              color: Colors.white, fontWeight: FontWeight.bold),
-                        )
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
                       ],
                     ),
                   ],
@@ -493,13 +555,16 @@ class _GaestelistState extends State<Gaestelist> {
                         ),
                         onPressed: () {
                           buttonIsPressed(1);
-                          Navigator.of(context)
-                              .pushNamed(RouteManager.tablesManagementPage);
+                          Navigator.of(
+                            context,
+                          ).pushNamed(RouteManager.tablesManagementPage);
                         },
                         label: const Text(
                           AppConstants.tableManagementButtonLabel,
                           style: TextStyle(
-                              fontWeight: FontWeight.bold, fontSize: 16),
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16,
+                          ),
                         ),
                         icon: const Icon(Icons.arrow_forward_ios_sharp),
                       ),
@@ -509,9 +574,7 @@ class _GaestelistState extends State<Gaestelist> {
               ),
             ),
             const SizedBox(height: 20),
-            Padding(
-              padding: EdgeInsets.symmetric(vertical: 25),
-            ),
+            Padding(padding: EdgeInsets.symmetric(vertical: 25)),
           ],
         ),
       ),
@@ -524,17 +587,12 @@ enum States { takePart, mayBeTakePart, canceled }
 // Add this function outside the class to be used with compute()
 // ignore: unused_element
 Future<Map<String, dynamic>> _addGuestInBackground(
-    Map<String, dynamic> params) async {
+  Map<String, dynamic> params,
+) async {
   try {
     // This function runs in a separate isolate
-    return {
-      'success': true,
-      'name': params['name'],
-    };
+    return {'success': true, 'name': params['name']};
   } catch (e) {
-    return {
-      'success': false,
-      'error': e.toString(),
-    };
+    return {'success': false, 'error': e.toString()};
   }
 }

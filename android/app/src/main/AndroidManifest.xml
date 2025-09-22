@@ -28,6 +28,8 @@
     <!-- Foreground service (for notifications/alarms on Android 14+) -->
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
 
+    <uses-permission android:name="android.permission.READ_CONTACTS" />
+
     <application
         android:label="4secrets"
         android:icon="@mipmap/ic_launcher"
@@ -171,6 +173,13 @@
         <intent>
             <action android:name="android.intent.action.VIEW" />
             <data android:scheme="http" />
+        </intent>
+    </queries>
+
+    <queries>
+        <intent>
+            <action android:name="android.intent.action.VIEW" />
+            <data android:mimeType="vnd.android.cursor.dir/contact" />
         </intent>
     </queries>
 
