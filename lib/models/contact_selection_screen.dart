@@ -13,11 +13,11 @@ class ContactSelectionScreen extends StatefulWidget {
 
 class _ContactSelectionScreenState extends State<ContactSelectionScreen> {
   List<Contact> contacts = [];
-  Contact? selectedContact;
+  Set<Contact> selectedContacts = {}; // Changed to Set for multiple selection
   bool _isLoading = false;
   bool _permissionGranted = false;
   String _searchQuery = '';
-  final FocusNode _searchFocusNode = FocusNode(); // ✅ FocusNode
+  final FocusNode _searchFocusNode = FocusNode();
 
   @override
   void initState() {
@@ -27,7 +27,7 @@ class _ContactSelectionScreenState extends State<ContactSelectionScreen> {
 
   @override
   void dispose() {
-    _searchFocusNode.dispose(); // ✅ cleanup
+    _searchFocusNode.dispose();
     super.dispose();
   }
 
@@ -62,16 +62,36 @@ class _ContactSelectionScreenState extends State<ContactSelectionScreen> {
     setState(() {
       contacts = filtered;
     });
-
-    print("Loaded contacts: ${contacts.length}");
   }
 
+  void _toggleContactSelection(Contact contact) {
+    setState(() {
+      if (selectedContacts.contains(contact)) {
+        selectedContacts.remove(contact);
+      } else {
+        selectedContacts.add(contact);
+      }
+    });
+  }
+
+  // In ContactSelectionScreen, update the _confirmSelection method:
   void _confirmSelection() {
-    if (selectedContact == null) {
-      _showErrorSnackbar('Bitte wählen Sie einen Kontakt aus');
+    if (selectedContacts.isEmpty) {
+      _showErrorSnackbar('Bitte wählen Sie mindestens einen Kontakt aus');
       return;
     }
-    Navigator.pop(context, selectedContact!.displayName);
+
+    // Return list of maps with name and phone number
+    final selectedContactsData = selectedContacts
+        .map(
+          (c) => {
+            'name': c.displayName,
+            'phone': c.phones.isNotEmpty ? c.phones.first.number : '',
+          },
+        )
+        .toList();
+
+    Navigator.pop(context, selectedContactsData);
   }
 
   void _showErrorSnackbar(String message) {
@@ -96,13 +116,16 @@ class _ContactSelectionScreenState extends State<ContactSelectionScreen> {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      // ✅ tap anywhere to hide keyboard
       onTap: () => FocusScope.of(context).unfocus(),
       child: Scaffold(
         appBar: AppBar(
           backgroundColor: AppTheme.primaryColor,
           foregroundColor: Colors.white,
-          title: const Text("Kontakt auswählen"),
+          title: Text(
+            selectedContacts.isEmpty
+                ? "Kontakte auswählen"
+                : "${selectedContacts.length} ausgewählt",
+          ),
           actions: [
             Padding(
               padding: const EdgeInsets.only(right: 12),
@@ -119,7 +142,7 @@ class _ContactSelectionScreenState extends State<ContactSelectionScreen> {
         ),
         body: Column(
           children: [
-            // 🔍 Search bar with FocusNode
+            // Search bar
             Padding(
               padding: const EdgeInsets.all(16.0),
               child: Container(
@@ -145,7 +168,6 @@ class _ContactSelectionScreenState extends State<ContactSelectionScreen> {
                 ),
               ),
             ),
-
             Expanded(
               child: _isLoading
                   ? const Center(child: CircularProgressIndicator())
@@ -183,7 +205,7 @@ class _ContactSelectionScreenState extends State<ContactSelectionScreen> {
                       padding: const EdgeInsets.symmetric(horizontal: 16),
                       itemBuilder: (context, i) {
                         final c = _filteredContacts[i];
-                        final selected = c == selectedContact;
+                        final selected = selectedContacts.contains(c);
 
                         return Container(
                           decoration: BoxDecoration(
@@ -192,7 +214,7 @@ class _ContactSelectionScreenState extends State<ContactSelectionScreen> {
                               color: selected
                                   ? AppTheme.primaryColor
                                   : Colors.grey.shade400,
-                              width: 1.0,
+                              width: selected ? 2.0 : 1.0,
                             ),
                           ),
                           child: ListTile(
@@ -202,31 +224,38 @@ class _ContactSelectionScreenState extends State<ContactSelectionScreen> {
                             contentPadding: const EdgeInsets.symmetric(
                               horizontal: 16,
                             ),
-                            tileColor: Colors.transparent,
-                            selected: selected,
-                            selectedTileColor: Colors.transparent,
-                            splashColor: Colors.transparent,
-                            hoverColor: Colors.transparent,
+                            tileColor: selected
+                                ? AppTheme.primaryColor.withOpacity(0.1)
+                                : Colors.transparent,
                             leading: CircleAvatar(
-                              backgroundColor: AppTheme.primaryColor,
+                              backgroundColor: selected
+                                  ? AppTheme.primaryColor
+                                  : Colors.grey.shade400,
                               child: Text(
                                 c.displayName[0].toUpperCase(),
-                                style: const TextStyle(color: Colors.white),
+                                style: TextStyle(
+                                  color: selected ? Colors.white : Colors.black,
+                                ),
                               ),
                             ),
-                            title: Text(c.displayName),
+                            title: Text(
+                              c.displayName,
+                              style: TextStyle(
+                                fontWeight: selected
+                                    ? FontWeight.bold
+                                    : FontWeight.normal,
+                              ),
+                            ),
                             subtitle: Text(_getPhoneNumber(c)),
-                            trailing: selected
-                                ? const Icon(
-                                    FontAwesomeIcons.squareCheck,
-                                    color: AppTheme.primaryColor,
-                                  )
-                                : null,
-                            onTap: () {
-                              setState(() {
-                                selectedContact = selected ? null : c;
-                              });
-                            },
+                            trailing: Icon(
+                              selected
+                                  ? FontAwesomeIcons.squareCheck
+                                  : FontAwesomeIcons.square,
+                              color: selected
+                                  ? AppTheme.primaryColor
+                                  : Colors.grey,
+                            ),
+                            onTap: () => _toggleContactSelection(c),
                           ),
                         );
                       },
@@ -234,13 +263,13 @@ class _ContactSelectionScreenState extends State<ContactSelectionScreen> {
             ),
           ],
         ),
-        floatingActionButton: selectedContact != null
+        floatingActionButton: selectedContacts.isNotEmpty
             ? FloatingActionButton.extended(
                 backgroundColor: AppTheme.primaryColor,
                 foregroundColor: Colors.white,
                 onPressed: _confirmSelection,
                 icon: const Icon(Icons.check),
-                label: const Text("Auswählen"),
+                label: Text("${selectedContacts.length} hinzufügen"),
               )
             : null,
       ),
