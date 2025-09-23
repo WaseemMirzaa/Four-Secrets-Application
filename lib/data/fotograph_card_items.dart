@@ -37,6 +37,22 @@ class FotographCardItems {
         videoRatio: FotographCardData.map2["videoRatio"]!,
         videoUri: FotographCardData.map2["videoUri"]!,
       ),
+      CardWidget(
+        className: FotographCardData,
+        avatarImage: FotographCardData.map3['avatar']!,
+        vorname: FotographCardData.map3['vorname']!,
+        nachname: FotographCardData.map3['nachname']!,
+        bezeichnung: FotographCardData.map3['bezeichnung']!,
+        backCardTaetigkeit: FotographCardData.map3['backCardTaetigkeit']!,
+        slogan: FotographCardData.map3['slogan']!,
+        homepage: FotographCardData.map3['homepage']!,
+        email: FotographCardData.map3['email']!,
+        instagram: FotographCardData.map3["instagram"]!,
+        phoneNumber: FotographCardData.map3["phoneNumber"]!,
+        videoAsset: FotographCardData.map3["videoAsset"]!,
+        videoRatio: FotographCardData.map3["videoRatio"]!,
+        videoUri: FotographCardData.map3["videoUri"]!,
+      ),
     ];
     return items;
   }

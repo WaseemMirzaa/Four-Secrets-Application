@@ -178,7 +178,7 @@ class MenueState extends State<Menue> {
       "Checkliste",
       "Gästeliste",
       "Tischverwaltung",
-      "Showroom",
+      //"Showroom",
       "KI-Assistent",
       "Mitgestalter",
       "Hochzeitskit",

@@ -2,6 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter_switch/flutter_switch.dart';
 import 'package:four_secrets_wedding_app/config/theme/app_theme.dart';
 import 'package:hive/hive.dart';
 import 'package:four_secrets_wedding_app/model/dialog_box.dart';
@@ -10,6 +11,8 @@ import 'package:four_secrets_wedding_app/model/todo_item.dart';
 import 'package:four_secrets_wedding_app/model/checklist_item.dart';
 import 'package:four_secrets_wedding_app/model/four_secrets_divider.dart';
 import 'package:four_secrets_wedding_app/menue.dart';
+
+import '../utils/snackbar_helper.dart';
 
 class Checklist extends StatefulWidget {
   const Checklist({super.key});
@@ -44,6 +47,13 @@ class _ChecklistState extends State<Checklist> with TickerProviderStateMixin {
   late AnimationController _dragAnimationController;
   late Animation<double> _dragAnimation;
 
+  // NEU: Reminder functionality
+  TimeOfDay? _selectedReminderTime;
+  DateTime? _selectedReminderDate;
+  String? _selectedReminderTimeText;
+  String? _selectedReminderDateText;
+  bool _reminderEnabled = false;
+
   @override
   void initState() {
     super.initState();
@@ -51,6 +61,7 @@ class _ChecklistState extends State<Checklist> with TickerProviderStateMixin {
     _initializeExpandedState();
     _initializeAnimations();
     _loadChecklist();
+    _loadReminderSettings();
   }
 
   void _initializeAnimations() {
@@ -58,13 +69,12 @@ class _ChecklistState extends State<Checklist> with TickerProviderStateMixin {
       duration: const Duration(milliseconds: 200),
       vsync: this,
     );
-    _dragAnimation = Tween<double>(
-      begin: 1.0,
-      end: 1.05,
-    ).animate(CurvedAnimation(
-      parent: _dragAnimationController,
-      curve: Curves.easeInOut,
-    ));
+    _dragAnimation = Tween<double>(begin: 1.0, end: 1.05).animate(
+      CurvedAnimation(
+        parent: _dragAnimationController,
+        curve: Curves.easeInOut,
+      ),
+    );
   }
 
   void _initializeData() {
@@ -92,6 +102,212 @@ class _ChecklistState extends State<Checklist> with TickerProviderStateMixin {
     _updateCategoryCache();
   }
 
+  // NEU: Load reminder settings from storage
+  void _loadReminderSettings() {
+    final reminderSettings = _myBoxToDo.get("CHECKLIST_REMINDER_SETTINGS");
+    if (reminderSettings != null && reminderSettings is Map) {
+      setState(() {
+        _reminderEnabled = reminderSettings['enabled'] ?? false;
+
+        if (reminderSettings['reminderDate'] != null) {
+          _selectedReminderDate = DateTime.parse(
+            reminderSettings['reminderDate'],
+          );
+          _selectedReminderDateText =
+              "${_selectedReminderDate!.day}/${_selectedReminderDate!.month}/${_selectedReminderDate!.year}";
+        }
+
+        if (reminderSettings['reminderTime'] != null) {
+          final timeParts = reminderSettings['reminderTime'].split(':');
+          _selectedReminderTime = TimeOfDay(
+            hour: int.parse(timeParts[0]),
+            minute: int.parse(timeParts[1]),
+          );
+          _selectedReminderTimeText =
+              "${_selectedReminderTime!.hour.toString().padLeft(2, '0')}:${_selectedReminderTime!.minute.toString().padLeft(2, '0')} Uhr";
+        }
+      });
+    }
+  }
+
+  // NEU: Save reminder settings to storage
+  void _saveReminderSettings() {
+    final reminderSettings = {
+      'enabled': _reminderEnabled,
+      'reminderDate': _selectedReminderDate?.toIso8601String(),
+      'reminderTime': _selectedReminderTime != null
+          ? "${_selectedReminderTime!.hour.toString().padLeft(2, '0')}:${_selectedReminderTime!.minute.toString().padLeft(2, '0')}"
+          : null,
+    };
+    _myBoxToDo.put("CHECKLIST_REMINDER_SETTINGS", reminderSettings);
+  }
+
+  // NEU: Select reminder date
+  Future<void> _selectReminderDate() async {
+    final DateTime now = DateTime.now();
+    final DateTime today = DateTime(now.year, now.month, now.day);
+
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: _selectedReminderDate ?? today,
+      firstDate: today,
+      lastDate: DateTime(2030),
+      builder: (context, child) {
+        return Theme(
+          data: Theme.of(context).copyWith(
+            colorScheme: Theme.of(context).colorScheme.copyWith(
+              primary: const Color.fromARGB(255, 107, 69, 106),
+            ),
+          ),
+          child: child!,
+        );
+      },
+    );
+
+    if (picked != null && picked != _selectedReminderDate) {
+      setState(() {
+        _selectedReminderDate = picked;
+        _selectedReminderDateText =
+            "${picked.day}/${picked.month}/${picked.year}";
+      });
+      _saveReminderSettings();
+      _validateReminderDateTime();
+    }
+  }
+
+  // NEU: Select reminder time
+  Future<void> _selectReminderTime() async {
+    final TimeOfDay? picked = await showTimePicker(
+      context: context,
+      initialTime: _selectedReminderTime ?? const TimeOfDay(hour: 9, minute: 0),
+      builder: (context, child) {
+        return Theme(
+          data: Theme.of(context).copyWith(
+            colorScheme: Theme.of(context).colorScheme.copyWith(
+              primary: const Color.fromARGB(255, 107, 69, 106),
+            ),
+          ),
+          child: child!,
+        );
+      },
+    );
+
+    if (picked != null) {
+      setState(() {
+        _selectedReminderTime = picked;
+        _selectedReminderTimeText =
+            "${picked.hour.toString().padLeft(2, '0')}:${picked.minute.toString().padLeft(2, '0')} Uhr";
+      });
+      _saveReminderSettings();
+      _validateReminderDateTime();
+    }
+  }
+
+  // NEU: Validate reminder date and time
+  void _validateReminderDateTime() {
+    if (_selectedReminderDate != null && _selectedReminderTime != null) {
+      DateTime reminderDateTime = DateTime(
+        _selectedReminderDate!.year,
+        _selectedReminderDate!.month,
+        _selectedReminderDate!.day,
+        _selectedReminderTime!.hour,
+        _selectedReminderTime!.minute,
+      );
+
+      final DateTime now = DateTime.now();
+
+      if (reminderDateTime.isBefore(now)) {
+        // Check if it's today and time is in the past
+        final DateTime today = DateTime(now.year, now.month, now.day);
+        final DateTime selectedDate = DateTime(
+          _selectedReminderDate!.year,
+          _selectedReminderDate!.month,
+          _selectedReminderDate!.day,
+        );
+
+        if (selectedDate.isAtSameMomentAs(today)) {
+          SnackBarHelper.showErrorSnackBar(
+            context,
+            'Die gewählte Erinnerungszeit liegt in der Vergangenheit. Bitte wählen Sie eine zukünftige Uhrzeit für heute.',
+          );
+        } else {
+          SnackBarHelper.showErrorSnackBar(
+            context,
+            'Erinnerung Datum und Uhrzeit müssen in der Zukunft liegen. Bitte wählen Sie ein zukünftiges Datum und eine zukünftige Uhrzeit.',
+          );
+        }
+      }
+    }
+  }
+
+  // NEU: Toggle reminder enabled/disabled
+  void _toggleReminder(bool value) {
+    setState(() {
+      _reminderEnabled = value;
+    });
+    _saveReminderSettings();
+
+    if (value) {
+      // Show reminder enabled message
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Row(
+            children: [
+              Icon(Icons.notifications_active, color: Colors.white, size: 20),
+              SizedBox(width: 8),
+              Expanded(
+                child: Text(
+                  'Ihre Checklisten-Erinnerung ist jetzt aktiviert!',
+                  style: TextStyle(fontSize: 14),
+                ),
+              ),
+            ],
+          ),
+          backgroundColor: Colors.green.shade600,
+          duration: Duration(seconds: 3),
+          behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+        ),
+      );
+    }
+  }
+
+  // NEU: Validate all reminder fields
+  bool _validateReminderFields() {
+    if (!_reminderEnabled) return true;
+
+    List<String> errors = [];
+
+    if (_selectedReminderDate == null) {
+      errors.add('Erinnerung Datum ist erforderlich');
+    }
+
+    if (_selectedReminderTime == null) {
+      errors.add('Erinnerung Uhrzeit ist erforderlich');
+    }
+
+    if (_selectedReminderDate != null && _selectedReminderTime != null) {
+      DateTime reminderDateTime = DateTime(
+        _selectedReminderDate!.year,
+        _selectedReminderDate!.month,
+        _selectedReminderDate!.day,
+        _selectedReminderTime!.hour,
+        _selectedReminderTime!.minute,
+      );
+
+      if (reminderDateTime.isBefore(DateTime.now())) {
+        errors.add('Erinnerung Datum und Uhrzeit müssen in der Zukunft liegen');
+      }
+    }
+
+    if (errors.isNotEmpty) {
+      SnackBarHelper.showErrorSnackBar(context, errors.join('\n'));
+      return false;
+    }
+
+    return true;
+  }
+
   void _initializeExpandedState() {
     // Lade gespeicherte States oder setze Smart Defaults
     final savedExpandedState = _myBoxToDo.get("CATEGORY_EXPANDED_STATE");
@@ -103,7 +319,8 @@ class _ChecklistState extends State<Checklist> with TickerProviderStateMixin {
       // Smart Defaults: Aktive und überfällige Kategorien expanded, zukünftige collapsed
       for (int i = 0; i < TodoCategory.categories.length; i++) {
         final status = WeddingDateHelper.getCategoryStatus(i, db.weddingDate);
-        _categoryExpandedState[i] = status == CategoryStatus.active ||
+        _categoryExpandedState[i] =
+            status == CategoryStatus.active ||
             status == CategoryStatus.overdue ||
             status == CategoryStatus.noDate;
       }
@@ -165,8 +382,10 @@ class _ChecklistState extends State<Checklist> with TickerProviderStateMixin {
     if (db.weddingDate == null)
       return true; // Wenn kein Datum gesetzt, erlaube alles
 
-    final status =
-        WeddingDateHelper.getCategoryStatus(targetCategory, db.weddingDate);
+    final status = WeddingDateHelper.getCategoryStatus(
+      targetCategory,
+      db.weddingDate,
+    );
     return status == CategoryStatus.active ||
         status == CategoryStatus.future ||
         status == CategoryStatus.noDate;
@@ -323,7 +542,7 @@ class _ChecklistState extends State<Checklist> with TickerProviderStateMixin {
             return DialogBox(
               controller: _controller,
               isLoading: _isLoading,
-              
+
               onSave: () async {
                 if (_controller.text.isEmpty) {
                   Navigator.of(context).pop();
@@ -337,8 +556,9 @@ class _ChecklistState extends State<Checklist> with TickerProviderStateMixin {
                   // Add task with default category (current active category or 0)
                   int targetCategory = 0;
                   if (db.weddingDate != null) {
-                    targetCategory =
-                        WeddingDateHelper.getCurrentCategory(db.weddingDate!);
+                    targetCategory = WeddingDateHelper.getCurrentCategory(
+                      db.weddingDate!,
+                    );
                   }
 
                   saveNewTask(_controller.text, targetCategory);
@@ -394,8 +614,8 @@ class _ChecklistState extends State<Checklist> with TickerProviderStateMixin {
         return Theme(
           data: Theme.of(context).copyWith(
             colorScheme: Theme.of(context).colorScheme.copyWith(
-                  primary: const Color.fromARGB(255, 107, 69, 106),
-                ),
+              primary: const Color.fromARGB(255, 107, 69, 106),
+            ),
           ),
           child: child!,
         );
@@ -453,6 +673,230 @@ class _ChecklistState extends State<Checklist> with TickerProviderStateMixin {
   String _getTimeUntilWedding() {
     if (db.weddingDate == null) return '';
     return WeddingDateHelper.formatTimeUntilWedding(db.weddingDate!);
+  }
+
+  // NEU: Build reminder section
+  Widget _buildReminderSection() {
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 25, vertical: 16),
+      child: Material(
+        borderRadius: BorderRadius.circular(12),
+        elevation: 3.0,
+        child: Container(
+          padding: const EdgeInsets.all(20),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(12),
+            gradient: LinearGradient(
+              colors: [Colors.white, Colors.grey.shade50],
+            ),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Header Row
+              Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color: const Color.fromARGB(25, 107, 69, 106),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: const Icon(
+                      Icons.notifications,
+                      color: Color.fromARGB(255, 107, 69, 106),
+                      size: 20,
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  const Expanded(
+                    child: Text(
+                      'Checklisten-Erinnerung',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color: Color.fromARGB(255, 107, 69, 106),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+
+              const SizedBox(height: 16),
+
+              // Reminder Toggle
+              Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 10,
+                  vertical: 12,
+                ),
+                decoration: BoxDecoration(
+                  color: Colors.grey.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const Expanded(
+                      child: Text(
+                        'Erinnerung aktivieren',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ),
+                    FlutterSwitch(
+                      height: 25,
+                      width: 50,
+                      activeColor: const Color.fromARGB(255, 107, 69, 106),
+                      inactiveColor: Colors.grey,
+                      borderRadius: 15,
+                      value: _reminderEnabled,
+                      onToggle: _toggleReminder,
+                    ),
+                  ],
+                ),
+              ),
+
+              // Show reminder date and time fields only if reminder is enabled
+              if (_reminderEnabled) ...[
+                const SizedBox(height: 16),
+
+                // Reminder Date
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      'Erinnerungsdatum *',
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    GestureDetector(
+                      onTap: _selectReminderDate,
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 12,
+                          vertical: 14,
+                        ),
+                        decoration: BoxDecoration(
+                          color: Colors.grey.withOpacity(0.1),
+                          borderRadius: BorderRadius.circular(8),
+                          border: Border.all(
+                            color: _selectedReminderDate == null
+                                ? Colors.transparent
+                                : const Color.fromARGB(255, 107, 69, 106),
+                          ),
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              _selectedReminderDateText ?? 'Datum auswählen...',
+                              style: TextStyle(
+                                fontSize: 14,
+                                color: _selectedReminderDateText == null
+                                    ? Colors.grey
+                                    : Colors.black,
+                              ),
+                            ),
+                            Icon(
+                              Icons.calendar_today,
+                              color: const Color.fromARGB(255, 107, 69, 106),
+                              size: 20,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+
+                const SizedBox(height: 12),
+
+                // Reminder Time
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      'Erinnerungszeit *',
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    GestureDetector(
+                      onTap: _selectReminderTime,
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 12,
+                          vertical: 14,
+                        ),
+                        decoration: BoxDecoration(
+                          color: Colors.grey.withOpacity(0.1),
+                          borderRadius: BorderRadius.circular(8),
+                          border: Border.all(
+                            color: _selectedReminderTime == null
+                                ? Colors.transparent
+                                : const Color.fromARGB(255, 107, 69, 106),
+                          ),
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              _selectedReminderTimeText ??
+                                  'Uhrzeit auswählen...',
+                              style: TextStyle(
+                                fontSize: 14,
+                                color: _selectedReminderTimeText == null
+                                    ? Colors.grey
+                                    : Colors.black,
+                              ),
+                            ),
+                            Icon(
+                              Icons.access_time,
+                              color: const Color.fromARGB(255, 107, 69, 106),
+                              size: 20,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+
+                // Info Text
+                const SizedBox(height: 12),
+                Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: const Color.fromARGB(
+                      255,
+                      107,
+                      69,
+                      106,
+                    ).withOpacity(0.05),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: const Text(
+                    'Sie erhalten eine Erinnerung zur ausgewählten Zeit, um Ihre Checklisten-Fortschritte zu überprüfen.',
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: Color.fromARGB(255, 107, 69, 106),
+                    ),
+                  ),
+                ),
+              ],
+            ],
+          ),
+        ),
+      ),
+    );
   }
 
   Widget _buildWeddingDateSection() {
@@ -587,9 +1031,11 @@ class _ChecklistState extends State<Checklist> with TickerProviderStateMixin {
                       // Fortschrittsbalken
                       Row(
                         children: [
-                          Icon(Icons.trending_up,
-                              color: const Color.fromARGB(255, 107, 69, 106),
-                              size: 16),
+                          Icon(
+                            Icons.trending_up,
+                            color: const Color.fromARGB(255, 107, 69, 106),
+                            size: 16,
+                          ),
                           const SizedBox(width: 8),
                           Text(
                             'Fortschritt: ${progressPercentage.toStringAsFixed(0)}%',
@@ -660,12 +1106,20 @@ class _ChecklistState extends State<Checklist> with TickerProviderStateMixin {
                 Container(
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
-                    color: const Color.fromARGB(255, 107, 69, 106)
-                        .withOpacity(0.05),
+                    color: const Color.fromARGB(
+                      255,
+                      107,
+                      69,
+                      106,
+                    ).withOpacity(0.05),
                     borderRadius: BorderRadius.circular(8),
                     border: Border.all(
-                      color: const Color.fromARGB(255, 107, 69, 106)
-                          .withOpacity(0.2),
+                      color: const Color.fromARGB(
+                        255,
+                        107,
+                        69,
+                        106,
+                      ).withOpacity(0.2),
                     ),
                   ),
                   child: Row(
@@ -764,11 +1218,15 @@ class _ChecklistState extends State<Checklist> with TickerProviderStateMixin {
               boxShadow: isDragOver && canDropHere
                   ? [
                       BoxShadow(
-                        color: const Color.fromARGB(255, 107, 69, 106)
-                            .withOpacity(0.3),
+                        color: const Color.fromARGB(
+                          255,
+                          107,
+                          69,
+                          106,
+                        ).withOpacity(0.3),
                         blurRadius: 8,
                         spreadRadius: 2,
-                      )
+                      ),
                     ]
                   : null,
             ),
@@ -864,27 +1322,26 @@ class _ChecklistState extends State<Checklist> with TickerProviderStateMixin {
                                           db.weddingDate,
                                         ),
                                         size: 14,
-                                        color: WeddingDateHelper
-                                            .getCategoryIconColor(
-                                          categoryId,
-                                          db.weddingDate,
-                                        ),
+                                        color:
+                                            WeddingDateHelper.getCategoryIconColor(
+                                              categoryId,
+                                              db.weddingDate,
+                                            ),
                                       ),
                                       const SizedBox(width: 4),
                                       Expanded(
                                         child: Text(
-                                          WeddingDateHelper
-                                              .getCategoryStatusText(
+                                          WeddingDateHelper.getCategoryStatusText(
                                             categoryId,
                                             db.weddingDate,
                                           ),
                                           style: TextStyle(
                                             fontSize: 12,
-                                            color: WeddingDateHelper
-                                                .getCategoryIconColor(
-                                              categoryId,
-                                              db.weddingDate,
-                                            ),
+                                            color:
+                                                WeddingDateHelper.getCategoryIconColor(
+                                                  categoryId,
+                                                  db.weddingDate,
+                                                ),
                                             fontWeight: FontWeight.w500,
                                           ),
                                         ),
@@ -935,8 +1392,10 @@ class _ChecklistState extends State<Checklist> with TickerProviderStateMixin {
 
                     // ToDo Items mit Drag-and-Drop
                     AnimatedCrossFade(
-                      firstChild:
-                          const SizedBox(width: double.infinity, height: 0),
+                      firstChild: const SizedBox(
+                        width: double.infinity,
+                        height: 0,
+                      ),
                       secondChild: categoryTodos.isNotEmpty
                           ? Padding(
                               padding: const EdgeInsets.only(bottom: 12),
@@ -989,11 +1448,7 @@ class _ChecklistState extends State<Checklist> with TickerProviderStateMixin {
             ),
             child: Row(
               children: [
-                const Icon(
-                  Icons.drag_indicator,
-                  color: Colors.white,
-                  size: 20,
-                ),
+                const Icon(Icons.drag_indicator, color: Colors.white, size: 20),
                 const SizedBox(width: 12),
                 Expanded(
                   child: Text(
@@ -1089,8 +1544,10 @@ class _ChecklistState extends State<Checklist> with TickerProviderStateMixin {
   }
 
   List<int> _getSortedCategoryIds() {
-    return List.generate(TodoCategory.categories.length,
-        (index) => TodoCategory.categories.length - 1 - index);
+    return List.generate(
+      TodoCategory.categories.length,
+      (index) => TodoCategory.categories.length - 1 - index,
+    );
   }
 
   @override
@@ -1136,10 +1593,11 @@ class _ChecklistState extends State<Checklist> with TickerProviderStateMixin {
             // Hochzeitsdatum Section
             _buildWeddingDateSection(),
 
+            // NEU: Reminder Section
+            _buildReminderSection(),
+
             _buildScrollHint(),
-            SizedBox(
-              height: 12,
-            ),
+            SizedBox(height: 12),
 
             // Kategorie Sections mit Drag-and-Drop
             ..._getSortedCategoryIds().map((categoryId) {

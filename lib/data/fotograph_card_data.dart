@@ -12,7 +12,7 @@ class FotographCardData {
     "nachname": "Testov",
     "bezeichnung": "Fotografie",
     "backCardTaetigkeit": "Alexey Testov Photographie",
-    "slogan": "Momente festhalten, Erinnerungen schaffen."
+    "slogan": "Momente festhalten, Erinnerungen schaffen.",
   };
 
   static final Map<String, String> map2 = {
@@ -28,6 +28,22 @@ class FotographCardData {
     "nachname": "Krovinovic",
     "bezeichnung": "Fotografie",
     "backCardTaetigkeit": "Hochzeitsfotograf München",
-    "slogan": "Echte Emotionen. Für immer eingefangen."
+    "slogan": "Echte Emotionen. Für immer eingefangen.",
+  };
+
+  static final Map<String, String> map3 = {
+    "videoAsset": "", // Uri geht vor Asset video
+    "videoUri": "",
+    "videoRatio": "",
+    "email": "temaire.videografie@gmail.com",
+    "homepage": "www.hochzeitsvideo-temaire.de",
+    "instagram": "https://www.instagram.com/hochzeitsvideo_temaire/",
+    "phoneNumber": "",
+    "avatar": "assets/images/card/paul_temaire_card.webp",
+    "vorname": "Paul",
+    "nachname": "Temaire",
+    "bezeichnung": "Videography",
+    "backCardTaetigkeit": "",
+    "slogan": "Aus Momenten werden Filme.",
   };
 }

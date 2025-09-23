@@ -12,21 +12,21 @@ class PapeterieCardData {
     "nachname": "Kugelmann",
     "bezeichnung": "Papeterie & Design",
     "backCardTaetigkeit": "Design-Atelier",
-    "slogan": "Worte, die bleiben - auf Papier, das berührt."
+    "slogan": "Worte, die bleiben - auf Papier, das berührt.",
   };
   static final Map<String, String> map2 = {
     "videoAsset": "",
     "videoUri": "",
     "videoRatio": "0.7",
-    "email": "contact@miracle-wedding.com",
-    "homepage": "https://www.miracle-wedding.com",
-    "instagram": "https://www.instagram.com/miracle.weddingsigns/",
+    "email": "info@freudenwerkstatt.de",
+    "homepage": "https://www.freudenwerkstatt.de",
+    "instagram": "https://www.instagram.com/freudenwerkstatt/",
     "phoneNumber": "+49 151 178 136 37",
     "avatar": "assets/images/card/miracle_wedding_card.jpg",
-    "vorname": "Miracle",
-    "nachname": "Wedding",
-    "bezeichnung": "Hochzeitsschilder",
+    "vorname": "Freudenwerkstatt",
+    "nachname": "",
+    "bezeichnung": "Illustrations",
     "backCardTaetigkeit": "Unique Designs",
-    "slogan": "Kreatives Design. Persönlich gedruckt."
+    "slogan": "Kreatives Design. Persönlich gedruckt.",
   };
 }

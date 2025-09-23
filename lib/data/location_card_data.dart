@@ -3,16 +3,16 @@ class LocationCardData {
     "videoAsset": "", // Uri geht vor Asset video
     "videoUri": "",
     "videoRatio": "0.7",
-    "email": "info@die-alte-gaertnerei.de",
-    "homepage": "https://www.die-alte-gaertnerei.de",
-    "instagram": "https://www.instagram.com/die_alte_gaertnerei_muenchen/",
+    "email": "servus@schlossgut-moosschwaige.de",
+    "homepage": "https://www.schlossgut-muenchen.de",
+    "instagram": "https://www.instagram.com/moosschwaigemuenchen/",
     "phoneNumber": "+49 (0)89 614 84 84",
     "avatar": "assets/images/card/alte_gaertnerei_card.jpg",
-    "vorname": "Die Alte",
-    "nachname": "Gärtnerei",
+    "vorname": "Schlossgut",
+    "nachname": "Moosschwaige",
     "bezeichnung": "",
     "backCardTaetigkeit": "Event & Hochzeitslocation",
-    "slogan": "Wo Liebe den schönsten Platz findet."
+    "slogan": "Wo Liebe den schönsten Platz findet.",
   };
 
   static final Map<String, String> map2 = {
@@ -28,6 +28,22 @@ class LocationCardData {
     "nachname": "Platzl",
     "bezeichnung": "Hotel",
     "backCardTaetigkeit": "Event & Hochzeitslocation",
-    "slogan": "Stilvolle Kulisse für große Gefühle."
+    "slogan": "Stilvolle Kulisse für große Gefühle.",
+  };
+
+  static final Map<String, String> map3 = {
+    "videoAsset": "", // Uri geht vor Asset video
+    "videoUri": "",
+    "videoRatio": "0.7",
+    "email": "info@lamplstaett.de",
+    "homepage": "https://www.lamplstaett.de",
+    "instagram": "https://www.instagram.com/lamplstaett/",
+    "phoneNumber": "+49 (0)89 622 33 70",
+    "avatar": "assets/images/card/landgut_card.jpg",
+    "vorname": "Landgut",
+    "nachname": "Lamplstätt",
+    "bezeichnung": "Location",
+    "backCardTaetigkeit": "Event & Hochzeitslocation",
+    "slogan": "Stilvolle Kulisse für große Gefühle.",
   };
 }

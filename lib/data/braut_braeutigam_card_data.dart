@@ -13,7 +13,7 @@ class BrautBraeutigamCardData {
     "nachname": "Atelier",
     "bezeichnung": "Brautmode-Designer",
     "backCardTaetigkeit": "Brautatelier",
-    "slogan": "Kleider, So edel wie die Liebe selbst."
+    "slogan": "Kleider, So edel wie die Liebe selbst.",
   };
 
   static final Map<String, String> map2 = {
@@ -29,7 +29,7 @@ class BrautBraeutigamCardData {
     "nachname": "",
     "bezeichnung": "Atelier",
     "backCardTaetigkeit": "Brautatelier",
-    "slogan": "Zeitlose Eleganz für unvergessliche Momente."
+    "slogan": "Zeitlose Eleganz für unvergessliche Momente.",
   };
   static final Map<String, String> map3 = {
     "videoAsset": "", // Uri geht vor Asset video
@@ -44,6 +44,22 @@ class BrautBraeutigamCardData {
     "nachname": "Herrenmode",
     "bezeichnung": "Maßanzüge",
     "backCardTaetigkeit": "Herrenatelier",
-    "slogan": "Maßarbeit für Männer mit Stil."
+    "slogan": "Maßarbeit für Männer mit Stil.",
+  };
+
+  static final Map<String, String> map4 = {
+    "videoAsset": "", // Uri geht vor Asset video
+    "videoUri": "",
+    "videoRatio": "0.7",
+    "email": "",
+    "homepage": "https://www.truesociety.com",
+    "instagram": "https://www.instagram.com/truesociety",
+    "phoneNumber": "",
+    "avatar": "assets/images/card/true_society.webp",
+    "vorname": "True",
+    "nachname": "Society",
+    "bezeichnung": "Atelier",
+    "backCardTaetigkeit": "Herrenatelier",
+    "slogan": "Atelier für Männer mit Stil.",
   };
 }

@@ -53,6 +53,22 @@ class BrautBraeutigamCardItems {
         videoRatio: BrautBraeutigamCardData.map3["videoRatio"]!,
         videoUri: BrautBraeutigamCardData.map3["videoUri"]!,
       ),
+      CardWidget(
+        className: BrautBraeutigamCardData,
+        avatarImage: BrautBraeutigamCardData.map4['avatar']!,
+        vorname: BrautBraeutigamCardData.map4['vorname']!,
+        nachname: BrautBraeutigamCardData.map4['nachname']!,
+        bezeichnung: BrautBraeutigamCardData.map4['bezeichnung']!,
+        backCardTaetigkeit: BrautBraeutigamCardData.map4['backCardTaetigkeit']!,
+        slogan: BrautBraeutigamCardData.map4['slogan']!,
+        homepage: BrautBraeutigamCardData.map4['homepage']!,
+        email: BrautBraeutigamCardData.map4["email"]!,
+        phoneNumber: BrautBraeutigamCardData.map4["phoneNumber"]!,
+        instagram: BrautBraeutigamCardData.map4["instagram"]!,
+        videoAsset: BrautBraeutigamCardData.map4["videoAsset"]!,
+        videoRatio: BrautBraeutigamCardData.map4["videoRatio"]!,
+        videoUri: BrautBraeutigamCardData.map4["videoUri"]!,
+      ),
     ];
     return items;
   }

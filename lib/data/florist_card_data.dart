@@ -3,15 +3,15 @@ class FloristCardData {
     "videoAsset": "", // Uri geht vor Asset video
     "videoUri": "",
     "videoRatio": "0.7",
-    "email": "info@belflair.de",
-    "homepage": "https://www.belflair.de",
-    "instagram": "https://www.instagram.com/belflair_216/",
+    "email": "dieblumenoase@gmx.de",
+    "homepage": "https://www.dieblumenoase.de",
+    "instagram": "https://www.instagram.com/dieblumenoase/",
     "phoneNumber": "+49 (0)89 448 68 68",
     "avatar": "assets/images/card/belflair_card.jpg",
-    "vorname": "Belflair",
-    "nachname": "",
+    "vorname": "Die",
+    "nachname": "Blumenoase",
     "bezeichnung": "Floristik",
     "backCardTaetigkeit": "Blumenatelier",
-    "slogan": "Blumen sprechen leise - und sagen doch alles."
+    "slogan": "Blumen sprechen leise - und sagen doch alles.",
   };
 }

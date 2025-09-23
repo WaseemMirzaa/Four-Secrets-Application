@@ -12,6 +12,22 @@ class TanzschuleCardData {
     "nachname": "Melanie Richt",
     "bezeichnung": "Tanzschule",
     "backCardTaetigkeit": "Tanzlehrer",
-    "slogan": "Eleganz in jedem Schritt."
+    "slogan": "Eleganz in jedem Schritt.",
+  };
+
+  static final Map<String, String> map2 = {
+    "videoAsset": "", // Uri geht vor Asset video
+    "videoUri": "",
+    "videoRatio": "",
+    "email": "info@tanzschule-muenchen-dt.de",
+    "homepage": "https://www.tanzschule-muenchen-dt.de/",
+    "instagram": "https://www.instagram.com/tanzschule_dt01/",
+    "phoneNumber": "+49 172 442 78 27",
+    "avatar": "assets/images/card/deine_card.webp",
+    "vorname": "Deine",
+    "nachname": "Tanzschule",
+    "bezeichnung": "Hochzeitstanz",
+    "backCardTaetigkeit": "Tanzlehrer",
+    "slogan": "Eleganz in jedem Schritt.",
   };
 }

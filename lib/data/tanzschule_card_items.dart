@@ -21,6 +21,22 @@ class TanzschuleCardItems {
         videoRatio: TanzschuleCardData.map1["videoRatio"]!,
         videoUri: TanzschuleCardData.map1["videoUri"]!,
       ),
+      CardWidget(
+        className: TanzschuleCardData,
+        avatarImage: TanzschuleCardData.map2['avatar']!,
+        vorname: TanzschuleCardData.map2['vorname']!,
+        nachname: TanzschuleCardData.map2['nachname']!,
+        bezeichnung: TanzschuleCardData.map2['bezeichnung']!,
+        backCardTaetigkeit: TanzschuleCardData.map2['backCardTaetigkeit']!,
+        slogan: TanzschuleCardData.map2['slogan']!,
+        homepage: TanzschuleCardData.map2['homepage']!,
+        email: TanzschuleCardData.map2['email']!,
+        instagram: TanzschuleCardData.map2["instagram"]!,
+        phoneNumber: TanzschuleCardData.map2["phoneNumber"]!,
+        videoAsset: TanzschuleCardData.map2["videoAsset"]!,
+        videoRatio: TanzschuleCardData.map2["videoRatio"]!,
+        videoUri: TanzschuleCardData.map2["videoUri"]!,
+      ),
     ];
     return items;
   }

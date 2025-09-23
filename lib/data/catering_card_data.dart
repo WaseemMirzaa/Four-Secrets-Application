@@ -3,15 +3,15 @@ class CateringCardData {
     "videoAsset": "", // Uri geht vor Asset video
     "videoUri": "",
     "videoRatio": "0.7",
-    "email": "mail@tasteria.de",
-    "homepage": "https://www.tasteria.de",
-    "instagram": "https://www.instagram.com/tasteria.catering/",
+    "email": "info@containerkitchen.de",
+    "homepage": "https://www.containerkitchen.de",
+    "instagram": "https://www.instagram.com/containerkitchen_by_tortora/",
     "phoneNumber": "+49 176 248 598 94",
     "avatar": "assets/images/card/tasteria_card.jpg",
-    "vorname": "Tasteria",
+    "vorname": "Containerkitchen",
     "nachname": "",
-    "bezeichnung": "Event & Gastronomie",
+    "bezeichnung": "Tortora",
     "backCardTaetigkeit": "Catering",
-    "slogan": "Feinster Genuss - perfekt inszeniert."
+    "slogan": "Feinster Genuss - perfekt inszeniert.",
   };
 }

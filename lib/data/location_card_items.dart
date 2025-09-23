@@ -36,7 +36,23 @@ class LocationCardItems {
         videoAsset: LocationCardData.map2["videoAsset"]!,
         videoRatio: LocationCardData.map2["videoRatio"]!,
         videoUri: LocationCardData.map2["videoUri"]!,
-      )
+      ),
+      CardWidget(
+        className: LocationCardData,
+        avatarImage: LocationCardData.map3['avatar']!,
+        vorname: LocationCardData.map3['vorname']!,
+        nachname: LocationCardData.map3['nachname']!,
+        bezeichnung: LocationCardData.map3['bezeichnung']!,
+        backCardTaetigkeit: LocationCardData.map3['backCardTaetigkeit']!,
+        slogan: LocationCardData.map3['slogan']!,
+        homepage: LocationCardData.map3['homepage']!,
+        email: LocationCardData.map3['email']!,
+        instagram: LocationCardData.map3["instagram"]!,
+        phoneNumber: LocationCardData.map3["phoneNumber"]!,
+        videoAsset: LocationCardData.map3["videoAsset"]!,
+        videoRatio: LocationCardData.map3["videoRatio"]!,
+        videoUri: LocationCardData.map3["videoUri"]!,
+      ),
     ];
     return items;
   }

@@ -35,6 +35,45 @@ class FooterButtons extends StatelessWidget {
         (videoUri?.isNotEmpty == true && videoUri != "null");
   }
 
+  bool get isHomepageAvailable {
+    return urlHomepage?.isNotEmpty == true && urlHomepage != "null";
+  }
+
+  // Helper method to check if mail is available
+  bool get isMailAvailable {
+    return mailAdress?.isNotEmpty == true && mailAdress != "null";
+  }
+
+  // Helper method to check if Instagram is available
+  bool get isInstagramAvailable {
+    return urlInstagram?.isNotEmpty == true && urlInstagram != "null";
+  }
+
+  void _handleHomepagePress(BuildContext context) {
+    if (isHomepageAvailable) {
+      UrlEmailInstagram.getLaunchHomepage(
+        url: urlHomepage,
+        modeString: urlMode,
+      );
+    } else {
+      SnackBarHelper.showErrorSnackBar(
+        context,
+        "Homepage noch nicht verfügbar",
+      );
+    }
+  }
+
+  void _handleMailPress(BuildContext context) {
+    if (isMailAvailable) {
+      UrlEmailInstagram.sendEmail(toEmail: mailAdress);
+    } else {
+      SnackBarHelper.showErrorSnackBar(
+        context,
+        "E-Mail Adresse noch nicht verfügbar",
+      );
+    }
+  }
+
   void _handleVideoPress(BuildContext context) {
     if (isVideoAvailable) {
       Navigator.of(context).pushNamed(
@@ -50,6 +89,20 @@ class FooterButtons extends StatelessWidget {
     }
   }
 
+  void _handleInstagramPress(BuildContext context) {
+    if (isInstagramAvailable) {
+      UrlEmailInstagram.getlaunchInstagram(
+        url: urlInstagram,
+        modeString: urlMode,
+      );
+    } else {
+      SnackBarHelper.showErrorSnackBar(
+        context,
+        "Instagram noch nicht verfügbar",
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Row(
@@ -57,80 +110,70 @@ class FooterButtons extends StatelessWidget {
       children: [
         Expanded(
           child: ElevatedButton(
-            child: Icon(
-              FontAwesomeIcons.earthAmericas,
-              size: iconSize,
-            ),
-            onPressed: () {
-              if (urlHomepage?.isNotEmpty == true && urlHomepage != "null") {
-                UrlEmailInstagram.getLaunchHomepage(
-                  url: urlHomepage,
-                  modeString: urlMode,
-                );
-              }
-            },
+            child: Icon(FontAwesomeIcons.earthAmericas, size: iconSize),
+            onPressed: () => _handleHomepagePress(context),
             style: ElevatedButton.styleFrom(
-                shape: CircleBorder(),
-                backgroundColor: Colors.white,
-                foregroundColor: Color.fromARGB(255, 107, 69, 106),
-                fixedSize: Size(buttonSize, buttonSize),
-                elevation: 2.5),
+              shape: CircleBorder(),
+              backgroundColor: isHomepageAvailable
+                  ? Colors.white
+                  : Colors.grey[300],
+              foregroundColor: isHomepageAvailable
+                  ? Color.fromARGB(255, 107, 69, 106)
+                  : Colors.grey[600],
+              fixedSize: Size(buttonSize, buttonSize),
+              elevation: 2.5,
+            ),
           ),
         ),
         Expanded(
           child: ElevatedButton(
-            child: Icon(
-              Icons.mail,
-              size: iconSize,
-            ),
-            onPressed: () {
-              if (mailAdress?.isNotEmpty == true && mailAdress != "null") {
-                UrlEmailInstagram.sendEmail(toEmail: mailAdress);
-              }
-            },
+            child: Icon(Icons.mail, size: iconSize),
+            onPressed: () => _handleMailPress(context),
             style: ElevatedButton.styleFrom(
-                shape: CircleBorder(),
-                backgroundColor: Colors.white,
-                foregroundColor: Color.fromARGB(255, 107, 69, 106),
-                fixedSize: Size(buttonSize, buttonSize),
-                elevation: 2.5),
+              shape: CircleBorder(),
+              backgroundColor: isMailAvailable
+                  ? Colors.white
+                  : Colors.grey[300],
+              foregroundColor: isMailAvailable
+                  ? Color.fromARGB(255, 107, 69, 106)
+                  : Colors.grey[600],
+              fixedSize: Size(buttonSize, buttonSize),
+              elevation: 2.5,
+            ),
           ),
         ),
         Expanded(
           child: ElevatedButton(
-            child: Icon(
-              Icons.play_circle,
-              size: iconSize,
-            ),
+            child: Icon(Icons.play_circle, size: iconSize),
             onPressed: () => _handleVideoPress(context),
             style: ElevatedButton.styleFrom(
-                shape: CircleBorder(),
-                backgroundColor: Colors.white,
-                foregroundColor: isVideoAvailable
-                    ? Color.fromARGB(255, 107, 69, 106)
-                    : Colors.grey, // Grey out if no video
-                fixedSize: Size(buttonSize, buttonSize),
-                elevation: 2.5),
+              shape: CircleBorder(),
+              backgroundColor: isVideoAvailable
+                  ? Colors.white
+                  : Colors.grey[300],
+              foregroundColor: isVideoAvailable
+                  ? Color.fromARGB(255, 107, 69, 106)
+                  : Colors.grey[600],
+              fixedSize: Size(buttonSize, buttonSize),
+              elevation: 2.5,
+            ),
           ),
         ),
         Expanded(
           child: ElevatedButton(
-            child: Icon(
-              FontAwesomeIcons.squareInstagram,
-              size: iconSize,
-            ),
-            onPressed: () {
-              if (urlInstagram?.isNotEmpty == true && urlInstagram != "null") {
-                UrlEmailInstagram.getlaunchInstagram(
-                    url: urlInstagram, modeString: urlMode);
-              }
-            },
+            child: Icon(FontAwesomeIcons.squareInstagram, size: iconSize),
+            onPressed: () => _handleInstagramPress(context),
             style: ElevatedButton.styleFrom(
-                shape: CircleBorder(),
-                backgroundColor: Colors.white,
-                foregroundColor: Color.fromARGB(255, 107, 69, 106),
-                fixedSize: Size(buttonSize, buttonSize),
-                elevation: 2.5),
+              shape: CircleBorder(),
+              backgroundColor: isInstagramAvailable
+                  ? Colors.white
+                  : Colors.grey[300],
+              foregroundColor: isInstagramAvailable
+                  ? Color.fromARGB(255, 107, 69, 106)
+                  : Colors.grey[600],
+              fixedSize: Size(buttonSize, buttonSize),
+              elevation: 2.5,
+            ),
           ),
         ),
       ],
