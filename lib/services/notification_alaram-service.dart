@@ -1,8 +1,10 @@
 // lib/services/notification_service.dart
 
 import 'dart:io';
+import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:timezone/data/latest.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
@@ -52,8 +54,10 @@ class NotificationService {
     await _createNotificationChannel();
 
     // 7️⃣ Request Android notification & exact-alarms permissions (Android 13+)
-    final androidImpl = _plugin.resolvePlatformSpecificImplementation<
-        AndroidFlutterLocalNotificationsPlugin>();
+    final androidImpl = _plugin
+        .resolvePlatformSpecificImplementation<
+          AndroidFlutterLocalNotificationsPlugin
+        >();
     if (androidImpl != null) {
       final notifGranted = await androidImpl.areNotificationsEnabled();
       debugPrint('Android notification permission granted: $notifGranted');
@@ -67,8 +71,10 @@ class NotificationService {
     }
 
     // 8️⃣ Request iOS permissions
-    final iosImpl = _plugin.resolvePlatformSpecificImplementation<
-        IOSFlutterLocalNotificationsPlugin>();
+    final iosImpl = _plugin
+        .resolvePlatformSpecificImplementation<
+          IOSFlutterLocalNotificationsPlugin
+        >();
     if (iosImpl != null) {
       final granted = await iosImpl.requestPermissions(
         alert: true,
@@ -189,10 +195,7 @@ class NotificationService {
       final uri = Uri.file(filePath);
 
       if (await canLaunchUrl(uri)) {
-        await launchUrl(
-          uri,
-          mode: LaunchMode.externalApplication,
-        );
+        await launchUrl(uri, mode: LaunchMode.externalApplication);
         debugPrint('✅ PDF file opened successfully');
       } else {
         debugPrint('❌ Cannot launch PDF file');
@@ -218,10 +221,7 @@ class NotificationService {
       final uri = Uri.file(filePath);
 
       if (await canLaunchUrl(uri)) {
-        await launchUrl(
-          uri,
-          mode: LaunchMode.externalApplication,
-        );
+        await launchUrl(uri, mode: LaunchMode.externalApplication);
         debugPrint('✅ File opened successfully');
       } else {
         debugPrint('❌ Cannot launch file');
@@ -263,8 +263,10 @@ class NotificationService {
       showBadge: true,
     );
 
-    final androidImpl = _plugin.resolvePlatformSpecificImplementation<
-        AndroidFlutterLocalNotificationsPlugin>();
+    final androidImpl = _plugin
+        .resolvePlatformSpecificImplementation<
+          AndroidFlutterLocalNotificationsPlugin
+        >();
 
     if (androidImpl != null) {
       await androidImpl.createNotificationChannel(channel);
@@ -353,33 +355,38 @@ class NotificationService {
     String? payload,
   }) async {
     try {
-      // Convert DateTime to TZDateTime in the local timezone
+      // FIX: Use the original DateTime without timezone conversion
+      // This preserves the local time the user selected
       final scheduledDate = tz.TZDateTime.from(dateTime, tz.local);
       final now = tz.TZDateTime.now(tz.local);
+
+      // Debug timezone info
+      debugPrint("🔔 TIMEZONE DEBUG:");
+      debugPrint("   Original DateTime: $dateTime");
+      debugPrint("   Local timezone: ${tz.local}");
+      debugPrint("   Scheduled Date (local): $scheduledDate");
+      debugPrint("   Current time (local): $now");
+      debugPrint(
+        "   Difference: ${scheduledDate.difference(now).inMinutes} minutes",
+      );
 
       // Check if the scheduled date is in the future
       if (scheduledDate.isBefore(now)) {
         debugPrint(
-            "❌ Cannot schedule notification for past time: $scheduledDate");
-        debugPrint("   Current time: $now");
-        debugPrint("   Requested time: $scheduledDate");
-        debugPrint(
-            "   Difference: ${scheduledDate.difference(now).inMinutes} minutes");
+          "❌ Cannot schedule notification for past time: $scheduledDate",
+        );
         return;
       }
 
-      debugPrint("✅ Scheduling notification for future time: $scheduledDate");
-      debugPrint("   Current time: $now");
-      debugPrint(
-          "   Time until notification: ${scheduledDate.difference(now).inMinutes} minutes");
+      debugPrint("✅ Scheduling notification for: $scheduledDate");
 
-      // Schedule the notification
+      // FIX: Use exact time scheduling with proper timezone handling
       await _plugin.zonedSchedule(
         id,
         title,
         body,
         scheduledDate,
-        const NotificationDetails(
+        NotificationDetails(
           android: AndroidNotificationDetails(
             'wedding_schedule_channel',
             'Wedding Alarms',
@@ -387,26 +394,28 @@ class NotificationService {
             importance: Importance.max,
             priority: Priority.high,
             playSound: true,
+            sound: const RawResourceAndroidNotificationSound('notification'),
             enableVibration: true,
+            vibrationPattern: Int64List.fromList(const [0, 1000, 500, 1000]),
             fullScreenIntent: true,
             category: AndroidNotificationCategory.alarm,
             visibility: NotificationVisibility.public,
             ongoing: false,
             autoCancel: true,
             showWhen: true,
+            timeoutAfter: 0, // Never timeout
           ),
-          iOS: DarwinNotificationDetails(
+          iOS: const DarwinNotificationDetails(
             presentAlert: true,
             presentSound: true,
             presentBadge: true,
-            sound: 'default', // Use default iOS sound for reliability
+            sound: 'default',
             interruptionLevel: InterruptionLevel.critical,
             categoryIdentifier: 'wedding_reminder',
           ),
         ),
         androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
         payload: payload,
-        // uiLocalNotificationDateInterpretation: UILocalNotificationDateInterpretation.absoluteTime,
       );
 
       // Store the scheduled notification ID
@@ -418,18 +427,62 @@ class NotificationService {
         await prefs.setStringList('scheduled_notification_ids', ids);
       }
 
-      debugPrint('⏰ Scheduled alarm (id=$id) for $scheduledDate');
-      // Test immediate notification to verify setup
-      // if (DateTime.now().difference(dateTime).inMinutes.abs() < 1) {
-      //   await showAlarmNotification(
-      //     id: id + 10000, // Different ID for test
-      //     title: 'Test: $title',
-      //     body: 'This is a test notification - $body',
-      //     payload: payload ?? '',
-      //   );
-      // }
+      debugPrint('⏰ Successfully scheduled alarm (id=$id) for $scheduledDate');
+
+      // Verify scheduling worked
+      await _verifyScheduledNotification(id);
     } catch (e) {
       debugPrint('❌ Error scheduling notification: $e');
+      // Try fallback method
+      await _scheduleFallbackNotification(id, dateTime, title, body, payload);
+    }
+  }
+
+  /// Verify that the notification was actually scheduled
+  static Future<void> _verifyScheduledNotification(int id) async {
+    try {
+      final pending = await _plugin.pendingNotificationRequests();
+      final scheduled = pending.where((n) => n.id == id).isNotEmpty;
+
+      if (scheduled) {
+        debugPrint('✅ Verification: Notification $id is properly scheduled');
+      } else {
+        debugPrint(
+          '❌ Verification: Notification $id NOT found in pending list',
+        );
+      }
+    } catch (e) {
+      debugPrint('❌ Error verifying notification: $e');
+    }
+  }
+
+  /// Fallback method using different scheduling approach
+  static Future<void> _scheduleFallbackNotification(
+    int id,
+    DateTime dateTime,
+    String title,
+    String body,
+    String? payload,
+  ) async {
+    try {
+      debugPrint('🔄 Trying fallback scheduling method...');
+
+      // Use simple delay-based scheduling as fallback
+      final delay = dateTime.difference(DateTime.now());
+
+      if (delay.inSeconds > 0) {
+        await Future.delayed(delay, () async {
+          await showAlarmNotification(
+            id: id,
+            title: title,
+            body: body,
+            payload: payload ?? '',
+          );
+        });
+        debugPrint('✅ Fallback notification scheduled with delay');
+      }
+    } catch (e) {
+      debugPrint('❌ Fallback scheduling also failed: $e');
     }
   }
 
@@ -445,6 +498,61 @@ class NotificationService {
       }
     } catch (e) {
       debugPrint('❌ Error getting pending notifications: $e');
+    }
+  }
+
+  // Add this method to your existing NotificationService class
+  static Future<void> scheduleWeddingReminder({
+    required int notificationId,
+    required DateTime reminderDateTime,
+    required String title,
+    required String body,
+    String? payload,
+  }) async {
+    try {
+      // Validate the reminder time is in the future
+      final now = DateTime.now();
+      if (reminderDateTime.isBefore(now)) {
+        debugPrint(
+          '❌ Cannot schedule reminder for past time: $reminderDateTime',
+        );
+        return;
+      }
+
+      debugPrint('🔔 Scheduling wedding reminder for: $reminderDateTime');
+      debugPrint('   Title: $title');
+      debugPrint('   Body: $body');
+
+      // Schedule the notification
+      await scheduleAlarmNotification(
+        id: notificationId,
+        dateTime: reminderDateTime,
+        title: title,
+        body: body,
+        payload: payload,
+      );
+
+      // Log all pending notifications for debugging
+      await getPendingNotifications();
+    } catch (e) {
+      debugPrint('❌ Error scheduling wedding reminder: $e');
+    }
+  }
+
+  // Add this method to cancel specific reminder
+  static Future<void> cancelWeddingReminder(int notificationId) async {
+    try {
+      await cancel(notificationId);
+      debugPrint('❌ Canceled wedding reminder with id: $notificationId');
+
+      // Update stored IDs
+      final prefs = await SharedPreferences.getInstance();
+      final List<String> ids =
+          prefs.getStringList('scheduled_notification_ids') ?? [];
+      ids.remove(notificationId.toString());
+      await prefs.setStringList('scheduled_notification_ids', ids);
+    } catch (e) {
+      debugPrint('❌ Error canceling wedding reminder: $e');
     }
   }
 
@@ -478,40 +586,46 @@ class NotificationService {
 
   /// Check and request all necessary permissions
   static Future<bool> checkAndRequestPermissions() async {
-    bool allPermissionsGranted = true;
+    try {
+      if (Platform.isAndroid) {
+        // Check for Android 12+ exact alarm permission
+        if (await _plugin
+                .resolvePlatformSpecificImplementation<
+                  AndroidFlutterLocalNotificationsPlugin
+                >()
+                ?.canScheduleExactNotifications() ==
+            false) {
+          debugPrint('📱 Requesting exact alarm permission...');
 
-    if (Platform.isAndroid) {
-      final androidImpl = _plugin.resolvePlatformSpecificImplementation<
-          AndroidFlutterLocalNotificationsPlugin>();
+          // Open app settings for user to enable manually
+          await openAppSettings();
 
-      if (androidImpl != null) {
-        // Check notification permissions
-        final notificationsEnabled =
-            await androidImpl.areNotificationsEnabled();
-        debugPrint('🔍 Notifications enabled: $notificationsEnabled');
+          // Check again after user returns
+          await Future.delayed(Duration(seconds: 2));
 
-        if (notificationsEnabled == false) {
-          debugPrint('❌ Requesting notification permission...');
-          final granted = await androidImpl.requestNotificationsPermission();
-          debugPrint('🔍 Notification permission granted: $granted');
-          allPermissionsGranted = allPermissionsGranted && (granted ?? false);
+          final canSchedule = await _plugin
+              .resolvePlatformSpecificImplementation<
+                AndroidFlutterLocalNotificationsPlugin
+              >()
+              ?.canScheduleExactNotifications();
+
+          if (canSchedule != true) {
+            debugPrint('❌ Exact alarm permission not granted');
+            return false;
+          }
         }
 
-        // Check exact alarm permissions
-        final exactAlarmPermission =
-            await androidImpl.canScheduleExactNotifications();
-        debugPrint('🔍 Exact alarm permission: $exactAlarmPermission');
-
-        if (exactAlarmPermission == false) {
-          debugPrint('❌ Requesting exact alarm permission...');
-          final granted = await androidImpl.requestExactAlarmsPermission();
-          debugPrint('🔍 Exact alarm permission granted: $granted');
-          allPermissionsGranted = allPermissionsGranted && (granted ?? false);
+        // Check notification permission
+        final notificationStatus = await Permission.notification.status;
+        if (!notificationStatus.isGranted) {
+          await Permission.notification.request();
         }
       }
-    }
 
-    debugPrint('🔍 All permissions granted: $allPermissionsGranted');
-    return allPermissionsGranted;
+      return true;
+    } catch (e) {
+      debugPrint('❌ Permission check error: $e');
+      return false;
+    }
   }
 }

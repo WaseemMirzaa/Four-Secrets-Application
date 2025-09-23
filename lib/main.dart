@@ -37,8 +37,9 @@ Future<void> main() async {
     );
 
     await FirebaseAppCheck.instance.activate(
-      androidProvider:
-          kDebugMode ? AndroidProvider.debug : AndroidProvider.playIntegrity,
+      androidProvider: kDebugMode
+          ? AndroidProvider.debug
+          : AndroidProvider.playIntegrity,
       appleProvider: kDebugMode ? AppleProvider.debug : AppleProvider.appAttest,
     );
 
@@ -103,9 +104,7 @@ Future<void> main() async {
 
   // Set preferred orientations
   try {
-    await SystemChrome.setPreferredOrientations([
-      DeviceOrientation.portraitUp,
-    ]);
+    await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
     print('📱 Device orientation set to portrait');
   } catch (e) {
     debugPrint('❌ Failed to set device orientation: $e');
@@ -114,9 +113,7 @@ Future<void> main() async {
   runApp(
     MaterialApp(
       title: '4secrets - Wedding Planner',
-      theme: ThemeData(
-        textTheme: GoogleFonts.openSansTextTheme(),
-      ),
+      theme: ThemeData(textTheme: GoogleFonts.openSansTextTheme()),
       initialRoute: RouteManager.splashScreen,
       onGenerateRoute: RouteManager.generateRoute,
       debugShowCheckedModeBanner: false,

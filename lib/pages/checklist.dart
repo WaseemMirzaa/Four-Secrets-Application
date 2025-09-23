@@ -12,6 +12,7 @@ import 'package:four_secrets_wedding_app/model/checklist_item.dart';
 import 'package:four_secrets_wedding_app/model/four_secrets_divider.dart';
 import 'package:four_secrets_wedding_app/menue.dart';
 
+import '../services/notification_alaram-service.dart';
 import '../utils/snackbar_helper.dart';
 
 class Checklist extends StatefulWidget {
@@ -54,6 +55,8 @@ class _ChecklistState extends State<Checklist> with TickerProviderStateMixin {
   String? _selectedReminderDateText;
   bool _reminderEnabled = false;
 
+  static const int CHECKLIST_REMINDER_ID = 1001;
+
   @override
   void initState() {
     super.initState();
@@ -62,6 +65,10 @@ class _ChecklistState extends State<Checklist> with TickerProviderStateMixin {
     _initializeAnimations();
     _loadChecklist();
     _loadReminderSettings();
+    // Add this line to reschedule reminders when the app starts
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _checkAndRescheduleReminders();
+    });
   }
 
   void _initializeAnimations() {
@@ -100,6 +107,133 @@ class _ChecklistState extends State<Checklist> with TickerProviderStateMixin {
 
     // Cache-Initialisierung
     _updateCategoryCache();
+  }
+
+  void _scheduleReminderNotification() {
+    if (!_reminderEnabled ||
+        _selectedReminderDate == null ||
+        _selectedReminderTime == null) {
+      return;
+    }
+
+    // Validate the reminder date/time
+    if (!_validateReminderFields()) {
+      return;
+    }
+
+    // Create the reminder DateTime
+    DateTime reminderDateTime = DateTime(
+      _selectedReminderDate!.year,
+      _selectedReminderDate!.month,
+      _selectedReminderDate!.day,
+      _selectedReminderTime!.hour,
+      _selectedReminderTime!.minute,
+    );
+
+    debugPrint('🔔 Original reminder time: $reminderDateTime');
+    debugPrint('🔔 Local timezone: ${reminderDateTime.timeZoneName}');
+
+    // Schedule the notification
+    NotificationService.scheduleWeddingReminder(
+      notificationId: CHECKLIST_REMINDER_ID,
+      reminderDateTime: reminderDateTime,
+      title: 'Checklisten-Erinnerung',
+      body: 'Zeit, Ihre Hochzeits-Checkliste zu überprüfen!',
+      payload: 'checklist_reminder',
+    );
+
+    // Show confirmation message
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Row(
+          children: [
+            Icon(Icons.notifications_active, color: Colors.white, size: 20),
+            SizedBox(width: 8),
+            Expanded(
+              child: Text(
+                'Erinnerung für ${_selectedReminderDateText} um ${_selectedReminderTimeText} gesetzt!',
+                style: TextStyle(fontSize: 14),
+              ),
+            ),
+          ],
+        ),
+        backgroundColor: Colors.green.shade600,
+        duration: Duration(seconds: 2),
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+      ),
+    );
+  }
+
+  void _checkAndRescheduleReminders() {
+    final reminderSettings = _myBoxToDo.get("CHECKLIST_REMINDER_SETTINGS");
+    if (reminderSettings != null && reminderSettings is Map) {
+      final bool enabled = reminderSettings['enabled'] ?? false;
+      final String? reminderDateStr = reminderSettings['reminderDate'];
+      final String? reminderTimeStr = reminderSettings['reminderTime'];
+
+      if (enabled && reminderDateStr != null && reminderTimeStr != null) {
+        try {
+          final DateTime reminderDate = DateTime.parse(reminderDateStr);
+          final timeParts = reminderTimeStr.split(':');
+          final TimeOfDay reminderTime = TimeOfDay(
+            hour: int.parse(timeParts[0]),
+            minute: int.parse(timeParts[1]),
+          );
+
+          DateTime reminderDateTime = DateTime(
+            reminderDate.year,
+            reminderDate.month,
+            reminderDate.day,
+            reminderTime.hour,
+            reminderTime.minute,
+          );
+
+          // Check if it's in the past and disable if so
+          if (reminderDateTime.isBefore(DateTime.now())) {
+            debugPrint('❌ Past reminder found, disabling...');
+
+            // Disable the reminder since it's in the past
+            final updatedSettings = {
+              'enabled': false,
+              'reminderDate': null,
+              'reminderTime': null,
+            };
+            _myBoxToDo.put("CHECKLIST_REMINDER_SETTINGS", updatedSettings);
+
+            // Cancel any existing notification
+            NotificationService.cancelWeddingReminder(CHECKLIST_REMINDER_ID);
+
+            // Update local state
+            if (mounted) {
+              setState(() {
+                _reminderEnabled = false;
+                _selectedReminderDate = null;
+                _selectedReminderDateText = null;
+                _selectedReminderTime = null;
+                _selectedReminderTimeText = null;
+              });
+            }
+          } else {
+            // Only reschedule if it's in the future
+            NotificationService.scheduleWeddingReminder(
+              notificationId: CHECKLIST_REMINDER_ID,
+              reminderDateTime: reminderDateTime,
+              title: 'Checklisten-Erinnerung',
+              body:
+                  'Zeit, Ihre Hochzeits-Checkliste zu überprüfen! Haben Sie heute etwas erledigt?',
+              payload: 'checklist_reminder',
+            );
+
+            debugPrint(
+              '✅ Rescheduled existing reminder for: $reminderDateTime',
+            );
+          }
+        } catch (e) {
+          debugPrint('❌ Error rescheduling reminder: $e');
+        }
+      }
+    }
   }
 
   // NEU: Load reminder settings from storage
@@ -170,8 +304,13 @@ class _ChecklistState extends State<Checklist> with TickerProviderStateMixin {
         _selectedReminderDateText =
             "${picked.day}/${picked.month}/${picked.year}";
       });
-      _saveReminderSettings();
       _validateReminderDateTime();
+      _saveReminderSettings();
+
+      // Schedule notification when date is selected
+      if (_reminderEnabled && _selectedReminderTime != null) {
+        _scheduleReminderNotification();
+      }
     }
   }
 
@@ -198,8 +337,13 @@ class _ChecklistState extends State<Checklist> with TickerProviderStateMixin {
         _selectedReminderTimeText =
             "${picked.hour.toString().padLeft(2, '0')}:${picked.minute.toString().padLeft(2, '0')} Uhr";
       });
-      _saveReminderSettings();
       _validateReminderDateTime();
+      _saveReminderSettings();
+
+      // Schedule notification when time is selected
+      if (_reminderEnabled && _selectedReminderDate != null) {
+        _scheduleReminderNotification();
+      }
     }
   }
 
@@ -240,39 +384,6 @@ class _ChecklistState extends State<Checklist> with TickerProviderStateMixin {
     }
   }
 
-  // NEU: Toggle reminder enabled/disabled
-  void _toggleReminder(bool value) {
-    setState(() {
-      _reminderEnabled = value;
-    });
-    _saveReminderSettings();
-
-    if (value) {
-      // Show reminder enabled message
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Row(
-            children: [
-              Icon(Icons.notifications_active, color: Colors.white, size: 20),
-              SizedBox(width: 8),
-              Expanded(
-                child: Text(
-                  'Ihre Checklisten-Erinnerung ist jetzt aktiviert!',
-                  style: TextStyle(fontSize: 14),
-                ),
-              ),
-            ],
-          ),
-          backgroundColor: Colors.green.shade600,
-          duration: Duration(seconds: 3),
-          behavior: SnackBarBehavior.floating,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-        ),
-      );
-    }
-  }
-
-  // NEU: Validate all reminder fields
   bool _validateReminderFields() {
     if (!_reminderEnabled) return true;
 
@@ -297,6 +408,16 @@ class _ChecklistState extends State<Checklist> with TickerProviderStateMixin {
 
       if (reminderDateTime.isBefore(DateTime.now())) {
         errors.add('Erinnerung Datum und Uhrzeit müssen in der Zukunft liegen');
+        // Auto-clear past date/time
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          setState(() {
+            _selectedReminderDate = null;
+            _selectedReminderDateText = null;
+            _selectedReminderTime = null;
+            _selectedReminderTimeText = null;
+          });
+          _saveReminderSettings();
+        });
       }
     }
 
@@ -306,6 +427,108 @@ class _ChecklistState extends State<Checklist> with TickerProviderStateMixin {
     }
 
     return true;
+  }
+
+  void _toggleReminder(bool value) {
+    if (value) {
+      // When enabling reminder - validate and check if date/time is in past
+      if (!_validateReminderFields()) {
+        // If validation fails, don't enable the reminder
+        setState(() {
+          _reminderEnabled = false;
+        });
+        _saveReminderSettings();
+        return;
+      }
+
+      // Additional check: if date/time is in past, clear them and show message
+      if (_selectedReminderDate != null && _selectedReminderTime != null) {
+        DateTime reminderDateTime = DateTime(
+          _selectedReminderDate!.year,
+          _selectedReminderDate!.month,
+          _selectedReminderDate!.day,
+          _selectedReminderTime!.hour,
+          _selectedReminderTime!.minute,
+        );
+
+        if (reminderDateTime.isBefore(DateTime.now())) {
+          // Clear the past date/time
+          setState(() {
+            _selectedReminderDate = null;
+            _selectedReminderDateText = null;
+            _selectedReminderTime = null;
+            _selectedReminderTimeText = null;
+            _reminderEnabled = false; // Don't enable if past date
+          });
+
+          _saveReminderSettings();
+
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Row(
+                children: [
+                  Icon(Icons.warning, color: Colors.white, size: 20),
+                  SizedBox(width: 8),
+                  Expanded(
+                    child: Text(
+                      'Die gewählte Erinnerungszeit liegt in der Vergangenheit. Bitte wählen Sie eine zukünftige Zeit.',
+                      style: TextStyle(fontSize: 14),
+                    ),
+                  ),
+                ],
+              ),
+              backgroundColor: Colors.orange.shade600,
+              duration: Duration(seconds: 3),
+              behavior: SnackBarBehavior.floating,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8),
+              ),
+            ),
+          );
+          return;
+        }
+      }
+
+      // If we get here, date/time is valid and in future
+      setState(() {
+        _reminderEnabled = true;
+      });
+      _saveReminderSettings();
+      _scheduleReminderNotification();
+    } else {
+      // When disabling reminder - clear everything
+      setState(() {
+        _reminderEnabled = false;
+        _selectedReminderDate = null;
+        _selectedReminderDateText = null;
+        _selectedReminderTime = null;
+        _selectedReminderTimeText = null;
+      });
+
+      _saveReminderSettings();
+      NotificationService.cancelWeddingReminder(CHECKLIST_REMINDER_ID);
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Row(
+            children: [
+              Icon(Icons.notifications_off, color: Colors.white, size: 20),
+              SizedBox(width: 8),
+              Expanded(
+                child: Text(
+                  'Checklisten-Erinnerung deaktiviert und alle Daten gelöscht',
+                  style: TextStyle(fontSize: 14),
+                ),
+              ),
+            ],
+          ),
+          backgroundColor: Colors.grey.shade600,
+          duration: Duration(seconds: 2),
+          behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+        ),
+      );
+    }
   }
 
   void _initializeExpandedState() {
@@ -882,6 +1105,15 @@ class _ChecklistState extends State<Checklist> with TickerProviderStateMixin {
                       106,
                     ).withOpacity(0.05),
                     borderRadius: BorderRadius.circular(8),
+
+                    border: Border.all(
+                      color: const Color.fromARGB(
+                        255,
+                        107,
+                        69,
+                        106,
+                      ).withOpacity(0.2),
+                    ),
                   ),
                   child: const Text(
                     'Sie erhalten eine Erinnerung zur ausgewählten Zeit, um Ihre Checklisten-Fortschritte zu überprüfen.',
