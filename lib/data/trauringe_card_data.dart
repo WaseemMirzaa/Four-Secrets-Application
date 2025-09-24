@@ -8,10 +8,10 @@ class TrauringeCardData {
     "instagram": "https://www.instagram.com/skusa.schmuck/",
     "phoneNumber": "+49 174 979 35 93",
     "avatar": "assets/images/card/judith_lorenz_skusa_schmuck_card.jpg",
-    "vorname": "Skusa Schmuck\n",
-    "nachname": "Judith Lorenz",
-    "bezeichnung": "",
+    "vorname": "Skusa",
+    "nachname": "Schmuck",
+    "bezeichnung": "Judith Lorenz",
     "backCardTaetigkeit": "Designer-Schmuck",
-    "slogan": "Jedes Stück ein Unikat. So wie ihr."
+    "slogan": "Jedes Stück ein Unikat. So wie ihr.",
   };
 }

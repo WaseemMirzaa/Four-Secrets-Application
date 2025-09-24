@@ -36,7 +36,7 @@ class FotographCardData {
     "videoUri": "",
     "videoRatio": "",
     "email": "temaire.videografie@gmail.com",
-    "homepage": "www.hochzeitsvideo-temaire.de",
+    "homepage": "https://www.hochzeitsvideo-temaire.de/",
     "instagram": "https://www.instagram.com/hochzeitsvideo_temaire/",
     "phoneNumber": "",
     "avatar": "assets/images/card/paul_temaire_card.webp",

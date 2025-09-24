@@ -44,6 +44,6 @@ class LocationCardData {
     "nachname": "Lamplstätt",
     "bezeichnung": "Location",
     "backCardTaetigkeit": "Event & Hochzeitslocation",
-    "slogan": "Stilvolle Kulisse für große Gefühle.",
+    "slogan": "Ein Ambiente, das Gefühle trägt.",
   };
 }

@@ -5,22 +5,22 @@ import 'package:flutter/material.dart';
 class BandDjCardItems {
   static List getCardItems() {
     List<Widget> items = [
-      CardWidget(
-        className: BandDjCardData,
-        avatarImage: BandDjCardData.map1['avatar']!,
-        vorname: BandDjCardData.map1['vorname']!,
-        nachname: BandDjCardData.map1['nachname']!,
-        bezeichnung: BandDjCardData.map1['bezeichnung']!,
-        backCardTaetigkeit: BandDjCardData.map1['backCardTaetigkeit']!,
-        slogan: BandDjCardData.map1['slogan']!,
-        homepage: BandDjCardData.map1['homepage']!,
-        email: BandDjCardData.map1["email"]!,
-        instagram: BandDjCardData.map1["instagram"]!,
-        phoneNumber: BandDjCardData.map1["phoneNumber"]!,
-        videoAsset: BandDjCardData.map1["videoAsset"]!,
-        videoRatio: BandDjCardData.map1["videoRatio"]!,
-        videoUri: BandDjCardData.map1["videoUri"]!,
-      ),
+      // CardWidget(
+      //   className: BandDjCardData,
+      //   avatarImage: BandDjCardData.map1['avatar']!,
+      //   vorname: BandDjCardData.map1['vorname']!,
+      //   nachname: BandDjCardData.map1['nachname']!,
+      //   bezeichnung: BandDjCardData.map1['bezeichnung']!,
+      //   backCardTaetigkeit: BandDjCardData.map1['backCardTaetigkeit']!,
+      //   slogan: BandDjCardData.map1['slogan']!,
+      //   homepage: BandDjCardData.map1['homepage']!,
+      //   email: BandDjCardData.map1["email"]!,
+      //   instagram: BandDjCardData.map1["instagram"]!,
+      //   phoneNumber: BandDjCardData.map1["phoneNumber"]!,
+      //   videoAsset: BandDjCardData.map1["videoAsset"]!,
+      //   videoRatio: BandDjCardData.map1["videoRatio"]!,
+      //   videoUri: BandDjCardData.map1["videoUri"]!,
+      // ),
       CardWidget(
         className: BandDjCardData,
         avatarImage: BandDjCardData.map2['avatar']!,

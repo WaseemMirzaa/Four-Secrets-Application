@@ -60,6 +60,6 @@ class BrautBraeutigamCardData {
     "nachname": "Society",
     "bezeichnung": "Atelier",
     "backCardTaetigkeit": "Herrenatelier",
-    "slogan": "Atelier für Männer mit Stil.",
+    "slogan": "Globaler Stil. Echte Erfahrung",
   };
 }

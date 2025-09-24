@@ -1,19 +1,19 @@
 class BandDjCardData {
-  static final Map<String, String> map1 = {
-    "videoAsset": "", // Uri geht vor Asset video
-    "videoUri": "",
-    "videoRatio": "0.7",
-    "email": "",
-    "homepage": "https://www.annabachkalova.wixsite.com",
-    "instagram": "https://www.instagram.com/anna.your.violinist/",
-    "phoneNumber": "+380 951 084 208",
-    "avatar": "assets/images/card/anna_bachkalova_card.jpg",
-    "vorname": "Anna",
-    "nachname": "Bachkalova",
-    "bezeichnung": "Violinistin",
-    "backCardTaetigkeit": "Musikbegleitung",
-    "slogan": "Die Sprache der Seele - gespielt auf vier Saiten."
-  };
+  // static final Map<String, String> map1 = {
+  //   "videoAsset": "", // Uri geht vor Asset video
+  //   "videoUri": "",
+  //   "videoRatio": "0.7",
+  //   "email": "",
+  //   "homepage": "https://www.annabachkalova.wixsite.com",
+  //   "instagram": "https://www.instagram.com/anna.your.violinist/",
+  //   "phoneNumber": "+380 951 084 208",
+  //   "avatar": "assets/images/card/anna_bachkalova_card.jpg",
+  //   "vorname": "Anna",
+  //   "nachname": "Bachkalova",
+  //   "bezeichnung": "Violinistin",
+  //   "backCardTaetigkeit": "Musikbegleitung",
+  //   "slogan": "Die Sprache der Seele - gespielt auf vier Saiten."
+  // };
 
   static final Map<String, String> map2 = {
     "videoAsset": "", // Uri geht vor Asset video
@@ -28,7 +28,7 @@ class BandDjCardData {
     "nachname": "",
     "bezeichnung": "Musikensemble",
     "backCardTaetigkeit": "Musikbegleitung",
-    "slogan": "Klassik, die unter die Haut geht."
+    "slogan": "Klassik, die unter die Haut geht.",
   };
 
   static final Map<String, String> map3 = {
@@ -44,6 +44,6 @@ class BandDjCardData {
     "nachname": "Adrian Planitz",
     "bezeichnung": "Saxobeatz",
     "backCardTaetigkeit": "Band & DJ",
-    "slogan": "Life. Laut. Legendär."
+    "slogan": "Life. Laut. Legendär.",
   };
 }
